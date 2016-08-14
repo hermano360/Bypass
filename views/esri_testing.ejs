@@ -242,7 +242,7 @@ $.ajax({
     var tokenObject = JSON.parse(results);
     //console.log(Date.now() + 86400);
     //console.log(tokenObject.access_token);
-    var tokenParameters = {expires: (Date.now() + 86400).toString(),server:'http://logistics.arcgis.com/arcgis/rest/services/World/Route/GPServer/FindRoutes/', ssl:true, token:tokenObject.access_token, userId:authdata.client_id};
+    var tokenParameters = {expires: (Date.now() + 86400).toString(),server:'https://route.arcgis.com/arcgis/rest/services/World/Route/NAServer/Route_World', ssl:true, token:tokenObject.access_token, userId:authdata.client_id};
 
     esriId.registerToken(tokenParameters);
 
@@ -271,7 +271,7 @@ $.ajax({
 //     console.log(body.access_token);
 // });
 //spH-4ut_taI6YRCYqbz4a1KWiK9Psdy2HaDAcNcq3z3yhLy0BdhPovt0mNRis3DbZlxDaT0t633lZlqhNZvptV5YHkKw_dmY5b00Xp2b6k1EC452t0q2GV2olqlK3RZux1ROFGIWnTpePUz2FON0rg..
-routeTask = new RouteTask("http://logistics.arcgis.com/arcgis/rest/services/World/Route/GPServer/FindRoutes/");
+routeTask = new RouteTask("https://route.arcgis.com/arcgis/rest/services/World/Route/NAServer/Route_World");
 routeParams = new RouteParameters();
 routeParams.stops = new FeatureSet();
 routeParams.barriers = new FeatureSet();
