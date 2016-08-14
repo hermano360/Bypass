@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
+  <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
+  <title>Saferoute</title>
+
+  <link rel="stylesheet" href="https://js.arcgis.com/3.17/dijit/themes/claro/claro.css">
+  <link rel="stylesheet" href="https://js.arcgis.com/3.17/esri/css/esri.css">
+  <link rel="stylesheet" href="style.css" />
+
+
+  <script type="text/javascript">
+    var dojoConfig = {
+      parseOnLoad: true
+    };
+  </script>
+
+
+  <script src="https://js.arcgis.com/3.17/"></script>
+
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+  <script>
+    require( [
+      "esri/urlUtils",
+      "esri/config",
+      "esri/map",
+      "esri/graphic",
+      "esri/IdentityManager",            
+      "esri/tasks/RouteTask",            
+      "esri/tasks/RouteParameters",
+      "esri/tasks/RouteResult",
+      "esri/tasks/FeatureSet",            
+      "esri/symbols/SimpleMarkerSymbol",
+      "esri/symbols/SimpleLineSymbol",
+      "esri/symbols/SimpleFillSymbol",  
+      "esri/Color",
+      "dojo/_base/array",
+      "dojo/on",
+      "dojo/dom",
+      "dijit/registry",
+      "dojo/query",
+      "esri/geometry/webMercatorUtils",
+      "esri/geometry/Circle",
+      "esri/geometry/Point",
+      "dojo/request",
+      "dojo/request/xhr",
+      "dojo/ready",
+      "esri/tasks/geometry",
+      "esri/units",
+      "dijit/layout/BorderContainer",
+      "dijit/layout/ContentPane",
+      "dijit/form/HorizontalSlider",
+      "dijit/form/HorizontalRuleLabels"
+      ], function (
+        urlUtils, esriConfig, Map, Graphic, esriId, RouteTask, RouteParameters, RouteResult,
+        FeatureSet, SimpleMarkerSymbol, SimpleLineSymbol, SimpleFillSymbol,          
+        Color, array, on, dom, registry, djQuery, webMercatorUtils, Circle, Point, request, xhr,ready
+        ) 
+      {
+        var data = [
+        // this is the format of the data we are accepting "Trespassing",-118.5006528,34.01718056,3
+        ];
+
+        var map, routeTask, routeParams, routes = [];
+        var stopSymbol, barrierSymbol, barrierSymbol1, routeSymbols, polygonBarrierSymbol;
+        var mapOnClick_addStops_connect, mapOnClick_addBarriers_connect, mapOnClick_addPolygonBarriers_connect, mapOnClick_testCrime_connect, mapOnClick_mapIndex_connect;
+        var stopCounter = 0;
+        var barrierToggle = 0;
+        var sortedData;
+        var plotCount = 0;
+        var routeResults;
+        var formatedData;
+        var crimeArray = [];
+        var globalxydata;
+        var severityAll = [];
+
+        //  urlUtils.addProxyRule({
+        //  urlPrefix: "route.arcgis.com",  
+        //  proxyUrl: "/sproxy/"
+        // });
+        
+        map = new Map("map", {
+          basemap: "streets",
+          center: [-118.49132, 34.01455],
+          zoom: 14,
+          slider:true
+          
+        }
+        );
+        //uploading csv data
+        ready(function() {
+          xhr.get("SantaMonicaCrime.csv", {
+            handleAs: "text",
+          }).then(function(data) {
+            globalvariable = data.split(",");
+            sortedData = filterBySeverity(globalvariable);
+            formatedData = formatGlobal(globalvariable);
+            $("#severity1").prop("disabled",false);
+          });
+          $("#addStopsBtn").click( function () {
+            addStops();
+          });
+          $("#addBarriersBtn").click( function () {
+            if(barrierToggle==0) {
+              $(this).css('background','orange');
+              addBarriers();
+              barrierToggle=1;
+            } else if(barrierToggle ==1) {
+              $(this).css('background','rgba(0,0,0, 0.3)');
+              removeEventHandlers();
+              barrierToggle=0;
+            }
+          });
+          $("#clearRoutesBtn").click( function () {
+            clearStops();
+            clearBarriers();
+            clearRoutes();
+            console.log(globalvariable);
+          });
+          $("#bufferzone").click( function () {
+            showBufferZones(sortedData);
+          });
+          $("#icons").click( function () {
+            showIcons();
+          });
+          $("#routeNameForm").click( function() {
+            sortedData = filterBySeverity(globalvariable);
+            if($("#bufferzone").is(':checked')) {
+              showBufferZones(sortedData);
+            }
+          });
+          $("#streetlights").click( function() {
+            console.log(routeParams.returnDirections);
+            console.log(routeParams);
+          });
+
+
+          $("#mapCrimeIndex").click( function () {
+            mapIndex();
+          });
+
+
+          $("#mapAllGrid").click( function () {
+            severityClick(formatedData);
+            mapAllIndices();
+          });        
+        });
+////THIS IS THE LAST THING I CHANGED...
+// var globalvariable = "bacon";
+// $.ajax({
+//   url:'smCrimeData.csv',
+//   type: 'GET',
+//   success: function (data) {
+//     globalvariable = data;
+//     //
+//   }
+// });
+//The globalvariable below is only going to be available after ajax request is successful.
+    //HPE Data upload
+    var objectdata = {apikey : "385bcd30-9d17-4037-917f-442c08e82b78", file : "/../public/SMCrimeBeatData.csv"/*"https://drive.google.com/uc?export=download&id=0BxioPUqqdZqReExzdWZYc2tfZFE"*/, max_results: 5, columns: ["Call_Type","Location"]}
+// $.ajax({
+//         url: "https://api.havenondemand.com/1/api/sync/anomalydetection/v1",
+//         type: 'POST',
+//         dataType: 'json',
+//         async: false,
+//         data: objectdata,
+//         success: function (results, textStatus, xhr) {
+//           console.log("test passed");
+//           console.log(results);
+//           // for(var i; i< results.length; i++){
+//           //   console.log(results[i]);
+//           // }
+//         },
+//         error: function (xhr, textStatus, errorThrown) {
+//             console.log("test failed");
+//             console.log("ERROR:" + xhr.responseText + xhr.status + errorThrown);
+
+//             return false;
+//         }
+//     });
+function filterBySeverity(data) {
+  var sortCounter = 0;
+  var filteredData = [];
+  var currentSeverity = $("input[name=routeRadioButtons]:checked").val();
+  var bufferSeverity;
+  if(currentSeverity == "Route 1"){
+    bufferSeverity = 1;
+  } else if(currentSeverity == "Route 2"){
+    bufferSeverity = 2;
+  } else if(currentSeverity == "Route 3"){
+    bufferSeverity = 3;
+  }
+  console.log(bufferSeverity + " " + currentSeverity);
+  for(var i = 4; i < data.length; i += 4){
+    if(data[i+3]==bufferSeverity){
+      filteredData[sortCounter] = data[i];
+      filteredData[sortCounter+1] = Number(data[i+1]); 
+      filteredData[sortCounter+2] = Number(data[i+2]); 
+      filteredData[sortCounter+3] = Number(data[i+3]);
+      sortCounter += 4;
+    }
+  }
+  return filteredData;
+}
+
+function formatGlobal(dataz) {
+  var formatedglobal = [];
+  var rowData = new Array(4);
+
+  for(var k = 4; k < dataz.length-3; k = k+4){
+    rowData[0] = dataz[k];
+    rowData[1] = Number(dataz[k+1]);
+    rowData[2] = Number(dataz[k+2]);
+    rowData[3] = Number(dataz[k+3]);
+    formatedglobal.push(rowData);
+    rowData = [0,0,0,0];
+  }
+  //console.log(formatedglobal);
+  
+  return formatedglobal;
+}
+
+var authdata = {client_id: '9gdUoBaoDjP5INej', client_secret: 'd2368d00106f46ec9e6d5bd9b069704a', grant_type: 'client_credentials', expiration: '1440'}
+var authresults;
+
+//synchronous
+//https://route.arcgis.com/arcgis/rest/services/World/Route/NAServer/Route_World"
+
+//asynchronous
+//http://logistics.arcgis.com/arcgis/rest/services/World/Route/GPServer/FindRoutes/
+
+$.ajax({
+  type: 'POST',
+  url: 'https://www.arcgis.com/sharing/rest/oauth2/token/',
+  data: authdata,
+
+  success: function (results, textStatus, xhr) {
+    //console.log(results);
+    var tokenObject = JSON.parse(results);
+    //console.log(Date.now() + 86400);
+    //console.log(tokenObject.access_token);
+    var tokenParameters = {expires: (Date.now() + 86400).toString(),server:'http://logistics.arcgis.com/arcgis/rest/services/World/Route/GPServer/FindRoutes/', ssl:true, token:tokenObject.access_token, userId:authdata.client_id};
+
+    esriId.registerToken(tokenParameters);
+
+  },
+
+  error: function (xhr, textStatus, errorThrown) {
+    console.log("test failed");
+    console.log("ERROR:" + xhr.responseText + xhr.status + errorThrown);
+    return false;
+  }
+});
+
+//generate a token with your client id and client secret
+// $.ajax({
+//     url: 'https://www.arcgis.com/sharing/rest/oauth2/token/',
+//     json: true,
+//     form: {
+//       'f': 'json',
+//       'client_id': '9gdUoBaoDjP5INej',
+//       'client_secret': 'd2368d00106f46ec9e6d5bd9b069704a',
+//       'grant_type': 'client_credentials',
+//       'expiration': '1440'
+//     }
+// }, function(error, response, body){
+// console.log(error);
+//     console.log(body.access_token);
+// });
+//spH-4ut_taI6YRCYqbz4a1KWiK9Psdy2HaDAcNcq3z3yhLy0BdhPovt0mNRis3DbZlxDaT0t633lZlqhNZvptV5YHkKw_dmY5b00Xp2b6k1EC452t0q2GV2olqlK3RZux1ROFGIWnTpePUz2FON0rg..
+routeTask = new RouteTask("http://logistics.arcgis.com/arcgis/rest/services/World/Route/GPServer/FindRoutes/");
+routeParams = new RouteParameters();
+routeParams.stops = new FeatureSet();
+routeParams.barriers = new FeatureSet();
+routeParams.polygonBarriers = new esri.tasks.FeatureSet();
+routeParams.returnDirections = true;
+
+polygonBarrierSymbol = new esri.symbol.SimpleFillSymbol();
+routeParams.outSpatialReference = {"wkid":102100};
+        //dojo.ready(function() { routeTask.on("solve-complete", showRoute); });
+        routeTask.on("solve-complete", showRoute);
+        routeTask.on("error", errorHandler);
+        //used as the start symbol of a destination
+        startSymbol = new SimpleMarkerSymbol();
+        startSymbol.setAngle(0);
+        startSymbol.setColor(new Color([38, 115, 0, 0.82]));
+        startSymbol.setPath("M16,3.5c-4.142,0-7.5,3.358-7.5,7.5c0,4.143,7.5,18.121,7.5,18.121S23.5,15.143,23.5,11C23.5,6.858,20.143,3.5,16,3.5z M16,14.584c-1.979,0-3.584-1.604-3.584-3.584S14.021,7.416,16,7.416S19.584,9.021,19.584,11S17.979,14.584,16,14.584z");
+        startSymbol.setStyle(SimpleMarkerSymbol.STYLE_PATH);
+        //used as the end symbol of a destination
+        stopSymbol = new SimpleMarkerSymbol();
+        stopSymbol.setAngle(0);
+        stopSymbol.setColor(new Color([230, 0, 0, 0.82]));
+        stopSymbol.setPath("M16,3.5c-4.142,0-7.5,3.358-7.5,7.5c0,4.143,7.5,18.121,7.5,18.121S23.5,15.143,23.5,11C23.5,6.858,20.143,3.5,16,3.5z M16,14.584c-1.979,0-3.584-1.604-3.584-3.584S14.021,7.416,16,7.416S19.584,9.021,19.584,11S17.979,14.584,16,14.584z");
+        stopSymbol.setStyle(SimpleMarkerSymbol.STYLE_PATH);
+        barrierSymbol = new esri.symbol.PictureMarkerSymbol({
+          "angle": 0,
+          "xoffset": 0,
+          "yoffset": 0,
+          "type": "esriPMS",
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/31/ProhibitionSign2.svg/2000px-ProhibitionSign2.svg.png",
+          "contentType": "image/png",
+          "width": 15,
+          "height": 15
+        });
+        var barrierSymbol1 = new SimpleFillSymbol().setColor(null).outline.setColor("blue");
+        routeSymbols = {
+          "Route 1": new SimpleLineSymbol().setColor(new Color([0,255,0,0.5])).setWidth(5),
+          "Route 2": new SimpleLineSymbol().setColor(new Color([255,255,0,0.5])).setWidth(5),
+          "Route 3": new SimpleLineSymbol().setColor(new Color([255,0,255,0.5])).setWidth(5)
+        };
+        //button click event listeners can't be added directly in HTML when the code is wrapped in an AMD callback
+        //using APIs?
+        
+        //on(dom.byId("addStopsBtn"), "click", addStops);
+        //on(dom.byId("clearStopsBtn"), "click", clearStops);
+        //on(dom.byId("addBarriersBtn"), "click", addBarriers);
+        //on(dom.byId("clearBarriersBtn"), "click", clearBarriers);
+        //on(dom.byId("solveRoutesBtn"), "click", solveRoute);
+        //on(dom.byId("clearRoutesBtn"), "click", clearRoutes);
+        //Begins listening for click events to add stops
+        function addStops() {
+          removeEventHandlers();
+          var node = dom.byId("addStopsBtn");
+          node.style.backgroundColor="green";
+          node.innerHTML= "Click To Start and End!";
+          mapOnClick_addStops_connect = map.on("click", addStop);
+        }
+        //Clears all stops
+        function clearStops() {
+          removeEventHandlers();
+          for (var i=routeParams.stops.features.length-1; i>=0; i--) {
+            map.graphics.remove(routeParams.stops.features.splice(i, 1)[0]);
+          }
+        }
+        //Adds a stop. The stop is associated with the route currently displayed in the dropdown
+        function addStop(evt) {
+          console.log($("input[name=routeRadioButtons]:checked").val())
+          var node2 = dom.byId("addStopsBtn");
+          node2.style.backgroundColor= "yellow";
+          if (stopCounter == 0) {
+            clearStops();
+            clearRoutes();
+            destinationSymbol = startSymbol;
+            stopCounter = 1;
+            addStops();
+          } else {
+            node2.innerHTML= "Click Here For New Route";
+            node2.style.backgroundColor= "blue";
+            destinationSymbol = stopSymbol;
+            stopCounter = 0;
+          }
+          routeParams.stops.features.push(
+            map.graphics.add(
+              new esri.Graphic(
+                evt.mapPoint,
+                destinationSymbol,
+                { RouteName:$("input[name=routeRadioButtons]:checked").val() }
+                )
+              )
+            );
+          if (stopCounter == 0) {
+            solveRoute();
+          }
+          //
+          console.log("addStop", evt.mapPoint);
+        }
+        //Begins listening for click events to add barriers
+        function addBarriers() {
+          removeEventHandlers();
+          mapOnClick_addBarriers_connect = on(map, "click", addBarrier1); //change to addBarrier1 once process completed
+        }
+
+        function mapIndex() {
+        	mapOnClick_mapIndex_connect = on(map, "click", addAnIndex);
+        }
+        //Fast mode
+        function clearBarriers() {
+          removeEventHandlers();
+          for (var i=routeParams.barriers.features.length-1; i>=0; i--) {
+            map.graphics.remove(routeParams.barriers.features.splice(i, 1)[0]);
+          }
+          clearCircleBarrier();
+          //Create a new PictureMarkerSymbol based on the static image and set a few properties.
+          //Change url to customize
+          // Create barriers
+          //11:20-not sure if this is supposed to be here?
+          // barrierSymbol = new esri.symbol.PictureMarkerSymbol({
+          //   "angle": 0,
+          //   "xoffset": 0,
+          //   "yoffset": 12,
+          //   "type": "esriPMS",
+          //   "url": "http://static.arcgis.com/images/Symbols/Basic/YellowStickpin.png",
+          //   "contentType": "image/png",
+          //   "width": 24,
+          //   "height": 24
+          // });
+          // console.log("showIcons() middle");
+          //This creates pins in place of existing barriers. Might be useful later...
+          /*
+          for (var i = 0; i < data.length; i = i+4) {
+            if(data[i+3] > 2) {
+              console.log(data[i+2]+', '+data[i+1]+'\n');
+              routeParams.barriers.features.push(
+                map.graphics.add(
+                  new esri.Graphic(
+                    new esri.geometry.Point(data[i+1], data[i+2]),
+                    barrierSymbol
+                    )
+                  )
+                );
+            }
+          }
+          */
+        }
+        //Adds a barrier
+        function addBarrier(evt) {
+          routeParams.barriers.features.push(
+            map.graphics.add(
+              new esri.Graphic(
+                evt.mapPoint,
+                barrierSymbol
+                )
+              )
+            );
+
+
+          //
+          console.log("addBarrier", evt.mapPoint);
+        }
+        function addBarrier1(evt) {
+          var latLongEvt = webMercatorUtils.xyToLngLat(evt.mapPoint["x"], evt.mapPoint["y"], true);
+          var severityEvt = $("input[name=severityRadioButtons]:checked").val();
+          addCircleBarrier1(latLongEvt[0],latLongEvt[1],severityEvt);
+          
+          /*
+          routeParams.barriers.features.push(
+            map.graphics.add(
+              new esri.Graphic(
+                evt.mapPoint,
+                barrierSymbol
+                )
+              )
+            );
+            */
+            
+          //
+          console.log("addBarrier1", evt.mapPoint);
+        }
+
+        //This function is to color an individual square, rather than the entire screen, which actually was just a test, rather than actually being a necessary function
+
+        // function addAnIndex(evt) {
+        //   var latLongEvt = webMercatorUtils.xyToLngLat(evt.mapPoint["x"], evt.mapPoint["y"], true);
+        //   addSquareBarrier(latLongEvt[0],latLongEvt[1]);
+        //   console.log("addAnIndex", evt.mapPoint);
+
+        // }
+
+        function mapAllIndices() {
+        	var xcenter;
+        	var ycenter;
+        	var max = 0;
+        	for(var i = 0; i < crimeArray.length; i++){
+        		for(var j = 0; j < crimeArray[i].length; j++){
+        			if(crimeArray[i][j]>max){
+        				max = crimeArray[i][j];
+        			}
+        		}
+        	}
+
+
+        	for(var i = 0; i < crimeArray.length; i = i+1){
+        		for(var j = 0; j < crimeArray[i].length; j=j+1){
+        			xcenter = -118.51618659213699 + i * 0.001651218959260686;
+        			ycenter = 34.047981411250944 - j * 0.0013911360369712373;
+        			addSquareBarrier(xcenter,ycenter,max);
+        		}
+        	}
+
+        }
+
+
+
+        function addSquareBarrier(long, lat,max) {
+          //op as opacity, radius as radius
+          
+
+          
+
+
+          var xdata = Math.round((long-(-118.51618659213699))/0.001651218959260686);
+
+          var ydata = Math.round((34.047981411250944-lat)/0.0013911360369712373);
+
+          var op = crimeArray[xdata][ydata]/max;
+
+          xcenter = -118.51618659213699 + xdata * 0.001651218959260686;
+          ycenter = 34.047981411250944 - ydata * 0.0013911360369712373;
+
+
+          //Change square color
+          polygonBarrierSymbol.setColor(new Color([0,0,0,op]));
+          //Change square outline
+          polygonBarrierSymbol.setOutline(
+            new SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new Color([255,255,255,0]), 2));
+
+          var center = new esri.geometry.Point([xcenter, ycenter]);
+
+          var ring = []; // point that make up the circle
+
+
+          ring.push([center.x - .5 * 0.001651218959260686 * .95, center.y + .5 * 0.0013911360369712373* .95]);
+          ring.push([center.x + .5 * 0.001651218959260686* .95, center.y + .5 * 0.0013911360369712373* .95]);
+          ring.push([center.x + .5 * 0.001651218959260686* .95, center.y - .5 * 0.0013911360369712373* .95]);
+          ring.push([center.x - .5 * 0.001651218959260686* .95, center.y - .5 * 0.0013911360369712373* .95]);
+
+          ring.push(ring[0]); // start point needs to == end point
+          var square = new esri.geometry.Polygon(ring);
+          var polygonbarrier = new esri.Graphic(square,polygonBarrierSymbol);
+          //polygonbarrier.attributes= {barrierType: 0};
+          routeParams.polygonBarriers.features.push(  
+            map.graphics.add(
+              polygonbarrier)
+            );
+        }
+
+
+
+
+       //Load-in barrier circle(polygon)
+       function addCircleBarrier1(long, lat, severity) {
+          //op as opacity, radius as radius
+          var op, radius;
+          if(severity == 1) {
+            op = 0.15;
+            radius = 0.0004;
+          }
+          else if(severity == 2) {
+            op = 0.20;
+            radius = 0.0007;
+          }
+          else {
+            op = 0.25;
+            radius = 0.001;
+          }
+          
+          //Change circle color
+          polygonBarrierSymbol.setColor(new Color([255,0,0,op]));
+          //Change circle outline
+          polygonBarrierSymbol.setOutline(
+            new SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new Color([255,255,255,0]), 2));
+
+          console.log([long, lat]);
+          var center = new esri.geometry.Point([long, lat]);
+
+          var ring = []; // point that make up the circle
+          var pts = 10; // number of points on the circle
+          var angle = 360 / pts; // used to compute points on the circle
+          for(var i = 1; i <= pts; i++) {
+            // convert angle to raidans
+            var radians = i * angle * Math.PI / 180;
+            // add point to the circle
+            ring.push([center.x + radius * Math.cos(radians), center.y + radius * Math.sin(radians)]);
+            
+            //
+            //console.log("x", center.x + radius * Math.cos(radians));
+            //console.log("y", center.y + radius * Math.sin(radians));
+          } 
+          ring.push(ring[0]); // start point needs to == end point
+          var circle = new esri.geometry.Polygon(ring);
+          var polygonbarrier = new esri.Graphic(circle,polygonBarrierSymbol);
+          polygonbarrier.attributes= {barrierType: 1, attr_length : 100
+          };
+          routeParams.polygonBarriers.features.push(  
+            map.graphics.add(
+              polygonbarrier)
+              // new esri.Graphic(
+              //   circle,
+              //   polygonBarrierSymbol)
+              // )  
+              );
+          //console.log(routeParams.polygonBarriers);
+        }
+        //Load-in barrier circle(polygon)
+        function addCircleBarrier(long, lat, severity) {
+          //op as opacity, radius as radius
+          var op, radius;
+          if(severity == 1) {
+            op = 0.15;
+            radius = 0.0004;
+          }
+          else if(severity == 2) {
+            op = 0.20;
+            radius = 0.0007;
+          }
+          else {
+            op = 0.25;
+            radius = 0.001;
+          }
+          
+
+          testSymbol = new SimpleMarkerSymbol();
+          testSymbol.setAngle(0);
+          testSymbol.setColor(new Color([220, 20, 60, .1]));
+          testSymbol.setStyle(SimpleMarkerSymbol.STYLE_CIRCLE);
+          testSymbol.setSize(10);
+
+          var xyUnits = webMercatorUtils.lngLatToXY(long, lat);
+          var pt = new Point(xyUnits[0],xyUnits[1],map.spatialReference);
+
+          routeParams.polygonBarriers.features.push( 
+            map.graphics.add(
+              new esri.Graphic(
+                pt,
+                testSymbol
+                )
+              )
+            );
+
+          plotCount++;
+
+
+
+
+        }
+        //Remove all circle(polygon) barriers
+        function clearCircleBarrier() {
+          removeEventHandlers();
+          for (var i=routeParams.polygonBarriers.features.length-1; i>=0; i--) {
+            map.graphics.remove(routeParams.polygonBarriers.features.splice(i, 1)[0]);
+          }
+        }
+        //Stops listening for click events to add barriers and stops (if they've already been wired)
+        function removeEventHandlers() {        
+          if (mapOnClick_addStops_connect) {
+            mapOnClick_addStops_connect.remove();
+          }
+          if (mapOnClick_addBarriers_connect) {
+            mapOnClick_addBarriers_connect.remove();
+          }
+          if (mapOnClick_addPolygonBarriers_connect) {
+            mapOnClick_addPolygonBarriers_connect.remove();
+          }
+        }
+        //Solves the routes. Any errors will trigger the errorHandler function.
+        function solveRoute() {
+          //Make sure data is ready?
+          //dojo.ready(function() {
+            removeEventHandlers();
+            console.log(routeTask.getServiceDescription());
+            routeTask.solve(routeParams);
+
+          //});
+        }
+        //Clears all routes
+        function clearRoutes() {
+          for (var i=routes.length-1; i>=0; i--) {
+            map.graphics.remove(routes.splice(i, 1)[0]);
+          }
+          routes = [];
+        }
+        //Draws the resulting routes on the map
+        function showRoute(evt) {
+          //Make sure data is ready?
+          //dojo.ready(function() {
+            clearRoutes();
+            array.forEach(evt.result.routeResults, function(routeResult, i) {
+              routes.push(
+                map.graphics.add(
+                  routeResult.route.setSymbol(routeSymbols[routeResult.routeName])
+                  )
+                );
+            });
+            
+            var msgs = ["Server messages:"];
+            array.forEach(evt.result.messages, function(message) {
+              msgs.push(message.type + " : " + message.description);
+            });
+            // if (msgs.length > 1) {
+            //   alert(msgs.join("\n - "));
+            // }
+          //});
+          var solveResult = evt.result;
+          routeResults = solveResult.routeResults;
+          //console.log(routeResults[0].directions);
+          console.log("The total drive time is " + routeResults[0].directions.totalDriveTime);
+          console.log("The total length is " + routeResults[0].directions.totalLength);
+          console.log("The total time is " + routeResults[0].directions.totalTime);
+        }
+        //Reports any errors that occurred during the solve
+        function errorHandler(err) {
+          alert("An error occured\n" + err.message + "\n" + err.details.join("\n"));
+        }
+        //Clear all
+        function clearAll() {
+          clearStops();
+          clearBarriers();
+          clearCircleBarrier();
+        }
+        map.on("load", function() {
+          // Create street lights
+          var featureLayer = new esri.layers.FeatureLayer("http://services1.arcgis.com/p84PN4WZvOWzi2j2/arcgis/rest/services/StreetLights/FeatureServer/0",{
+            mode: esri.layers.FeatureLayer.MODE_ONDEMAND,
+            outFields: ["*"]
+          });
+          map.addLayer(featureLayer);
+          //Default
+          // showBufferZones();          
+        });
+        function showBufferZones(dataz) {
+          console.log("showBufferZones() called");
+          clearAll();
+          for (var i = 0; i < dataz.length; i = i+4) {
+           addCircleBarrier1(dataz[i+2], dataz[i+1], dataz[i+3]);
+         }
+         plotCount = 0;
+       }
+
+       function severityClick(dataz) {
+        crimeArray = [];
+
+        var xmin=-13193161.542197285;
+        var xmax=-13185441.402340494;
+        var ymax=4035246.5784217017;
+        var ymin=4028520.119932615;
+        var xcells = Math.ceil((xmax-xmin)/187.02);
+        var ycells = Math.ceil((ymax-ymin)/187.02);
+        var longLatTL = webMercatorUtils.xyToLngLat(xmin, ymax, true);
+        var longLatRB = webMercatorUtils.xyToLngLat(xmax, ymin, true);
+        console.log(longLatTL);
+        console.log(longLatRB);
+
+        var xdata;
+        var ydata;
+        var xyarr=[];
+        
+
+        var deltaLngLat = [(-longLatTL[0]+longLatRB[0])/42,(-longLatRB[1]+longLatTL[1])/36];
+        console.log(deltaLngLat);
+        for(var i = 0; i < 50; i++){
+          crimeArray.push([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]);
+        }
+
+        for(var j = 0; j < dataz.length; j++){
+
+          xdata = Math.round((dataz[j][2]-longLatTL[0])/deltaLngLat[0]);
+          
+
+          ydata = Math.round((longLatTL[1]-dataz[j][1])/deltaLngLat[1]);
+          xyarr.push([xdata,ydata]);
+        }
+
+        for( var k = 0; k < crimeArray.length; k++){
+        	for(var m = 0; m < xyarr.length; m++) {
+        		if (k == xyarr[m][0]){
+        			crimeArray[k][xyarr[m][1]]++;
+        		}
+        	}
+        }
+
+        console.log(crimeArray);
+        
+        
+        globalxydata = [deltaLngLat,longLatTL];
+        
+        mapOnClick_testCrime_connect = map.on("click", testCrime);
+
+        /*
+        Format the following data in order to show graphics in for each of the crime zones.  You'll have to make sure they correlate correctly with the previous for loop.  7/19/2016
+          var polygonJson  = {"rings":[[[-122.63,45.52],[-122.57,45.53],[-122.52,45.50],[-122.49,45.48],
+    [-122.64,45.49],[-122.63,45.52],[-122.63,45.52]]],"spatialReference":{"wkid":4326 }};
+  var polygon = new Polygon(polygonJson);
+
+            var circle = new esri.geometry.Polygon(ring);
+          var polygonbarrier = new esri.Graphic(circle,polygonBarrierSymbol);
+          polygonbarrier.attributes= {barrierType: 1, attr_length : 100
+          };
+          routeParams.polygonBarriers.features.push(  
+            map.graphics.add(
+              polygonbarrier)
+              // new esri.Graphic(
+              //   circle,
+              //   polygonBarrierSymbol)
+              // )  
+            );
+
+            */
+
+          }
+
+          function testCrime(evt) {
+            var longLatEvt = webMercatorUtils.xyToLngLat(evt.mapPoint["x"], evt.mapPoint["y"], true);
+            var xcell = Math.round((longLatEvt[0]-globalxydata[1][0])/globalxydata[0][0]);
+            var ycell = Math.round((globalxydata[1][1]-longLatEvt[1])/globalxydata[0][1]);
+            console.log(crimeArray[xcell][ycell]);
+            console.log("The longitude is " + longLatEvt[0] + ",latitude is " + longLatEvt[1] );
+          }
+
+
+
+
+
+
+
+
+          function showIcons() {
+            console.log("showIcons() called");
+            clearAll();
+          //Create a new PictureMarkerSymbol based on the static image and set a few properties.
+          //Change url to customize
+          // Create barriers
+          barrierSymbol = new esri.symbol.PictureMarkerSymbol({
+            "angle": 0,
+            "xoffset": 0,
+            "yoffset": 12,
+            "type": "esriPMS",
+            "url": "http://static.arcgis.com/images/Symbols/Basic/YellowStickpin.png",
+            "contentType": "image/png",
+            "width": 24,
+            "height": 24
+          });
+          console.log("showIcons() middle");
+          for (var i = 0; i < data.length; i = i+4) {
+            //if(data[i+3] > 2) {
+              console.log(data[i+2]+', '+data[i+1]+'\n');
+              routeParams.barriers.features.push(
+                map.graphics.add(
+                  new esri.Graphic(
+                    new esri.geometry.Point(data[i+1], data[i+2]),
+                    barrierSymbol
+                    )
+                  )
+                );
+            //}
+          }
+        }
+      });
+    </script>
+
+  </head>
+  <body>
+
+    <!--   <img src="images/murder.png" /> -->
+    <div id="centerpage">
+      <div id="map" style="width:320px; height:586px;"></div>
+      <div id="safefast"> 
+        <form id="routeNameForm">
+          <input type="radio" name="routeRadioButtons" id="route1" checked value="Route 1"/> <label for="route1">Safe</label>
+          <input type="radio" name="routeRadioButtons" id="route2" unchecked value="Route 2"/> <label for="route2">Balanced</label>
+          <input type="radio" name="routeRadioButtons" id="route3" unchecked value="Route 3"/> <label for="route3">Fast</label>
+        </form>
+      </div>
+      <button id="addBarriersBtn">Add Barriers</button>
+      <form id="severityForm">
+        <input type="radio" name="severityRadioButtons" id="severity1" checked value="1" disabled="true"/> <label for="severity1">1</label>
+        <input type="radio" name="severityRadioButtons" id="severity2" unchecked value="2"/> <label for="severity2">2</label>
+        <input type="radio" name="severityRadioButtons" id="severity3" unchecked value="3"/> <label for="severity3">3</label>
+      </form>
+
+      <div id="rightControlPanel">
+        <button id="addStopsBtn">Click Here To Begin!</button>
+        <button id="clearRoutesBtn">Clear Screen</button>
+        <div id="rightToolbar">
+          <form id="extraSettings">
+            <input type="radio" name="myRadioButtons" id="bufferzone" value="1" checked/> <label for="bufferzone">Buffer Zone</label><br/>
+            <input type="radio" name="myRadioButtons" id="icons" value="2" unchecked/> <label for="icons">Icons</label><br/><br/>
+            <input type="checkbox" checked="checked" id="streetlights" unchecked /> <label for="streetlights">Street Lights</label><br/>
+          </form>
+          <button id="mapAllGrid">Map all Grid</button>
+        </div>
+      </div>
+    </div>
+  </body>
+  </html>

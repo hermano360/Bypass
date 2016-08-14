@@ -1,0 +1,73 @@
+#centerpage {
+	position: relative;
+	height: 568px;
+	width: 320px;
+	outline: black solid 1px;
+	margin: 0 auto;
+}
+
+#routeNameForm {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	padding-right: 10px;
+	font-size: .75em;
+	font-family: "Times New Roman", Times, serif;
+	color: white;
+	background:rgba(0,0,0, 0.3);
+}
+
+.esriSimpleSliderTL {
+    top: 200px;
+    left: 5px;
+}
+
+.esriSimpleSlider {
+	background:rgba(255,255,255, 0.3);
+}
+
+#rightToolbar {
+	position: absolute;
+	top: 0px;
+	right:0px;
+	background:rgba(0,0,0, 0.3);
+	font-size: .75em;
+	font-family: "Times New Roman", Times, serif;
+	color: white;
+}
+
+#addStopsBtn {
+	position: absolute;
+	background-color: green;
+	font-family: "Times New Roman", Times, serif;
+	color: black;
+	bottom: 35px;
+	left: 79px;
+}
+
+#clearRoutesBtn {
+	position: absolute;
+	background-color: red;
+	font-family: "Times New Roman", Times, serif;
+	color: white;
+	bottom: 5px;
+	left: 110px;
+}
+
+#addBarriersBtn {
+	position: absolute;
+	top: 29px;
+	left:0px;
+	color: white;
+	background:rgba(0,0,0, 0.3);
+}
+
+#severityForm {
+	position: absolute;
+	top:52px;
+	left:0px;
+	font-size: .75em;
+	font-family: "Times New Roman", Times, serif;
+	color: white;
+	background:rgba(0,0,0, 0.3);
+}
