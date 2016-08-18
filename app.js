@@ -12,8 +12,8 @@ fs.readdirSync(__dirname + '/models').forEach(function(filename) {
 });
 
 app.get('/database_test', function(req, res) {
-  mongoose.model('InfluencerWeight').find(function(err, influencer_weights) {
-    res.send(influencer_weights);
+  mongoose.model('DangerInfluenceWeight').find(function(err, danger_influence_weight) {
+    res.send(danger_influence_weights);
   });
 });
 
