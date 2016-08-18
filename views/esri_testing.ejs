@@ -4,7 +4,7 @@
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 
   <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
-  <title>Saferoute</title>
+  <title>Bypass</title>
 
   <link rel="stylesheet" href="https://js.arcgis.com/3.17/dijit/themes/claro/claro.css">
   <link rel="stylesheet" href="https://js.arcgis.com/3.17/esri/css/esri.css">
@@ -64,7 +64,7 @@
         // this is the format of the data we are accepting "Trespassing",-118.5006528,34.01718056,3
         ];
 
-        var map, routeTask, routeParams, routes = [];
+        var map, routeTask, routeParams, routeParamsNormal, routes = [];
         var stopSymbol, barrierSymbol, barrierSymbol1, routeSymbols, polygonBarrierSymbol;
         var mapOnClick_addStops_connect, mapOnClick_addBarriers_connect, mapOnClick_addPolygonBarriers_connect, mapOnClick_testCrime_connect, mapOnClick_mapIndex_connect;
         var stopCounter = 0;
@@ -76,6 +76,17 @@
         var crimeArray = [];
         var globalxydata;
         var severityAll = [];
+        var densityArray;
+        var weightedSpatialArray;
+
+        var SantaMonicaCoordinates= {
+          xmin:-13193161.542197285, //western-most x-coordinate (corresponds to GPS)
+          xmax:-13185441.402340494, //eastern-most x-coordinate (corresponds to GPS)
+          ymax:4035246.5784217017,  //northern-most y-coordinate (corresponds to GPS)
+          ymin:4028520.119932615,  //southern-most y-coordinate (corresponds to GPS)
+          blockWidthXY: 187.02 //This is what correponds most closely to about 300' in terms of xy coordinates
+        }
+        
 
         //  urlUtils.addProxyRule({
         //  urlPrefix: "route.arcgis.com",  
@@ -125,6 +136,7 @@
           });
           $("#icons").click( function () {
             showIcons();
+
           });
           $("#routeNameForm").click( function() {
             sortedData = filterBySeverity(globalvariable);
@@ -143,10 +155,17 @@
           });
 
 
-          $("#mapAllGrid").click( function () {
-            severityClick(formatedData);
-            mapAllIndices();
-          });        
+          $("#DensityGrid").click( function () {
+            densityArray = crimeDensity(formatedData);
+            mapAllIndices(densityArray);
+          });
+
+          $("#ClusterGrid").click( function () {
+            weightedSpatialArray = crimeCluster(formatedData);
+            mapAllIndices(weightedSpatialArray);
+          });  
+
+
         });
 ////THIS IS THE LAST THING I CHANGED...
 // var globalvariable = "bacon";
@@ -374,7 +393,7 @@ routeParams.outSpatialReference = {"wkid":102100};
         }
 
         function mapIndex() {
-        	mapOnClick_mapIndex_connect = on(map, "click", addAnIndex);
+          mapOnClick_mapIndex_connect = on(map, "click", addAnIndex);
         }
         //Fast mode
         function clearBarriers() {
@@ -459,26 +478,26 @@ routeParams.outSpatialReference = {"wkid":102100};
 
         // }
 
-        function mapAllIndices() {
-        	var xcenter;
-        	var ycenter;
-        	var max = 0;
-        	for(var i = 0; i < crimeArray.length; i++){
-        		for(var j = 0; j < crimeArray[i].length; j++){
-        			if(crimeArray[i][j]>max){
-        				max = crimeArray[i][j];
-        			}
-        		}
-        	}
+        function mapAllIndices(array) {
+          var xcenter;
+          var ycenter;
+          var max = 0;
+          for(var i = 0; i < array.length; i++){
+            for(var j = 0; j < array[i].length; j++){
+              if(array[i][j]>max){
+                max = array[i][j];
+              }
+            }
+          }
 
 
-        	for(var i = 0; i < crimeArray.length; i = i+1){
-        		for(var j = 0; j < crimeArray[i].length; j=j+1){
-        			xcenter = -118.51618659213699 + i * 0.001651218959260686;
-        			ycenter = 34.047981411250944 - j * 0.0013911360369712373;
-        			addSquareBarrier(xcenter,ycenter,max);
-        		}
-        	}
+          for(var i = 0; i < array.length; i = i+1){
+            for(var j = 0; j < array[i].length; j=j+1){
+              xcenter = -118.51618659213699 + i * 0.001651218959260686;
+              ycenter = 34.047981411250944 - j * 0.0013911360369712373;
+              addSquareBarrier(xcenter,ycenter,max);
+            }
+          }
 
         }
 
@@ -496,6 +515,7 @@ routeParams.outSpatialReference = {"wkid":102100};
           var ydata = Math.round((34.047981411250944-lat)/0.0013911360369712373);
 
           var op = crimeArray[xdata][ydata]/max;
+          var impedance = op*10;
 
           xcenter = -118.51618659213699 + xdata * 0.001651218959260686;
           ycenter = 34.047981411250944 - ydata * 0.0013911360369712373;
@@ -520,11 +540,13 @@ routeParams.outSpatialReference = {"wkid":102100};
           ring.push(ring[0]); // start point needs to == end point
           var square = new esri.geometry.Polygon(ring);
           var polygonbarrier = new esri.Graphic(square,polygonBarrierSymbol);
-          //polygonbarrier.attributes= {barrierType: 0};
+          polygonbarrier.attributes= {BarrierType: 1, Attr_TravelTime: impedance};
+          if(impedance > 1.2){
           routeParams.polygonBarriers.features.push(  
             map.graphics.add(
               polygonbarrier)
             );
+        }
         }
 
 
@@ -633,6 +655,14 @@ routeParams.outSpatialReference = {"wkid":102100};
             map.graphics.remove(routeParams.polygonBarriers.features.splice(i, 1)[0]);
           }
         }
+
+        //Remove all circle(polygon) barriers
+        function clearRouteBarrier(givenRouteParameters) {
+          removeEventHandlers();
+          for (var i=givenRouteParameters.polygonBarriers.features.length-1; i>=0; i--) {
+            givenRouteParameters.polygonBarriers.features.splice(i, 1)[0];
+          }
+        }
         //Stops listening for click events to add barriers and stops (if they've already been wired)
         function removeEventHandlers() {        
           if (mapOnClick_addStops_connect) {
@@ -645,13 +675,31 @@ routeParams.outSpatialReference = {"wkid":102100};
             mapOnClick_addPolygonBarriers_connect.remove();
           }
         }
+
+        function asyncRoute() {
+          console.log(routeParams);
+        }
+
+
+
+
+
+
         //Solves the routes. Any errors will trigger the errorHandler function.
         function solveRoute() {
           //Make sure data is ready?
           //dojo.ready(function() {
             removeEventHandlers();
             console.log(routeTask.getServiceDescription());
+
+            //make async call here
+            //asyncRoute();
+            routeParamsNormal = routeParams;
             routeTask.solve(routeParams);
+            clearRouteBarrier(routeParamsNormal);
+            routeTask.solve(routeParamsNormal);
+            console.log(routeParams);
+            console.log(routeParamsNormal);
 
           //});
         }
@@ -719,49 +767,48 @@ routeParams.outSpatialReference = {"wkid":102100};
          plotCount = 0;
        }
 
-       function severityClick(dataz) {
-        crimeArray = [];
+       function crimeDensity(dataz) {
+        var calculatedArray = [];
 
-        var xmin=-13193161.542197285;
-        var xmax=-13185441.402340494;
-        var ymax=4035246.5784217017;
-        var ymin=4028520.119932615;
-        var xcells = Math.ceil((xmax-xmin)/187.02);
-        var ycells = Math.ceil((ymax-ymin)/187.02);
-        var longLatTL = webMercatorUtils.xyToLngLat(xmin, ymax, true);
-        var longLatRB = webMercatorUtils.xyToLngLat(xmax, ymin, true);
-        console.log(longLatTL);
-        console.log(longLatRB);
+        var xmin=SantaMonicaCoordinates.xmin;
+        var xmax=SantaMonicaCoordinates.xmax;
+        var ymax=SantaMonicaCoordinates.ymax;
+        var ymin=SantaMonicaCoordinates.ymin;
+
+        var xcells = Math.ceil((xmax-xmin)/SantaMonicaCoordinates.blockWidthXY); //defines how many 300' sections in x direction
+        var ycells = Math.ceil((ymax-ymin)/SantaMonicaCoordinates.blockWidthXY); //defines how many 300' sections in y direction
+
+        var longLatTL = webMercatorUtils.xyToLngLat(xmin, ymax, true); //converts the top left xy coordinate into longitude and latitude
+        var longLatRB = webMercatorUtils.xyToLngLat(xmax, ymin, true); //converts the right bottom xy coordinate into longitude and latitude
+        console.log(longLatTL); //shows it to make sure it reflects reality
+        console.log(longLatRB); //shows it to make sure it reflects reality
 
         var xdata;
         var ydata;
         var xyarr=[];
-        
 
-        var deltaLngLat = [(-longLatTL[0]+longLatRB[0])/42,(-longLatRB[1]+longLatTL[1])/36];
-        console.log(deltaLngLat);
-        for(var i = 0; i < 50; i++){
-          crimeArray.push([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]);
+        //This reflects how far the center of each cell is from eachother, in terms of [longitude, latitude]. This is approximate since earth is round
+        var deltaLngLat = [(-longLatTL[0]+longLatRB[0])/xcells,(-longLatRB[1]+longLatTL[1])/ycells];  
+        for(var i = 0; i < xcells; i++){
+          calculatedArray.push([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]);//had problems getting array not to point to same object, just added 0's so that I knew for sure they wouldn't be pointing at the same array;
+
         }
 
-        for(var j = 0; j < dataz.length; j++){
-
+        for(var j = 0; j < dataz.length; j++){ //this calculates each of the xcell/ycell combos that are going to get a point added.
           xdata = Math.round((dataz[j][2]-longLatTL[0])/deltaLngLat[0]);
-          
-
           ydata = Math.round((longLatTL[1]-dataz[j][1])/deltaLngLat[1]);
           xyarr.push([xdata,ydata]);
         }
 
-        for( var k = 0; k < crimeArray.length; k++){
-        	for(var m = 0; m < xyarr.length; m++) {
-        		if (k == xyarr[m][0]){
-        			crimeArray[k][xyarr[m][1]]++;
-        		}
-        	}
+        for( var k = 0; k < calculatedArray.length; k++){
+          for(var m = 0; m < xyarr.length; m++) {
+            if (k == xyarr[m][0]){
+              calculatedArray[k][xyarr[m][1]]++;
+            }
+          }
         }
 
-        console.log(crimeArray);
+        console.log(calculatedArray);
         
         
         globalxydata = [deltaLngLat,longLatTL];
@@ -788,8 +835,83 @@ routeParams.outSpatialReference = {"wkid":102100};
             );
 
             */
+            return calculatedArray;
+          }
+
+
+          function crimeCluster(dataz) {
+
+            var calculatedArray = [];
+
+            var xmin=SantaMonicaCoordinates.xmin;
+            var xmax=SantaMonicaCoordinates.xmax;
+            var ymax=SantaMonicaCoordinates.ymax;
+            var ymin=SantaMonicaCoordinates.ymin;
+
+            var xcells = Math.ceil((xmax-xmin)/SantaMonicaCoordinates.blockWidthXY); //defines how many 300' sections in x direction
+            var ycells = Math.ceil((ymax-ymin)/SantaMonicaCoordinates.blockWidthXY); //defines how many 300' sections in y direction
+
+            var longLatTL = webMercatorUtils.xyToLngLat(xmin, ymax, true); //converts the top left xy coordinate into longitude and latitude
+            var longLatRB = webMercatorUtils.xyToLngLat(xmax, ymin, true); //converts the right bottom xy coordinate into longitude and latitude
+            console.log(longLatTL); //shows it to make sure it reflects reality
+            console.log(longLatRB); //shows it to make sure it reflects reality
+
+            var xdata;
+            var ydata;
+            var xyarr=[];
+
+            //This reflects how far the center of each cell is from eachother, in terms of [longitude, latitude]. This is approximate since earth is round
+
+            var deltaLngLat = [(-longLatTL[0]+longLatRB[0])/xcells,(-longLatRB[1]+longLatTL[1])/ycells];
+            for(var i = 0; i < xcells; i++){
+              crimeArray.push([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]);//had problems getting array not to point to same object, just added 0's so that I knew for sure they wouldn't be pointing at the same array;
+            }
+
+            for(var j = 0; j < dataz.length; j++){ //this calculates each of the xcell/ycell combos that are going to get a point added.
+              xdata = Math.round((dataz[j][2]-longLatTL[0])/deltaLngLat[0]);
+              ydata = Math.round((longLatTL[1]-dataz[j][1])/deltaLngLat[1]);
+              xyarr.push([xdata,ydata]);
+            }
+
+            for( var k = 0; k < crimeArray.length; k++){
+              for(var m = 0; m < xyarr.length; m++) {
+                if (k == xyarr[m][0]){
+                  crimeArray[k][xyarr[m][1]]++;
+                }
+              }
+            }
+
+            console.log(crimeArray);
+
+            globalxydata = [deltaLngLat,longLatTL];
+
+            //mapOnClick_testCrime_connect = map.on("click", testCrime);  This was to see if I could click on a cell individually to view it
+
+        /*
+        Format the following data in order to show graphics in for each of the crime zones.  You'll have to make sure they correlate correctly with the previous for loop.  7/19/2016
+          var polygonJson  = {"rings":[[[-122.63,45.52],[-122.57,45.53],[-122.52,45.50],[-122.49,45.48],
+    [-122.64,45.49],[-122.63,45.52],[-122.63,45.52]]],"spatialReference":{"wkid":4326 }};
+  var polygon = new Polygon(polygonJson);
+
+            var circle = new esri.geometry.Polygon(ring);
+          var polygonbarrier = new esri.Graphic(circle,polygonBarrierSymbol);
+          polygonbarrier.attributes= {barrierType: 1, attr_length : 100
+          };
+          routeParams.polygonBarriers.features.push(  
+            map.graphics.add(
+              polygonbarrier)
+              // new esri.Graphic(
+              //   circle,
+              //   polygonBarrierSymbol)
+              // )  
+            );
+
+            */
 
           }
+
+
+
 
           function testCrime(evt) {
             var longLatEvt = webMercatorUtils.xyToLngLat(evt.mapPoint["x"], evt.mapPoint["y"], true);
@@ -869,7 +991,12 @@ routeParams.outSpatialReference = {"wkid":102100};
             <input type="radio" name="myRadioButtons" id="icons" value="2" unchecked/> <label for="icons">Icons</label><br/><br/>
             <input type="checkbox" checked="checked" id="streetlights" unchecked /> <label for="streetlights">Street Lights</label><br/>
           </form>
-          <button id="mapAllGrid">Map all Grid</button>
+          <div>
+          <button id="DensityGrid">Density Grid</button>
+          </div>
+          <div>
+          <button id="ClusterGrid">Cluster Grid</button>
+          </div>
         </div>
       </div>
     </div>
