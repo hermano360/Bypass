@@ -1,8 +1,8 @@
 var mongoose = require('../config/mongo');
-var DangerInfluenceWeightModel = require("../models/danger_influence_weight");
+var DangerInfluenceWeight = require("../models/danger_influence_weight");
 var fs = require('fs');
 var parse = require('csv-parse');
-var dangerInfluenceWeightPath = __dirname + "/danger_influence_weight_seed.csv";
+var dangerInfluenceWeightPath = __dirname + "/data_files/danger_influence_weight_seed.csv";
 
 fileBuffer = fs.readFileSync(dangerInfluenceWeightPath);
 to_string = fileBuffer.toString();
@@ -20,19 +20,9 @@ fs.createReadStream(dangerInfluenceWeightPath)
   })
   .on('end',function() {
     console.log(csvData);
-      DangerInfluenceWeightModel.insertMany(csvData, function(err, docs) {
+      DangerInfluenceWeight.insertMany(csvData, function(err, docs) {
 				if (err) { console.log ('Error on save!') }
 				else { process.exit(); }
       });
   });
 
-
-//var dangerInfluenceWeight = new DangerInfluenceWeightModel ({ type: 'assault', weight: 3 });
-//dangerInfluenceWeight.save(function (err) {
-//  if (err) {
-//    console.log ('Error on save!')
-//  }
-//  else {
-//    process.exit();
-//  }
-//});

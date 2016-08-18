@@ -5,6 +5,6 @@ var dangerInfluenceWeightSchema = new mongoose.Schema({
   weight: Number
 });
 
-var dangerInfluenceWeightModel = mongoose.model('DangerInfluenceWeight', dangerInfluenceWeightSchema);
+var dangerInfluenceWeight = mongoose.model('DangerInfluenceWeight', dangerInfluenceWeightSchema);
 
-module.exports = dangerInfluenceWeightModel;
+module.exports = dangerInfluenceWeight;
