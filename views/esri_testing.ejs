@@ -9,13 +9,15 @@
   <link rel="stylesheet" href="https://js.arcgis.com/3.17/dijit/themes/claro/claro.css">
   <link rel="stylesheet" href="https://js.arcgis.com/3.17/esri/css/esri.css">
   <link rel="stylesheet" href="style.css" />
-
-
+  <!--<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+-->
   <script type="text/javascript">
     var dojoConfig = {
       parseOnLoad: true
     };
   </script>
+
 
 
   <script src="https://js.arcgis.com/3.17/"></script>
@@ -35,7 +37,8 @@
       "esri/tasks/FeatureSet",            
       "esri/symbols/SimpleMarkerSymbol",
       "esri/symbols/SimpleLineSymbol",
-      "esri/symbols/SimpleFillSymbol",  
+      "esri/symbols/SimpleFillSymbol",
+      "esri/geometry/Polyline",  
       "esri/Color",
       "dojo/_base/array",
       "dojo/on",
@@ -56,7 +59,7 @@
       "dijit/form/HorizontalRuleLabels"
       ], function (
         urlUtils, esriConfig, Map, Graphic, esriId, RouteTask, RouteParameters, RouteResult,
-        FeatureSet, SimpleMarkerSymbol, SimpleLineSymbol, SimpleFillSymbol,          
+        FeatureSet, SimpleMarkerSymbol, SimpleLineSymbol, SimpleFillSymbol, Polyline,          
         Color, array, on, dom, registry, djQuery, webMercatorUtils, Circle, Point, request, xhr,ready
         ) 
       {
@@ -78,14 +81,21 @@
         var severityAll = [];
         var densityArray;
         var weightedSpatialArray;
+        var phoneNumber;
+        var businessLocations;
+        var footTrafficArray;
+        var globalToken;
 
         var SantaMonicaCoordinates= {
           xmin:-13193161.542197285, //western-most x-coordinate (corresponds to GPS)
           xmax:-13185441.402340494, //eastern-most x-coordinate (corresponds to GPS)
           ymax:4035246.5784217017,  //northern-most y-coordinate (corresponds to GPS)
           ymin:4028520.119932615,  //southern-most y-coordinate (corresponds to GPS)
-          blockWidthXY: 187.02 //This is what correponds most closely to about 300' in terms of xy coordinates
+          blockWidthXY: 187.02, //This is what correponds most closely to about 300' in terms of xy coordinates
         }
+
+
+        
         
 
         //  urlUtils.addProxyRule({
@@ -97,7 +107,7 @@
           basemap: "streets",
           center: [-118.49132, 34.01455],
           zoom: 14,
-          slider:true
+          scrollWheelZoom:true
           
         }
         );
@@ -111,9 +121,22 @@
             formatedData = formatGlobal(globalvariable);
             $("#severity1").prop("disabled",false);
           });
+
+          xhr.get("SMpopdataFormat1.csv", {
+            handleAs: "text",
+          }).then(function(data) {
+
+            businessLocations = formatBusinesses(data.split(","));
+            
+            footTrafficArray = gridDensity(businessLocations);
+            console.log(footTrafficArray);
+          });
+
+
           $("#addStopsBtn").click( function () {
             addStops();
           });
+
           $("#addBarriersBtn").click( function () {
             if(barrierToggle==0) {
               $(this).css('background','orange');
@@ -129,13 +152,13 @@
             clearStops();
             clearBarriers();
             clearRoutes();
-            console.log(globalvariable);
           });
           $("#bufferzone").click( function () {
             showBufferZones(sortedData);
           });
           $("#icons").click( function () {
             showIcons();
+            phoneStore();
 
           });
           $("#routeNameForm").click( function() {
@@ -147,6 +170,8 @@
           $("#streetlights").click( function() {
             console.log(routeParams.returnDirections);
             console.log(routeParams);
+            mapAllIndices(footTrafficArray);
+            
           });
 
 
@@ -156,7 +181,7 @@
 
 
           $("#DensityGrid").click( function () {
-            densityArray = crimeDensity(formatedData);
+            densityArray = gridDensity(formatedData);
             mapAllIndices(densityArray);
           });
 
@@ -167,16 +192,7 @@
 
 
         });
-////THIS IS THE LAST THING I CHANGED...
-// var globalvariable = "bacon";
-// $.ajax({
-//   url:'smCrimeData.csv',
-//   type: 'GET',
-//   success: function (data) {
-//     globalvariable = data;
-//     //
-//   }
-// });
+
 //The globalvariable below is only going to be available after ajax request is successful.
     //HPE Data upload
     var objectdata = {apikey : "385bcd30-9d17-4037-917f-442c08e82b78", file : "/../public/SMCrimeBeatData.csv"/*"https://drive.google.com/uc?export=download&id=0BxioPUqqdZqReExzdWZYc2tfZFE"*/, max_results: 5, columns: ["Call_Type","Location"]}
@@ -200,6 +216,14 @@
 //             return false;
 //         }
 //     });
+
+function phoneStore() {
+	if(phoneNumber){
+		alert("Calling " + phoneNumber + "...");
+	} else {
+		phoneNumber = prompt("Please enter an emergency phone number","");
+	}
+}
 function filterBySeverity(data) {
   var sortCounter = 0;
   var filteredData = [];
@@ -237,9 +261,29 @@ function formatGlobal(dataz) {
     formatedglobal.push(rowData);
     rowData = [0,0,0,0];
   }
-  //console.log(formatedglobal);
-  
+
+
   return formatedglobal;
+}
+
+function formatBusinesses(dataz) {
+	
+	var formattedBusinessArray = [];
+	var rowData = new Array(4);
+
+	for(var k = 2; k < dataz.length-1; k = k+2){
+		rowData[0] = dataz[k];
+		rowData[1] = Number(dataz[k+1].match(/\((.*)\;/i)[1]);
+		rowData[2] = Number(dataz[k+1].match(/\;(.*)\)/i)[1]);
+		rowData[3] = 1;
+
+		formattedBusinessArray.push(rowData);
+		rowData = [0,0,0,0];
+	}
+
+  console.log(formattedBusinessArray);
+  return formattedBusinessArray;
+
 }
 
 var authdata = {client_id: '9gdUoBaoDjP5INej', client_secret: 'd2368d00106f46ec9e6d5bd9b069704a', grant_type: 'client_credentials', expiration: '1440'}
@@ -259,8 +303,8 @@ $.ajax({
   success: function (results, textStatus, xhr) {
     //console.log(results);
     var tokenObject = JSON.parse(results);
-    //console.log(Date.now() + 86400);
-    //console.log(tokenObject.access_token);
+    
+    globalToken = tokenObject.access_token;
     var tokenParameters = {expires: (Date.now() + 86400).toString(),server:'https://route.arcgis.com/arcgis/rest/services/World/Route/NAServer/Route_World', ssl:true, token:tokenObject.access_token, userId:authdata.client_id};
 
     esriId.registerToken(tokenParameters);
@@ -298,6 +342,8 @@ routeParams.polygonBarriers = new esri.tasks.FeatureSet();
 routeParams.returnDirections = true;
 
 polygonBarrierSymbol = new esri.symbol.SimpleFillSymbol();
+var fakeRouteSymbol = new esri.symbol.SimpleLineSymbol();
+
 routeParams.outSpatialReference = {"wkid":102100};
         //dojo.ready(function() { routeTask.on("solve-complete", showRoute); });
         routeTask.on("solve-complete", showRoute);
@@ -469,14 +515,6 @@ routeParams.outSpatialReference = {"wkid":102100};
           console.log("addBarrier1", evt.mapPoint);
         }
 
-        //This function is to color an individual square, rather than the entire screen, which actually was just a test, rather than actually being a necessary function
-
-        // function addAnIndex(evt) {
-        //   var latLongEvt = webMercatorUtils.xyToLngLat(evt.mapPoint["x"], evt.mapPoint["y"], true);
-        //   addSquareBarrier(latLongEvt[0],latLongEvt[1]);
-        //   console.log("addAnIndex", evt.mapPoint);
-
-        // }
 
         function mapAllIndices(array) {
           var xcenter;
@@ -495,7 +533,7 @@ routeParams.outSpatialReference = {"wkid":102100};
             for(var j = 0; j < array[i].length; j=j+1){
               xcenter = -118.51618659213699 + i * 0.001651218959260686;
               ycenter = 34.047981411250944 - j * 0.0013911360369712373;
-              addSquareBarrier(xcenter,ycenter,max);
+              addSquareBarrier(xcenter,ycenter,max,array);
             }
           }
 
@@ -503,7 +541,7 @@ routeParams.outSpatialReference = {"wkid":102100};
 
 
 
-        function addSquareBarrier(long, lat,max) {
+        function addSquareBarrier(long, lat,max,array) {
           //op as opacity, radius as radius
           
 
@@ -514,7 +552,7 @@ routeParams.outSpatialReference = {"wkid":102100};
 
           var ydata = Math.round((34.047981411250944-lat)/0.0013911360369712373);
 
-          var op = crimeArray[xdata][ydata]/max;
+          var op = array[xdata][ydata]/max;
           var impedance = op*10;
 
           xcenter = -118.51618659213699 + xdata * 0.001651218959260686;
@@ -676,9 +714,59 @@ routeParams.outSpatialReference = {"wkid":102100};
           }
         }
 
-        function asyncRoute() {
-          console.log(routeParams);
+        function syncRouteWB(RouteParams) { //With Barriers
+          
+
+
+//http://route.arcgis.com/arcgis/rest/services/World/Route/NAServer/Route_World/solve?token=<yourToken>&stops=-122.4079,37.78356;-122.404,37.782&f=json
+
         }
+
+        function syncRouteWOB(RouteParams) {//Without Barriers
+
+          var stops = [[RouteParams.stops.features[0].geometry.x,RouteParams.stops.features[0].geometry.y],[RouteParams.stops.features[1].geometry.x,RouteParams.stops.features[1].geometry.y]];
+
+          stops[0]=webMercatorUtils.xyToLngLat(stops[0][0], stops[0][1], true);
+          stops[1]=webMercatorUtils.xyToLngLat(stops[1][0], stops[1][1], true);
+
+          $.ajax({
+            type: 'POST',
+            url: 'http://route.arcgis.com/arcgis/rest/services/World/Route/NAServer/Route_World/solve?token='+globalToken+'&stops='+stops[0][0]+','+stops[0][1]+';'+stops[1][0]+','+stops[1][1]+'&f=json',
+
+            success: function (results, textStatus, xhr) {
+              var sRoute = JSON.parse(results);
+              console.log("sRoute");
+              console.log(sRoute);
+              for(var i = 0 ; i < sRoute.directions[0].features.length; i++)
+              {
+                console.log(sRoute.directions[0].features[i].attributes.text);
+              };
+
+              var routeLineJson = {
+              "paths":[sRoute.routes.features[0].geometry.paths[0]],
+              "spatialReference":{"wkid":102100}
+            };
+
+            fakeRouteSymbol.setColor(new Color([0,0,0,1]));
+
+            var routeLine = new esri.Graphic(routeLineJson,fakeRouteSymbol);
+
+
+                        map.graphics.add(routeLine);
+            
+            },
+            error: function (xhr, textStatus, errorThrown) {
+              console.log("test failed");
+              console.log("ERROR:" + xhr.responseText + xhr.status + errorThrown);
+              return false;
+            }
+          });
+
+
+
+
+        }
+
 
 
 
@@ -687,21 +775,9 @@ routeParams.outSpatialReference = {"wkid":102100};
 
         //Solves the routes. Any errors will trigger the errorHandler function.
         function solveRoute() {
-          //Make sure data is ready?
-          //dojo.ready(function() {
             removeEventHandlers();
-            console.log(routeTask.getServiceDescription());
-
-            //make async call here
-            //asyncRoute();
-            routeParamsNormal = routeParams;
+            syncRouteWOB(routeParams);
             routeTask.solve(routeParams);
-            clearRouteBarrier(routeParamsNormal);
-            routeTask.solve(routeParamsNormal);
-            console.log(routeParams);
-            console.log(routeParamsNormal);
-
-          //});
         }
         //Clears all routes
         function clearRoutes() {
@@ -714,6 +790,8 @@ routeParams.outSpatialReference = {"wkid":102100};
         function showRoute(evt) {
           //Make sure data is ready?
           //dojo.ready(function() {
+            console.log("782");
+            console.log(evt.result.routeResults);
             clearRoutes();
             array.forEach(evt.result.routeResults, function(routeResult, i) {
               routes.push(
@@ -727,10 +805,7 @@ routeParams.outSpatialReference = {"wkid":102100};
             array.forEach(evt.result.messages, function(message) {
               msgs.push(message.type + " : " + message.description);
             });
-            // if (msgs.length > 1) {
-            //   alert(msgs.join("\n - "));
-            // }
-          //});
+
           var solveResult = evt.result;
           routeResults = solveResult.routeResults;
           //console.log(routeResults[0].directions);
@@ -767,7 +842,11 @@ routeParams.outSpatialReference = {"wkid":102100};
          plotCount = 0;
        }
 
-       function crimeDensity(dataz) {
+
+
+
+          function gridDensity(dataz) {
+
         var calculatedArray = [];
 
         var xmin=SantaMonicaCoordinates.xmin;
@@ -785,129 +864,116 @@ routeParams.outSpatialReference = {"wkid":102100};
 
         var xdata;
         var ydata;
-        var xyarr=[];
+        var pointWeight;
+        var weightCollection=[];
+
+        var xval;
+        var yval;
+        var wval;
 
         //This reflects how far the center of each cell is from eachother, in terms of [longitude, latitude]. This is approximate since earth is round
-        var deltaLngLat = [(-longLatTL[0]+longLatRB[0])/xcells,(-longLatRB[1]+longLatTL[1])/ycells];  
+        var deltaLngLat = [(-longLatTL[0]+longLatRB[0])/xcells,(-longLatRB[1]+longLatTL[1])/ycells];
+
         for(var i = 0; i < xcells; i++){
           calculatedArray.push([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]);//had problems getting array not to point to same object, just added 0's so that I knew for sure they wouldn't be pointing at the same array;
 
         }
+       
 
         for(var j = 0; j < dataz.length; j++){ //this calculates each of the xcell/ycell combos that are going to get a point added.
-          xdata = Math.round((dataz[j][2]-longLatTL[0])/deltaLngLat[0]);
-          ydata = Math.round((longLatTL[1]-dataz[j][1])/deltaLngLat[1]);
-          xyarr.push([xdata,ydata]);
-        }
+          xdata = Math.round((dataz[j][2]-longLatTL[0])/deltaLngLat[0]); //represents the x coordinate of the grid.  This represents which ycell column we are looking at
+          ydata = Math.round((longLatTL[1]-dataz[j][1])/deltaLngLat[1]); //represents the y coordinate of the grid.  This represents which element in the ycell column we are referring to
+          pointWeight = dataz[j][3];//This is the weight of the point we are looking at
 
-        for( var k = 0; k < calculatedArray.length; k++){
-          for(var m = 0; m < xyarr.length; m++) {
-            if (k == xyarr[m][0]){
-              calculatedArray[k][xyarr[m][1]]++;
-            }
+          if(xdata<42 && xdata>=0 && ydata<36 && ydata>=0){
+          	weightCollection.push([xdata,ydata,pointWeight]);//sets up an array that designates which cell the severity weight (included as well) will be added to, while making sure it fits in the extents of the calculated array
+          } 
+      }
+
+      var maxValue = 0
+          for(var m = 0; m < weightCollection.length; m++) {
+          	xval = weightCollection[m][0];
+          	yval = weightCollection[m][1];
+          	wval = weightCollection[m][2];
+          	calculatedArray[xval][yval] += wval;//If you want to just count the crimes in the area, change wval to 1;
+          	if(calculatedArray[xval][yval]>maxValue){
+          		maxValue = calculatedArray[xval][yval];
+          	}
           }
-        }
 
-        console.log(calculatedArray);
-        
-        
-        globalxydata = [deltaLngLat,longLatTL];
-        
-        mapOnClick_testCrime_connect = map.on("click", testCrime);
+          console.log(maxValue);
 
-        /*
-        Format the following data in order to show graphics in for each of the crime zones.  You'll have to make sure they correlate correctly with the previous for loop.  7/19/2016
-          var polygonJson  = {"rings":[[[-122.63,45.52],[-122.57,45.53],[-122.52,45.50],[-122.49,45.48],
-    [-122.64,45.49],[-122.63,45.52],[-122.63,45.52]]],"spatialReference":{"wkid":4326 }};
-  var polygon = new Polygon(polygonJson);
-
-            var circle = new esri.geometry.Polygon(ring);
-          var polygonbarrier = new esri.Graphic(circle,polygonBarrierSymbol);
-          polygonbarrier.attributes= {barrierType: 1, attr_length : 100
-          };
-          routeParams.polygonBarriers.features.push(  
-            map.graphics.add(
-              polygonbarrier)
-              // new esri.Graphic(
-              //   circle,
-              //   polygonBarrierSymbol)
-              // )  
-            );
-
-            */
             return calculatedArray;
           }
 
 
-          function crimeCluster(dataz) {
+          function crimeCluster(dataz){
 
-            var calculatedArray = [];
+          	var calculatedArray = [];
 
-            var xmin=SantaMonicaCoordinates.xmin;
-            var xmax=SantaMonicaCoordinates.xmax;
-            var ymax=SantaMonicaCoordinates.ymax;
-            var ymin=SantaMonicaCoordinates.ymin;
+          	
+          	var xmin=SantaMonicaCoordinates.xmin;
+          	var xmax=SantaMonicaCoordinates.xmax;
+          	var ymax=SantaMonicaCoordinates.ymax;
+          	var ymin=SantaMonicaCoordinates.ymin;
 
-            var xcells = Math.ceil((xmax-xmin)/SantaMonicaCoordinates.blockWidthXY); //defines how many 300' sections in x direction
-            var ycells = Math.ceil((ymax-ymin)/SantaMonicaCoordinates.blockWidthXY); //defines how many 300' sections in y direction
+          	var xcells = Math.ceil((xmax-xmin)/SantaMonicaCoordinates.blockWidthXY); //defines how many 300' sections in x direction
 
-            var longLatTL = webMercatorUtils.xyToLngLat(xmin, ymax, true); //converts the top left xy coordinate into longitude and latitude
-            var longLatRB = webMercatorUtils.xyToLngLat(xmax, ymin, true); //converts the right bottom xy coordinate into longitude and latitude
-            console.log(longLatTL); //shows it to make sure it reflects reality
-            console.log(longLatRB); //shows it to make sure it reflects reality
+          	var ycells = Math.ceil((ymax-ymin)/SantaMonicaCoordinates.blockWidthXY); //defines how many 300' sections in y direction
 
-            var xdata;
-            var ydata;
-            var xyarr=[];
+          	var longLatTL = webMercatorUtils.xyToLngLat(xmin, ymax, true); //converts the top left xy coordinate into longitude and latitude
 
-            //This reflects how far the center of each cell is from eachother, in terms of [longitude, latitude]. This is approximate since earth is round
+          	var longLatRB = webMercatorUtils.xyToLngLat(xmax, ymin, true); //converts the right bottom xy coordinate into longitude and latitude
 
-            var deltaLngLat = [(-longLatTL[0]+longLatRB[0])/xcells,(-longLatRB[1]+longLatTL[1])/ycells];
-            for(var i = 0; i < xcells; i++){
-              crimeArray.push([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]);//had problems getting array not to point to same object, just added 0's so that I knew for sure they wouldn't be pointing at the same array;
-            }
+          	var pointDistance;
+          	var pointWeight;
 
-            for(var j = 0; j < dataz.length; j++){ //this calculates each of the xcell/ycell combos that are going to get a point added.
-              xdata = Math.round((dataz[j][2]-longLatTL[0])/deltaLngLat[0]);
-              ydata = Math.round((longLatTL[1]-dataz[j][1])/deltaLngLat[1]);
-              xyarr.push([xdata,ydata]);
-            }
+          	var minValue;
+          	var cellLong;
+          	var cellLat;
+          	var wval;
+          	var testSpatialWeight = [];
 
-            for( var k = 0; k < crimeArray.length; k++){
-              for(var m = 0; m < xyarr.length; m++) {
-                if (k == xyarr[m][0]){
-                  crimeArray[k][xyarr[m][1]]++;
-                }
-              }
-            }
+          	//This reflects how far the center of each cell is from eachother, in terms of [longitude, latitude]. This is approximate since earth is round
 
-            console.log(crimeArray);
+          	var deltaLngLat = [(-longLatTL[0]+longLatRB[0])/xcells,(-longLatRB[1]+longLatTL[1])/ycells];
 
-            globalxydata = [deltaLngLat,longLatTL];
+          	for(var i = 0; i < xcells; i++){
+          		calculatedArray.push([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]);//had problems getting array not to point to same object, just added 0's so that I knew for sure they wouldn't be pointing at the same array;
+          	}
 
-            //mapOnClick_testCrime_connect = map.on("click", testCrime);  This was to see if I could click on a cell individually to view it
+          	console.log(calculatedArray);
 
-        /*
-        Format the following data in order to show graphics in for each of the crime zones.  You'll have to make sure they correlate correctly with the previous for loop.  7/19/2016
-          var polygonJson  = {"rings":[[[-122.63,45.52],[-122.57,45.53],[-122.52,45.50],[-122.49,45.48],
-    [-122.64,45.49],[-122.63,45.52],[-122.63,45.52]]],"spatialReference":{"wkid":4326 }};
-  var polygon = new Polygon(polygonJson);
 
-            var circle = new esri.geometry.Polygon(ring);
-          var polygonbarrier = new esri.Graphic(circle,polygonBarrierSymbol);
-          polygonbarrier.attributes= {barrierType: 1, attr_length : 100
-          };
-          routeParams.polygonBarriers.features.push(  
-            map.graphics.add(
-              polygonbarrier)
-              // new esri.Graphic(
-              //   circle,
-              //   polygonBarrierSymbol)
-              // )  
-            );
+          	for(var i = 0; i < xcells; i++){
+          		cellLong = i * deltaLngLat[0] + .5 * deltaLngLat[0];
+          		for(var k = 0; k < ycells; k++){
+          			cellLat = k * deltaLngLat[1] + .5 * deltaLngLat[1];
+          			for(var j = 0; j < 1/*dataz.length*/; j++){
+          				pointDistance = Math.pow(Math.pow((cellLong-dataz[j][2]),2)+Math.pow((cellLat-dataz[j][1]),2),.5);
+          				calculatedArray[i][k] += dataz[j][3]/pointDistance;
+          			}
+          			if(i==0 & k==0){
+          				minValue = calculatedArray[0][0];
+          			}
+          			if(calculatedArray[i][k]<minValue){
+          				minValue = calculatedArray[i][k];
+          				console.log(minValue);
+          			}
+          		}
+          	}
 
-            */
+          	for(var i = 0; i < xcells; i++){
+          		for(var k = 0; k < ycells; k++){
+          			calculatedArray[i][k] -= minValue;
+          		}
+          	}
 
+
+
+          	console.log(calculatedArray);
+
+          	return calculatedArray;
           }
 
 
@@ -965,8 +1031,10 @@ routeParams.outSpatialReference = {"wkid":102100};
   </head>
   <body>
 
-    <!--   <img src="images/murder.png" /> -->
-    <div id="centerpage">
+  <div id="centerpage">
+    
+
+    
       <div id="map" style="width:320px; height:586px;"></div>
       <div id="safefast"> 
         <form id="routeNameForm">
@@ -997,8 +1065,14 @@ routeParams.outSpatialReference = {"wkid":102100};
           <div>
           <button id="ClusterGrid">Cluster Grid</button>
           </div>
-        </div>
+          <div>
+          <button id="BypassRoute">Bypass</button>
+          </div>
+          <div>
+          <button id="NormalRoute">Normal</button>
+          </div>        </div>
       </div>
     </div>
+
   </body>
   </html>
