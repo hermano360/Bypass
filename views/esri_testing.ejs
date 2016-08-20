@@ -85,8 +85,11 @@
           xmax:-13185441.402340494, //eastern-most x-coordinate (corresponds to GPS)
           ymax:4035246.5784217017,  //northern-most y-coordinate (corresponds to GPS)
           ymin:4028520.119932615,  //southern-most y-coordinate (corresponds to GPS)
-          blockWidthXY: 187.02 //This is what correponds most closely to about 300' in terms of xy coordinates
+          blockWidthXY: 187.02, //This is what correponds most closely to about 300' in terms of xy coordinates
         }
+
+
+        
         
 
         //  urlUtils.addProxyRule({
@@ -496,7 +499,7 @@ routeParams.outSpatialReference = {"wkid":102100};
             for(var j = 0; j < array[i].length; j=j+1){
               xcenter = -118.51618659213699 + i * 0.001651218959260686;
               ycenter = 34.047981411250944 - j * 0.0013911360369712373;
-              addSquareBarrier(xcenter,ycenter,max);
+              addSquareBarrier(xcenter,ycenter,max,array);
             }
           }
 
@@ -504,7 +507,7 @@ routeParams.outSpatialReference = {"wkid":102100};
 
 
 
-        function addSquareBarrier(long, lat,max) {
+        function addSquareBarrier(long, lat,max,array) {
           //op as opacity, radius as radius
           
 
@@ -515,7 +518,7 @@ routeParams.outSpatialReference = {"wkid":102100};
 
           var ydata = Math.round((34.047981411250944-lat)/0.0013911360369712373);
 
-          var op = crimeArray[xdata][ydata]/max;
+          var op = array[xdata][ydata]/max;
           var impedance = op*10;
 
           xcenter = -118.51618659213699 + xdata * 0.001651218959260686;
@@ -768,7 +771,10 @@ routeParams.outSpatialReference = {"wkid":102100};
          plotCount = 0;
        }
 
-       function crimeDensity(dataz) {
+
+
+
+          function crimeDensity(dataz) {
         var calculatedArray = [];
 
         var xmin=SantaMonicaCoordinates.xmin;
@@ -786,129 +792,113 @@ routeParams.outSpatialReference = {"wkid":102100};
 
         var xdata;
         var ydata;
-        var xyarr=[];
+        var pointWeight;
+        var weightCollection=[];
+
+        var xval;
+        var yval;
+        var wval;
 
         //This reflects how far the center of each cell is from eachother, in terms of [longitude, latitude]. This is approximate since earth is round
-        var deltaLngLat = [(-longLatTL[0]+longLatRB[0])/xcells,(-longLatRB[1]+longLatTL[1])/ycells];  
+        var deltaLngLat = [(-longLatTL[0]+longLatRB[0])/xcells,(-longLatRB[1]+longLatTL[1])/ycells];
+
         for(var i = 0; i < xcells; i++){
           calculatedArray.push([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]);//had problems getting array not to point to same object, just added 0's so that I knew for sure they wouldn't be pointing at the same array;
 
         }
+        console.log(calculatedArray);
 
         for(var j = 0; j < dataz.length; j++){ //this calculates each of the xcell/ycell combos that are going to get a point added.
-          xdata = Math.round((dataz[j][2]-longLatTL[0])/deltaLngLat[0]);
-          ydata = Math.round((longLatTL[1]-dataz[j][1])/deltaLngLat[1]);
-          xyarr.push([xdata,ydata]);
-        }
+          xdata = Math.round((dataz[j][2]-longLatTL[0])/deltaLngLat[0]); //represents the x coordinate of the grid.  This represents which ycell column we are looking at
+          ydata = Math.round((longLatTL[1]-dataz[j][1])/deltaLngLat[1]); //represents the y coordinate of the grid.  This represents which element in the ycell column we are referring to
+          pointWeight = dataz[j][3];//This is the weight of the point we are looking at
 
-        for( var k = 0; k < calculatedArray.length; k++){
-          for(var m = 0; m < xyarr.length; m++) {
-            if (k == xyarr[m][0]){
-              calculatedArray[k][xyarr[m][1]]++;
-            }
+          if(xdata<42 && xdata>=0 && ydata<36 && ydata>=0){
+          	weightCollection.push([xdata,ydata,pointWeight]);//sets up an array that designates which cell the severity weight (included as well) will be added to, while making sure it fits in the extents of the calculated array
+          } 
+      }
+
+          for(var m = 0; m < weightCollection.length; m++) {
+          	xval = weightCollection[m][0];
+          	yval = weightCollection[m][1];
+          	wval = weightCollection[m][2];
+          	calculatedArray[xval][yval] += wval;//If you want to just count the crimes in the area, change wval to 1;
           }
-        }
+        
 
         console.log(calculatedArray);
-        
-        
-        globalxydata = [deltaLngLat,longLatTL];
-        
-        mapOnClick_testCrime_connect = map.on("click", testCrime);
 
-        /*
-        Format the following data in order to show graphics in for each of the crime zones.  You'll have to make sure they correlate correctly with the previous for loop.  7/19/2016
-          var polygonJson  = {"rings":[[[-122.63,45.52],[-122.57,45.53],[-122.52,45.50],[-122.49,45.48],
-    [-122.64,45.49],[-122.63,45.52],[-122.63,45.52]]],"spatialReference":{"wkid":4326 }};
-  var polygon = new Polygon(polygonJson);
 
-            var circle = new esri.geometry.Polygon(ring);
-          var polygonbarrier = new esri.Graphic(circle,polygonBarrierSymbol);
-          polygonbarrier.attributes= {barrierType: 1, attr_length : 100
-          };
-          routeParams.polygonBarriers.features.push(  
-            map.graphics.add(
-              polygonbarrier)
-              // new esri.Graphic(
-              //   circle,
-              //   polygonBarrierSymbol)
-              // )  
-            );
-
-            */
             return calculatedArray;
           }
 
+          function crimeCluster(dataz){
 
-          function crimeCluster(dataz) {
+          	var calculatedArray = [];
 
-            var calculatedArray = [];
+          	
+          	var xmin=SantaMonicaCoordinates.xmin;
+          	var xmax=SantaMonicaCoordinates.xmax;
+          	var ymax=SantaMonicaCoordinates.ymax;
+          	var ymin=SantaMonicaCoordinates.ymin;
 
-            var xmin=SantaMonicaCoordinates.xmin;
-            var xmax=SantaMonicaCoordinates.xmax;
-            var ymax=SantaMonicaCoordinates.ymax;
-            var ymin=SantaMonicaCoordinates.ymin;
+          	var xcells = Math.ceil((xmax-xmin)/SantaMonicaCoordinates.blockWidthXY); //defines how many 300' sections in x direction
 
-            var xcells = Math.ceil((xmax-xmin)/SantaMonicaCoordinates.blockWidthXY); //defines how many 300' sections in x direction
-            var ycells = Math.ceil((ymax-ymin)/SantaMonicaCoordinates.blockWidthXY); //defines how many 300' sections in y direction
+          	var ycells = Math.ceil((ymax-ymin)/SantaMonicaCoordinates.blockWidthXY); //defines how many 300' sections in y direction
 
-            var longLatTL = webMercatorUtils.xyToLngLat(xmin, ymax, true); //converts the top left xy coordinate into longitude and latitude
-            var longLatRB = webMercatorUtils.xyToLngLat(xmax, ymin, true); //converts the right bottom xy coordinate into longitude and latitude
-            console.log(longLatTL); //shows it to make sure it reflects reality
-            console.log(longLatRB); //shows it to make sure it reflects reality
+          	var longLatTL = webMercatorUtils.xyToLngLat(xmin, ymax, true); //converts the top left xy coordinate into longitude and latitude
 
-            var xdata;
-            var ydata;
-            var xyarr=[];
+          	var longLatRB = webMercatorUtils.xyToLngLat(xmax, ymin, true); //converts the right bottom xy coordinate into longitude and latitude
 
-            //This reflects how far the center of each cell is from eachother, in terms of [longitude, latitude]. This is approximate since earth is round
+          	var pointDistance;
+          	var pointWeight;
 
-            var deltaLngLat = [(-longLatTL[0]+longLatRB[0])/xcells,(-longLatRB[1]+longLatTL[1])/ycells];
-            for(var i = 0; i < xcells; i++){
-              crimeArray.push([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]);//had problems getting array not to point to same object, just added 0's so that I knew for sure they wouldn't be pointing at the same array;
-            }
+          	var minValue;
+          	var cellLong;
+          	var cellLat;
+          	var wval;
+          	var testSpatialWeight = [];
 
-            for(var j = 0; j < dataz.length; j++){ //this calculates each of the xcell/ycell combos that are going to get a point added.
-              xdata = Math.round((dataz[j][2]-longLatTL[0])/deltaLngLat[0]);
-              ydata = Math.round((longLatTL[1]-dataz[j][1])/deltaLngLat[1]);
-              xyarr.push([xdata,ydata]);
-            }
+          	//This reflects how far the center of each cell is from eachother, in terms of [longitude, latitude]. This is approximate since earth is round
 
-            for( var k = 0; k < crimeArray.length; k++){
-              for(var m = 0; m < xyarr.length; m++) {
-                if (k == xyarr[m][0]){
-                  crimeArray[k][xyarr[m][1]]++;
-                }
-              }
-            }
+          	var deltaLngLat = [(-longLatTL[0]+longLatRB[0])/xcells,(-longLatRB[1]+longLatTL[1])/ycells];
 
-            console.log(crimeArray);
+          	for(var i = 0; i < xcells; i++){
+          		calculatedArray.push([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]);//had problems getting array not to point to same object, just added 0's so that I knew for sure they wouldn't be pointing at the same array;
+          	}
 
-            globalxydata = [deltaLngLat,longLatTL];
+          	console.log(calculatedArray);
 
-            //mapOnClick_testCrime_connect = map.on("click", testCrime);  This was to see if I could click on a cell individually to view it
 
-        /*
-        Format the following data in order to show graphics in for each of the crime zones.  You'll have to make sure they correlate correctly with the previous for loop.  7/19/2016
-          var polygonJson  = {"rings":[[[-122.63,45.52],[-122.57,45.53],[-122.52,45.50],[-122.49,45.48],
-    [-122.64,45.49],[-122.63,45.52],[-122.63,45.52]]],"spatialReference":{"wkid":4326 }};
-  var polygon = new Polygon(polygonJson);
+          	for(var i = 0; i < xcells; i++){
+          		cellLong = i * deltaLngLat[0] + .5 * deltaLngLat[0];
+          		for(var k = 0; k < ycells; k++){
+          			cellLat = k * deltaLngLat[1] + .5 * deltaLngLat[1];
+          			for(var j = 0; j < 1/*dataz.length*/; j++){
+          				pointDistance = Math.pow(Math.pow((cellLong-dataz[j][2]),2)+Math.pow((cellLat-dataz[j][1]),2),.5);
+          				calculatedArray[i][k] += dataz[j][3]/pointDistance;
+          			}
+          			if(i==0 & k==0){
+          				minValue = calculatedArray[0][0];
+          			}
+          			if(calculatedArray[i][k]<minValue){
+          				minValue = calculatedArray[i][k];
+          				console.log(minValue);
+          			}
+          		}
+          	}
 
-            var circle = new esri.geometry.Polygon(ring);
-          var polygonbarrier = new esri.Graphic(circle,polygonBarrierSymbol);
-          polygonbarrier.attributes= {barrierType: 1, attr_length : 100
-          };
-          routeParams.polygonBarriers.features.push(  
-            map.graphics.add(
-              polygonbarrier)
-              // new esri.Graphic(
-              //   circle,
-              //   polygonBarrierSymbol)
-              // )  
-            );
+          	for(var i = 0; i < xcells; i++){
+          		for(var k = 0; k < ycells; k++){
+          			calculatedArray[i][k] -= minValue;
+          		}
+          	}
 
-            */
 
+
+          	console.log(calculatedArray);
+
+          	return calculatedArray;
           }
 
 
