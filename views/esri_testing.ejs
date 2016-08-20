@@ -30,15 +30,15 @@
       "esri/config",
       "esri/map",
       "esri/graphic",
-      "esri/IdentityManager",            
-      "esri/tasks/RouteTask",            
+      "esri/IdentityManager",
+      "esri/tasks/RouteTask",
       "esri/tasks/RouteParameters",
       "esri/tasks/RouteResult",
-      "esri/tasks/FeatureSet",            
+      "esri/tasks/FeatureSet",
       "esri/symbols/SimpleMarkerSymbol",
       "esri/symbols/SimpleLineSymbol",
       "esri/symbols/SimpleFillSymbol",
-      "esri/geometry/Polyline",  
+      "esri/geometry/Polyline",
       "esri/Color",
       "dojo/_base/array",
       "dojo/on",
@@ -59,9 +59,9 @@
       "dijit/form/HorizontalRuleLabels"
       ], function (
         urlUtils, esriConfig, Map, Graphic, esriId, RouteTask, RouteParameters, RouteResult,
-        FeatureSet, SimpleMarkerSymbol, SimpleLineSymbol, SimpleFillSymbol, Polyline,          
+        FeatureSet, SimpleMarkerSymbol, SimpleLineSymbol, SimpleFillSymbol, Polyline,
         Color, array, on, dom, registry, djQuery, webMercatorUtils, Circle, Point, request, xhr,ready
-        ) 
+        )
       {
         var data = [
         // this is the format of the data we are accepting "Trespassing",-118.5006528,34.01718056,3
@@ -95,20 +95,20 @@
         }
 
 
-        
-        
+
+
 
         //  urlUtils.addProxyRule({
-        //  urlPrefix: "route.arcgis.com",  
+        //  urlPrefix: "route.arcgis.com",
         //  proxyUrl: "/sproxy/"
         // });
-        
+
         map = new Map("map", {
           basemap: "streets",
           center: [-118.49132, 34.01455],
           zoom: 14,
           scrollWheelZoom:true
-          
+
         }
         );
         //uploading csv data
@@ -127,7 +127,7 @@
           }).then(function(data) {
 
             businessLocations = formatBusinesses(data.split(","));
-            
+
             footTrafficArray = gridDensity(businessLocations);
             console.log(footTrafficArray);
           });
@@ -171,7 +171,7 @@
             console.log(routeParams.returnDirections);
             console.log(routeParams);
             mapAllIndices(footTrafficArray);
-            
+
           });
 
 
@@ -188,7 +188,7 @@
           $("#ClusterGrid").click( function () {
             weightedSpatialArray = crimeCluster(formatedData);
             mapAllIndices(weightedSpatialArray);
-          });  
+          });
 
 
         });
@@ -240,8 +240,8 @@ function filterBySeverity(data) {
   for(var i = 4; i < data.length; i += 4){
     if(data[i+3]==bufferSeverity){
       filteredData[sortCounter] = data[i];
-      filteredData[sortCounter+1] = Number(data[i+1]); 
-      filteredData[sortCounter+2] = Number(data[i+2]); 
+      filteredData[sortCounter+1] = Number(data[i+1]);
+      filteredData[sortCounter+2] = Number(data[i+2]);
       filteredData[sortCounter+3] = Number(data[i+3]);
       sortCounter += 4;
     }
@@ -267,7 +267,7 @@ function formatGlobal(dataz) {
 }
 
 function formatBusinesses(dataz) {
-	
+
 	var formattedBusinessArray = [];
 	var rowData = new Array(4);
 
@@ -303,7 +303,7 @@ $.ajax({
   success: function (results, textStatus, xhr) {
     //console.log(results);
     var tokenObject = JSON.parse(results);
-    
+
     globalToken = tokenObject.access_token;
     var tokenParameters = {expires: (Date.now() + 86400).toString(),server:'https://route.arcgis.com/arcgis/rest/services/World/Route/NAServer/Route_World', ssl:true, token:tokenObject.access_token, userId:authdata.client_id};
 
@@ -378,7 +378,7 @@ routeParams.outSpatialReference = {"wkid":102100};
         };
         //button click event listeners can't be added directly in HTML when the code is wrapped in an AMD callback
         //using APIs?
-        
+
         //on(dom.byId("addStopsBtn"), "click", addStops);
         //on(dom.byId("clearStopsBtn"), "click", clearStops);
         //on(dom.byId("addBarriersBtn"), "click", addBarriers);
@@ -499,7 +499,7 @@ routeParams.outSpatialReference = {"wkid":102100};
           var latLongEvt = webMercatorUtils.xyToLngLat(evt.mapPoint["x"], evt.mapPoint["y"], true);
           var severityEvt = $("input[name=severityRadioButtons]:checked").val();
           addCircleBarrier1(latLongEvt[0],latLongEvt[1],severityEvt);
-          
+
           /*
           routeParams.barriers.features.push(
             map.graphics.add(
@@ -510,7 +510,7 @@ routeParams.outSpatialReference = {"wkid":102100};
               )
             );
             */
-            
+
           //
           console.log("addBarrier1", evt.mapPoint);
         }
@@ -543,9 +543,9 @@ routeParams.outSpatialReference = {"wkid":102100};
 
         function addSquareBarrier(long, lat,max,array) {
           //op as opacity, radius as radius
-          
 
-          
+
+
 
 
           var xdata = Math.round((long-(-118.51618659213699))/0.001651218959260686);
@@ -580,7 +580,7 @@ routeParams.outSpatialReference = {"wkid":102100};
           var polygonbarrier = new esri.Graphic(square,polygonBarrierSymbol);
           polygonbarrier.attributes= {BarrierType: 1, Attr_TravelTime: impedance};
           if(impedance > 1.2){
-          routeParams.polygonBarriers.features.push(  
+          routeParams.polygonBarriers.features.push(
             map.graphics.add(
               polygonbarrier)
             );
@@ -606,7 +606,7 @@ routeParams.outSpatialReference = {"wkid":102100};
             op = 0.25;
             radius = 0.001;
           }
-          
+
           //Change circle color
           polygonBarrierSymbol.setColor(new Color([255,0,0,op]));
           //Change circle outline
@@ -624,23 +624,23 @@ routeParams.outSpatialReference = {"wkid":102100};
             var radians = i * angle * Math.PI / 180;
             // add point to the circle
             ring.push([center.x + radius * Math.cos(radians), center.y + radius * Math.sin(radians)]);
-            
+
             //
             //console.log("x", center.x + radius * Math.cos(radians));
             //console.log("y", center.y + radius * Math.sin(radians));
-          } 
+          }
           ring.push(ring[0]); // start point needs to == end point
           var circle = new esri.geometry.Polygon(ring);
           var polygonbarrier = new esri.Graphic(circle,polygonBarrierSymbol);
           polygonbarrier.attributes= {barrierType: 1, attr_length : 100
           };
-          routeParams.polygonBarriers.features.push(  
+          routeParams.polygonBarriers.features.push(
             map.graphics.add(
               polygonbarrier)
               // new esri.Graphic(
               //   circle,
               //   polygonBarrierSymbol)
-              // )  
+              // )
               );
           //console.log(routeParams.polygonBarriers);
         }
@@ -660,7 +660,7 @@ routeParams.outSpatialReference = {"wkid":102100};
             op = 0.25;
             radius = 0.001;
           }
-          
+
 
           testSymbol = new SimpleMarkerSymbol();
           testSymbol.setAngle(0);
@@ -671,7 +671,7 @@ routeParams.outSpatialReference = {"wkid":102100};
           var xyUnits = webMercatorUtils.lngLatToXY(long, lat);
           var pt = new Point(xyUnits[0],xyUnits[1],map.spatialReference);
 
-          routeParams.polygonBarriers.features.push( 
+          routeParams.polygonBarriers.features.push(
             map.graphics.add(
               new esri.Graphic(
                 pt,
@@ -702,7 +702,7 @@ routeParams.outSpatialReference = {"wkid":102100};
           }
         }
         //Stops listening for click events to add barriers and stops (if they've already been wired)
-        function removeEventHandlers() {        
+        function removeEventHandlers() {
           if (mapOnClick_addStops_connect) {
             mapOnClick_addStops_connect.remove();
           }
@@ -715,7 +715,7 @@ routeParams.outSpatialReference = {"wkid":102100};
         }
 
         function syncRouteWB(RouteParams) { //With Barriers
-          
+
 
 
 //http://route.arcgis.com/arcgis/rest/services/World/Route/NAServer/Route_World/solve?token=<yourToken>&stops=-122.4079,37.78356;-122.404,37.782&f=json
@@ -753,7 +753,7 @@ routeParams.outSpatialReference = {"wkid":102100};
 
 
                         map.graphics.add(routeLine);
-            
+
             },
             error: function (xhr, textStatus, errorThrown) {
               console.log("test failed");
@@ -800,7 +800,7 @@ routeParams.outSpatialReference = {"wkid":102100};
                   )
                 );
             });
-            
+
             var msgs = ["Server messages:"];
             array.forEach(evt.result.messages, function(message) {
               msgs.push(message.type + " : " + message.description);
@@ -831,7 +831,7 @@ routeParams.outSpatialReference = {"wkid":102100};
           });
           map.addLayer(featureLayer);
           //Default
-          // showBufferZones();          
+          // showBufferZones();
         });
         function showBufferZones(dataz) {
           console.log("showBufferZones() called");
@@ -878,7 +878,7 @@ routeParams.outSpatialReference = {"wkid":102100};
           calculatedArray.push([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]);//had problems getting array not to point to same object, just added 0's so that I knew for sure they wouldn't be pointing at the same array;
 
         }
-       
+
 
         for(var j = 0; j < dataz.length; j++){ //this calculates each of the xcell/ycell combos that are going to get a point added.
           xdata = Math.round((dataz[j][2]-longLatTL[0])/deltaLngLat[0]); //represents the x coordinate of the grid.  This represents which ycell column we are looking at
@@ -887,7 +887,7 @@ routeParams.outSpatialReference = {"wkid":102100};
 
           if(xdata<42 && xdata>=0 && ydata<36 && ydata>=0){
           	weightCollection.push([xdata,ydata,pointWeight]);//sets up an array that designates which cell the severity weight (included as well) will be added to, while making sure it fits in the extents of the calculated array
-          } 
+          }
       }
 
       var maxValue = 0
@@ -911,7 +911,7 @@ routeParams.outSpatialReference = {"wkid":102100};
 
           	var calculatedArray = [];
 
-          	
+
           	var xmin=SantaMonicaCoordinates.xmin;
           	var xmax=SantaMonicaCoordinates.xmax;
           	var ymax=SantaMonicaCoordinates.ymax;
@@ -1032,11 +1032,11 @@ routeParams.outSpatialReference = {"wkid":102100};
   <body>
 
   <div id="centerpage">
-    
 
-    
+
+
       <div id="map" style="width:320px; height:586px;"></div>
-      <div id="safefast"> 
+      <div id="safefast">
         <form id="routeNameForm">
           <input type="radio" name="routeRadioButtons" id="route1" checked value="Route 1"/> <label for="route1">Safe</label>
           <input type="radio" name="routeRadioButtons" id="route2" unchecked value="Route 2"/> <label for="route2">Balanced</label>
