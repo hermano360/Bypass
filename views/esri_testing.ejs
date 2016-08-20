@@ -92,7 +92,7 @@
         );
         //uploading csv data
         ready(function() {
-          xhr.get("SantaMonicaCrime.csv", {
+          xhr.get("cached_danger_influences.csv", {
             handleAs: "text",
           }).then(function(data) {
             globalvariable = data.split(",");
