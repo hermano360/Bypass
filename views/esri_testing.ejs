@@ -9,9 +9,9 @@
   <link rel="stylesheet" href="https://js.arcgis.com/3.17/dijit/themes/claro/claro.css">
   <link rel="stylesheet" href="https://js.arcgis.com/3.17/esri/css/esri.css">
   <link rel="stylesheet" href="style.css" />
-
-
-
+  <!--<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+-->
   <script type="text/javascript">
     var dojoConfig = {
       parseOnLoad: true
@@ -79,6 +79,9 @@
         var severityAll = [];
         var densityArray;
         var weightedSpatialArray;
+        var phoneNumber;
+        var businessLocations;
+        var footTrafficArray;
 
         var SantaMonicaCoordinates= {
           xmin:-13193161.542197285, //western-most x-coordinate (corresponds to GPS)
@@ -115,9 +118,19 @@
             formatedData = formatGlobal(globalvariable);
             $("#severity1").prop("disabled",false);
           });
+/*
+          xhr.get("SMpopdataFormat1.csv", {
+            handleAs: "text",
+          }).then(function(data) {
+            businessLocations = formatBusinesses(data.split(","));
+            footTrafficArray = gridDensity(businessLocations);
+          });
+*/
+
           $("#addStopsBtn").click( function () {
             addStops();
           });
+
           $("#addBarriersBtn").click( function () {
             if(barrierToggle==0) {
               $(this).css('background','orange');
@@ -133,13 +146,13 @@
             clearStops();
             clearBarriers();
             clearRoutes();
-            console.log(globalvariable);
           });
           $("#bufferzone").click( function () {
             showBufferZones(sortedData);
           });
           $("#icons").click( function () {
             showIcons();
+            phoneStore();
 
           });
           $("#routeNameForm").click( function() {
@@ -151,6 +164,7 @@
           $("#streetlights").click( function() {
             console.log(routeParams.returnDirections);
             console.log(routeParams);
+            
           });
 
 
@@ -160,7 +174,7 @@
 
 
           $("#DensityGrid").click( function () {
-            densityArray = crimeDensity(formatedData);
+            densityArray = gridDensity(formatedData);
             mapAllIndices(densityArray);
           });
 
@@ -171,16 +185,7 @@
 
 
         });
-////THIS IS THE LAST THING I CHANGED...
-// var globalvariable = "bacon";
-// $.ajax({
-//   url:'smCrimeData.csv',
-//   type: 'GET',
-//   success: function (data) {
-//     globalvariable = data;
-//     //
-//   }
-// });
+
 //The globalvariable below is only going to be available after ajax request is successful.
     //HPE Data upload
     var objectdata = {apikey : "385bcd30-9d17-4037-917f-442c08e82b78", file : "/../public/SMCrimeBeatData.csv"/*"https://drive.google.com/uc?export=download&id=0BxioPUqqdZqReExzdWZYc2tfZFE"*/, max_results: 5, columns: ["Call_Type","Location"]}
@@ -204,6 +209,14 @@
 //             return false;
 //         }
 //     });
+
+function phoneStore() {
+	if(phoneNumber){
+		alert("Calling " + phoneNumber + "...");
+	} else {
+		phoneNumber = prompt("Please enter an emergency phone number","");
+	}
+}
 function filterBySeverity(data) {
   var sortCounter = 0;
   var filteredData = [];
@@ -241,9 +254,28 @@ function formatGlobal(dataz) {
     formatedglobal.push(rowData);
     rowData = [0,0,0,0];
   }
-  //console.log(formatedglobal);
-  
+
+
   return formatedglobal;
+}
+
+function formatBusinesses(data) {
+	
+	var formattedBusinessArray = [];
+	var rowData = new Array(4);
+
+	for(var k = 2; k < 10-1; k = k+2){
+		rowData[0] = data[k];
+		rowData[1] = Number(data[k+1].match(/\((.*)\;/i)[1]);
+		rowData[2] = Number(data[k+1].match(/\;(.*)\)/i)[1]);
+		rowData[3] = 1;
+
+		formattedBusinessArray.push(rowData);
+		rowData = [0,0,0,0];
+	}
+
+  return formattedBusinessArray;
+
 }
 
 var authdata = {client_id: '9gdUoBaoDjP5INej', client_secret: 'd2368d00106f46ec9e6d5bd9b069704a', grant_type: 'client_credentials', expiration: '1440'}
@@ -545,7 +577,7 @@ routeParams.outSpatialReference = {"wkid":102100};
           var square = new esri.geometry.Polygon(ring);
           var polygonbarrier = new esri.Graphic(square,polygonBarrierSymbol);
           polygonbarrier.attributes= {BarrierType: 1, Attr_TravelTime: impedance};
-          if(impedance > 1.2){
+          if(impedance > 1){
           routeParams.polygonBarriers.features.push(  
             map.graphics.add(
               polygonbarrier)
@@ -774,7 +806,8 @@ routeParams.outSpatialReference = {"wkid":102100};
 
 
 
-          function crimeDensity(dataz) {
+          function gridDensity(dataz) {
+
         var calculatedArray = [];
 
         var xmin=SantaMonicaCoordinates.xmin;
@@ -806,7 +839,7 @@ routeParams.outSpatialReference = {"wkid":102100};
           calculatedArray.push([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]);//had problems getting array not to point to same object, just added 0's so that I knew for sure they wouldn't be pointing at the same array;
 
         }
-        console.log(calculatedArray);
+       
 
         for(var j = 0; j < dataz.length; j++){ //this calculates each of the xcell/ycell combos that are going to get a point added.
           xdata = Math.round((dataz[j][2]-longLatTL[0])/deltaLngLat[0]); //represents the x coordinate of the grid.  This represents which ycell column we are looking at
@@ -818,19 +851,22 @@ routeParams.outSpatialReference = {"wkid":102100};
           } 
       }
 
+      var maxValue = 0
           for(var m = 0; m < weightCollection.length; m++) {
           	xval = weightCollection[m][0];
           	yval = weightCollection[m][1];
           	wval = weightCollection[m][2];
           	calculatedArray[xval][yval] += wval;//If you want to just count the crimes in the area, change wval to 1;
+          	if(calculatedArray[xval][yval]>maxValue){
+          		maxValue = calculatedArray[xval][yval];
+          	}
           }
-        
 
-        console.log(calculatedArray);
-
+          console.log(maxValue);
 
             return calculatedArray;
           }
+
 
           function crimeCluster(dataz){
 
@@ -956,8 +992,10 @@ routeParams.outSpatialReference = {"wkid":102100};
   </head>
   <body>
 
-    <!--   <img src="images/murder.png" /> -->
-    <div id="centerpage">
+  <div id="centerpage">
+    
+
+    
       <div id="map" style="width:320px; height:586px;"></div>
       <div id="safefast"> 
         <form id="routeNameForm">
@@ -991,5 +1029,6 @@ routeParams.outSpatialReference = {"wkid":102100};
         </div>
       </div>
     </div>
+
   </body>
   </html>
