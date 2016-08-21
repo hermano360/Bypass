@@ -734,6 +734,7 @@ routeParams.outSpatialReference = {"wkid":102100};
             polygonBarriersURL += "{\"geometry\":{\"rings\":[[";
             for(var j = 0; j < 5/*RouteParams.polygonBarriers.features[i].geometry.rings[0].length*/; j++){
  
+ 
                polygonBarriersURL += "["+RouteParams.polygonBarriers.features[i].geometry.rings[0][j][0]+","+RouteParams.polygonBarriers.features[i].geometry.rings[0][j][1]+"]";
                if(j<4){
                 polygonBarriersURL += ",";
