@@ -28,7 +28,7 @@
       "esri/urlUtils",
       "esri/config",
       "esri/map",
-      "esri/graphic",
+      "esri/graphic",//may need to be esri/graphic instead...
       "esri/IdentityManager",
       "esri/tasks/RouteTask",
       "esri/tasks/RouteParameters",
@@ -67,7 +67,7 @@
         ];
 
         var map, routeTask, routeParams, routeParamsNormal, routes = [];
-        var stopSymbol, barrierSymbol, barrierSymbol1, routeSymbols, polygonBarrierSymbol;
+        var stopSymbol, barrierSymbol, barrierSymbol1, customRouteSymbol, routeSymbols, polygonBarrierSymbol;
         var mapOnClick_addStops_connect, mapOnClick_addBarriers_connect, mapOnClick_addPolygonBarriers_connect, mapOnClick_testCrime_connect, mapOnClick_mapIndex_connect;
         var stopCounter = 0;
         var barrierToggle = 0;
@@ -84,6 +84,10 @@
         var businessLocations;
         var footTrafficArray;
         var globalToken;
+        var saferoute;
+        var bypassroute;
+        var sRouteWB;
+        var sRoute;
 
         var SantaMonicaCoordinates= {
           xmin:-13193161.542197285, //western-most x-coordinate (corresponds to GPS)
@@ -107,9 +111,8 @@
           center: [-118.49132, 34.01455],
           zoom: 14,
           isScrollWheelZoom:true
+        });
 
-        }
-        );
         //uploading csv data
         ready(function() {
           xhr.get("cached_danger_influences.csv", {
@@ -235,7 +238,7 @@ function filterBySeverity(data) {
   } else if(currentSeverity == "Route 3"){
     bufferSeverity = 3;
   }
-  console.log(bufferSeverity + " " + currentSeverity);
+  
   for(var i = 4; i < data.length; i += 4){
     if(data[i+3]==bufferSeverity){
       filteredData[sortCounter] = data[i];
@@ -341,7 +344,7 @@ routeParams.polygonBarriers = new esri.tasks.FeatureSet();
 routeParams.returnDirections = true;
 
 polygonBarrierSymbol = new esri.symbol.SimpleFillSymbol();
-var fakeRouteSymbol = new esri.symbol.SimpleLineSymbol();
+customRouteSymbol = new SimpleLineSymbol();
 
 routeParams.outSpatialReference = {"wkid":102100};
         //dojo.ready(function() { routeTask.on("solve-complete", showRoute); });
@@ -371,8 +374,8 @@ routeParams.outSpatialReference = {"wkid":102100};
         });
         var barrierSymbol1 = new SimpleFillSymbol().setColor(null).outline.setColor("blue");
         routeSymbols = {
-          "Route 1": new SimpleLineSymbol().setColor(new Color([0,255,0,0.5])).setWidth(5),
-          "Route 2": new SimpleLineSymbol().setColor(new Color([255,255,0,0.5])).setWidth(5),
+          "Route 1": new SimpleLineSymbol().setColor(new Color([112,128,144,1])).setWidth(5),
+          "Route 2": new SimpleLineSymbol().setColor(new Color([34, 139, 34,1])).setWidth(5),
           "Route 3": new SimpleLineSymbol().setColor(new Color([255,0,255,0.5])).setWidth(5)
         };
         //button click event listeners can't be added directly in HTML when the code is wrapped in an AMD callback
@@ -719,14 +722,6 @@ routeParams.outSpatialReference = {"wkid":102100};
           stops[0]=webMercatorUtils.xyToLngLat(stops[0][0], stops[0][1], true);
           stops[1]=webMercatorUtils.xyToLngLat(stops[1][0], stops[1][1], true);
 
-          //"http://route.arcgis.com/arcgis/rest/services/World/Route/NAServer/Route_World/solve?token=<yourToken>&stops=-96.436378,42.499344;-96.364166,42.459969&polygonBarriers={"features":[{"geometry":{"rings":[[[-96.382,42.49],[-96.391,42.471],[-96.414,42.475],[-96.421,42.491],[-96.401,42.505],[-96.382,42.49]]]},"attributes":{"Name":"Flood zone","BarrierType":0}}]}&outSR=102100&directionsOutputType=esriDOTInstructionsOnly&f=json"
-
-
-          /* For more insight into URL call
-          http://route.arcgis.com/arcgis/rest/services/World/Route/NAServer/Route_World/solve?token=<yourToken>&stops={"features":[{"geometry":{"x":-122.473948,"y":37.7436},"attributes":{"Name":"Office","Attr_TravelTime":0}},{"geometry":{"x":-122.439613,"y":37.746144},"attributes":{"Name":"Store 1","Attr_TravelTime":25}},{"geometry":{"x":-122.488254,"y":37.754092},"attributes":{"Name":"Store 2","Attr_TravelTime":20}},{"geometry":{"x":-122.44915,"y":37.731837},"attributes":{"Name":"Store 3","Attr_TravelTime":30}},{"geometry":{"x":-122.46441,"y":37.774756},"attributes":{"Name":"Store 4","Attr_TravelTime":25}},{"geometry":{"x":-122.426896,"y":37.769352},"attributes":{"Name":"Store 5","Attr_TravelTime":20}},{"geometry":{"x":-122.473948,"y":37.7436},"attributes":{"Name":"Office","Attr_TravelTime":0}}]}&findBestSequence=true&preserverFirstStop=true&preserveLastStop=true&returnStops=true&returnDirections=true&returnRoutes=true&f=json
-          */
-
-
           var polygonBarriersURL= "{\"features\":[";
           
           for(var i = 0; i< RouteParams.polygonBarriers.features.length; i++){
@@ -750,14 +745,14 @@ routeParams.outSpatialReference = {"wkid":102100};
           polygonBarriersURL += "]}";
 
 
-          console.log(polygonBarriersURL);
+          
  
 
           polygonBarriersURL= "polygonBarriers=" + polygonBarriersURL;
 
           var finalSynchronousBarriersURL = 'http://route.arcgis.com/arcgis/rest/services/World/Route/NAServer/Route_World/solve?token='+globalToken+'&stops='+stops[0][0]+','+stops[0][1]+';'+stops[1][0]+','+stops[1][1]+"&"+ polygonBarriersURL+'&f=json&returnPolygonBarriers=true';
 
-          console.log(finalSynchronousBarriersURL);
+          
 
           $.ajax({
             type: 'POST',
@@ -765,12 +760,17 @@ routeParams.outSpatialReference = {"wkid":102100};
             
 
             success: function (results, textStatus, xhr) {
-              var sRouteWB = JSON.parse(results);
+              sRouteWB = JSON.parse(results);
               console.log("sRouteWB");
               console.log(sRouteWB);
+
+          var routeLine = new esri.geometry.Polyline(sRouteWB.routes.features[0].geometry.paths[0]);
+          var routePolyline = new esri.Graphic(routeLine,routeSymbols["Route 2"]);
+          routes.push(map.graphics.add(routePolyline));
+
               for(var i = 0 ; i < sRouteWB.directions[0].features.length; i++)
               {
-                console.log(sRouteWB.directions[0].features[i].attributes.text);
+                //console.log(sRouteWB.directions[0].features[i].attributes.text); shows directions
               };
 
 
@@ -796,12 +796,14 @@ routeParams.outSpatialReference = {"wkid":102100};
             url: 'http://route.arcgis.com/arcgis/rest/services/World/Route/NAServer/Route_World/solve?token='+globalToken+'&stops='+stops[0][0]+','+stops[0][1]+';'+stops[1][0]+','+stops[1][1]+'&f=json',
 
             success: function (results, textStatus, xhr) {
-              var sRoute = JSON.parse(results);
-              console.log("sRoute");
-              console.log(sRoute);
+              sRoute = JSON.parse(results);
+              var routeLine = new esri.geometry.Polyline(sRoute.routes.features[0].geometry.paths[0]);
+              var routePolyline = new esri.Graphic(routeLine,routeSymbols["Route 1"]);
+              routes.push(map.graphics.add(routePolyline));
+
               for(var i = 0 ; i < sRoute.directions[0].features.length; i++)
               {
-                console.log(sRoute.directions[0].features[i].attributes.text);
+                //console.log(sRoute.directions[0].features[i].attributes.text); shows written directions
               };
 
             },
@@ -828,7 +830,7 @@ routeParams.outSpatialReference = {"wkid":102100};
             removeEventHandlers();
             syncRouteWOB(routeParams);
             syncRouteWB(routeParams);
-            routeTask.solve(routeParams);
+            //routeTask.solve(routeParams);
         }
         //Clears all routes
         function clearRoutes() {
@@ -839,10 +841,8 @@ routeParams.outSpatialReference = {"wkid":102100};
         }
         //Draws the resulting routes on the map
         function showRoute(evt) {
-          //Make sure data is ready?
-          //dojo.ready(function() {
-            //console.log("782");
-            //console.log(evt.result.routeResults);
+
+            console.log(evt.result.routeResults);
             clearRoutes();
             array.forEach(evt.result.routeResults, function(routeResult, i) {
               routes.push(
@@ -851,6 +851,9 @@ routeParams.outSpatialReference = {"wkid":102100};
                   )
                 );
             });
+
+            console.log(map.graphics);
+
 
             var msgs = ["Server messages:"];
             array.forEach(evt.result.messages, function(message) {
@@ -952,7 +955,7 @@ routeParams.outSpatialReference = {"wkid":102100};
           	}
           }
 
-          console.log(maxValue);
+          
 
             return calculatedArray;
           }
