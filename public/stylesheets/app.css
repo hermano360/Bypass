@@ -9,6 +9,41 @@ h1 {
 }
 /* zurb foundation overrides - END */
 
+.close-button {
+  top: 5px;
+  right: 5px;
+  position: absolute;
+}
+
+#callPolicePopup > a {
+  width: 100%;
+  margin-top:20px;
+}
+
+#infoPopup {
+  background: #B5B5B5;
+  color: white;
+}
+
+.icon-wrapper {
+  line-height: 50px;
+  height: 50px;
+  width: 50px;
+  margin-top:6px;
+}
+
+.nav-bar {
+  height:65px;
+  background: #F8F8F8;
+  border-bottom: #556270 1px solid;
+}
+
+.nav-bar div {
+  float:left;
+  width:33%;
+  text-align:center;
+}
+
 #routeNameForm {
 	position: absolute;
 	bottom: 150px;
@@ -69,11 +104,5 @@ h1 {
 
 #map_row {
   padding-left:0;
-}
-
-.nav-bar {
-  height:50px;
-  background: lightgray;
-  border-bottom: black 1px solid;
 }
 
