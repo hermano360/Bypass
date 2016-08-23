@@ -7,6 +7,10 @@ h1 {
   font-size:30px;
   font-weight:bold;
 }
+
+.reveal {
+  padding-top:20px;
+}
 /* zurb foundation overrides - END */
 
 .close-button {
@@ -17,7 +21,8 @@ h1 {
 
 #callPolicePopup > a {
   width: 100%;
-  margin-top:20px;
+  margin-top:40px;
+  margin-bottom:40px;
 }
 
 #infoPopup {

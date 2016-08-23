@@ -1037,6 +1037,24 @@ routeParams.outSpatialReference = {"wkid":102100};
 				<div><a data-open="infoPopup"><img class='icon-wrapper' src="/images/info_icon.png" /></a></div>
       </div>
     </div>
+
+    <div class="row">
+      <div class="large-12 columns">
+				<form action="addressLookup">
+					<div class="row">
+						<div class="large-12 columns">
+					  	<input type="text" name="startAddress" id="startAddress">
+						</div>
+					</div>
+					<div class="row">
+						<div class="large-12 columns">
+					  	<input type="text" name="destinationAddress" id="destinationAddress">
+						</div>
+					</div>
+				</form>
+      </div>
+    </div>
+
     <div class="row">
       <div id='map_row' class="large-12 columns">
         <div id="map"></div>
@@ -1074,7 +1092,7 @@ routeParams.outSpatialReference = {"wkid":102100};
     </div>
 
     <div class="reveal" id="callPolicePopup" data-reveal>
-      <a class='button alert' href="tel:911">Call Police<a></a>
+      <a class='button alert radius' href="tel:911">Call Police<a></a>
       <button class="close-button" data-close aria-label="Close modal" type="button">
         <span aria-hidden="true">&times;</span>
       </button>
