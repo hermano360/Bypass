@@ -13,6 +13,39 @@ h1 {
 }
 /* zurb foundation overrides - END */
 
+/* only affects input tag placeholder color - BEGIN */
+::-webkit-input-placeholder { /* WebKit, Blink, Edge */
+  color: #FEF9F0;
+}
+:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+  color: #FEF9F0;
+  opacity: 1;
+}
+::-moz-placeholder { /* Mozilla Firefox 19+ */
+  color: #FEF9F0;
+  opacity: 1;
+}
+:-ms-input-placeholder { /* Internet Explorer 10-11 */
+  color: #FEF9F0;
+}
+/* only affects input tag placeholder color - END */
+
+.directions-textbox {
+  width:100%;
+  padding:7px 13px;
+  background: #8CD4CC;
+  color: white;
+  border:none;
+  border-bottom: gray 1px solid;
+  font-weight:bold;
+}
+
+.middle-nav-bar {
+  padding-left:0;
+  padding-right:0;
+
+}
+
 .close-button {
   top: 5px;
   right: 5px;

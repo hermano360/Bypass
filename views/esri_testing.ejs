@@ -123,7 +123,7 @@
          }, "search");
          console.log(search);
 
-        
+
 
         function resetBarriers(){
           if(densityGridOn){
@@ -132,7 +132,7 @@
           }
         }
 
-        
+
         ready(function() {
           xhr.get("cached_danger_influences.csv", { //uploading csv data
             handleAs: "text",
@@ -174,7 +174,7 @@
             if($('#startAddress').val()){
               requestAddress($('#startAddress').val());
             }
-            
+
 
 
           });
@@ -195,7 +195,7 @@
 
           $("#NormalRoute").click( function () {
             chooseNormal();
-          });          
+          });
 
           $("#routeNameForm").click( function() {
             sortedData = filterBySeverity(globalvariable);
@@ -272,7 +272,7 @@ function filterBySeverity(data) {
   } else if(currentSeverity == "Route 3"){
     bufferSeverity = 3;
   }
-  
+
   for(var i = 4; i < data.length; i += 4){
     if(data[i+3]==bufferSeverity){
       filteredData[sortCounter] = data[i];
@@ -286,7 +286,7 @@ function filterBySeverity(data) {
 }
 
 function requestAddress(givenAddress){
-  
+
   var finalGeocodingURL = "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/geocodeAddresses?addresses={%22records%22:[{%22attributes%22:{%22OBJECTID%22:1,%22SingleLine%22:%22" + givenAddress.replace(" ","%20") + "%22}}]}&sourceCountry=USA&token=" + globalToken + "&f=pjson";
 
             $.ajax({
@@ -624,7 +624,7 @@ routeParams.outSpatialReference = {"wkid":102100};
             irreleventBarriers.push(map.graphics.add(polygonbarrier));
           }
 
-        
+
         }
 
 
@@ -761,13 +761,13 @@ routeParams.outSpatialReference = {"wkid":102100};
           stops[1]=webMercatorUtils.xyToLngLat(stops[1][0], stops[1][1], true);
 
           var polygonBarriersURL= "{\"features\":[";
-          
+
           for(var i = 0; i< barriers.length; i++){
-            
+
             polygonBarriersURL += "{\"geometry\":{\"rings\":[[";
             for(var j = 0; j < 5/*barriers[i].geometry.rings[0].length*/; j++){
- 
- 
+
+
                polygonBarriersURL += "["+barriers[i].geometry.rings[0][j][0]+","+barriers[i].geometry.rings[0][j][1]+"]";
                if(j<4){
                 polygonBarriersURL += ",";
@@ -777,25 +777,25 @@ routeParams.outSpatialReference = {"wkid":102100};
                       if(i<barriers.length-1){
                         polygonBarriersURL += ",";
                       }
-                      
+
 
           }
           polygonBarriersURL += "]}";
 
 
-          
- 
+
+
 
           polygonBarriersURL= "polygonBarriers=" + polygonBarriersURL;
 
           var finalSynchronousBarriersURL = 'http://route.arcgis.com/arcgis/rest/services/World/Route/NAServer/Route_World/solve?token='+globalToken+'&stops='+stops[0][0]+','+stops[0][1]+';'+stops[1][0]+','+stops[1][1]+"&"+ polygonBarriersURL+'&f=json&returnPolygonBarriers=true';
 
-          
+
 
           $.ajax({
             type: 'POST',
             url: finalSynchronousBarriersURL,
-            
+
 
             success: function (results, textStatus, xhr) {
               $("BypassRoute").prop('disabled', false);
@@ -810,7 +810,7 @@ routeParams.outSpatialReference = {"wkid":102100};
               {
                 //console.log(sRouteWB.directions[0].features[i].attributes.text); shows directions
               };
-              
+
 
 
             },
@@ -823,25 +823,25 @@ routeParams.outSpatialReference = {"wkid":102100};
         }
 
         function chooseBypass(){
-          
+
           $("chooseBypass").css("background-color","blue");
           $("chooseNormal").css("background-color","grey");
           clearRoutes();
 
           routes.push(map.graphics.add(new esri.Graphic(normalRoute,routeSymbols["Route 1"])));
           routes.push(map.graphics.add(new esri.Graphic(bypassRoute,routeSymbols["Route 2"])));
-          
+
         }
 
         function chooseNormal(){
-          
+
           $("chooseNormal").css("background-color","blue");
           $("chooseBypass").css("background-color","grey");
           clearRoutes();
 
           routes.push(map.graphics.add(new esri.Graphic(bypassRoute,routeSymbols["Route 1"])));
           routes.push(map.graphics.add(new esri.Graphic(normalRoute,routeSymbols["Route 2"])));
-          
+
         }
 
 
@@ -868,7 +868,7 @@ routeParams.outSpatialReference = {"wkid":102100};
               {
                 //console.log(sRoute.directions[0].features[i].attributes.text); shows written directions
               };
-              
+
 
             },
             error: function (xhr, textStatus, errorThrown) {
@@ -1022,7 +1022,7 @@ routeParams.outSpatialReference = {"wkid":102100};
           	}
           }
 
-          
+
 
             return calculatedArray;
           }
@@ -1163,16 +1163,16 @@ routeParams.outSpatialReference = {"wkid":102100};
 
 
     <div class="row">
-      <div class="large-12 columns">
+      <div class="middle-nav-bar large-12 columns">
 				<form action="addressLookup">
 					<div class="row">
 						<div class="large-12 columns">
-					  	<input type="text" name="startAddress" id="startAddress">
+					  	<input class='directions-textbox' type="text" name="startAddress" id="startAddress" placeholder='Choose your starting point'>
 						</div>
 					</div>
 					<div class="row">
 						<div class="large-12 columns">
-					  	<input type="text" name="destinationAddress" id="destinationAddress">
+					  	<input class='directions-textbox' type="text" name="destinationAddress" id="destinationAddress" placeholder='Choose your destination'>
 						</div>
 					</div>
 				</form>
@@ -1220,7 +1220,7 @@ routeParams.outSpatialReference = {"wkid":102100};
           <form action="addressLookup">
             <input type="text" name="startAddress" id="startAddress">
             <input type="button" value="Find" id="submitStartAddress">
-          </form>       
+          </form>
           </div>
 
       </div>
