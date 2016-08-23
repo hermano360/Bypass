@@ -217,8 +217,10 @@
 
 
           $("#DensityGrid").click( function () {
+            if(!densityGridOn){
+              mapAllIndices(densityArray)
+            };
             densityGridOn = true;
-            mapAllIndices(densityArray);
           });
 
           $("#ClusterGrid").click( function () {
@@ -858,6 +860,7 @@ routeParams.outSpatialReference = {"wkid":102100};
             success: function (results, textStatus, xhr) {
               $("NormalRoute").prop('disabled', false);
               sRoute = JSON.parse(results);
+              console.log(sRoute.travelMode);
               normalRoute = new esri.geometry.Polyline(sRoute.routes.features[0].geometry.paths[0]);
               routes.push(map.graphics.add(new esri.Graphic(normalRoute,routeSymbols["Route 1"])));
 
