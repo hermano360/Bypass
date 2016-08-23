@@ -9,6 +9,22 @@ h1 {
 }
 /* zurb foundation overrides - END */
 
+.close-button {
+  top: 5px;
+  right: 5px;
+  position: absolute;
+}
+
+#callPolicePopup > a {
+  width: 100%;
+  margin-top:20px;
+}
+
+#infoPopup {
+  background: #B5B5B5;
+  color: white;
+}
+
 .icon-wrapper {
   line-height: 50px;
   height: 50px;
@@ -18,7 +34,7 @@ h1 {
 
 .nav-bar {
   height:65px;
-  background: lightgray;
+  background: #F8F8F8;
   border-bottom: #556270 1px solid;
 }
 
