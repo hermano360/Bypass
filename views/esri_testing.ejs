@@ -1152,7 +1152,6 @@ routeParams.outSpatialReference = {"wkid":102100};
   </head>
   <body>
 
-
     <div class="row">
       <div class="nav-bar large-12 columns">
 				<div><a data-open="callPolicePopup"><img class='icon-wrapper' src="/images/call_icon.png" /></a></div>
@@ -1160,7 +1159,6 @@ routeParams.outSpatialReference = {"wkid":102100};
 				<div><a data-open="infoPopup"><img class='icon-wrapper' src="/images/info_icon.png" /></a></div>
       </div>
     </div>
-
 
     <div class="row">
       <div class="middle-nav-bar large-12 columns">
@@ -1210,13 +1208,8 @@ routeParams.outSpatialReference = {"wkid":102100};
             </form>
             <div><button id="DensityGrid">Density Grid</button></div>
             <div><button id="ClusterGrid">Cluster Grid</button></div>
-            <div><button id="BypassRoute">Bypass</button></div>
-            <div><button id="NormalRoute">Normal</button></div>
           </div>
 
-          <div>
-          <button id="NormalRoute">Normal</button>
-          </div>
           <form action="addressLookup">
             <input type="text" name="startAddress" id="startAddress">
             <input type="button" value="Find" id="submitStartAddress">
@@ -1224,6 +1217,11 @@ routeParams.outSpatialReference = {"wkid":102100};
           </div>
 
       </div>
+    </div>
+
+    <div class='bottomRightNav'>
+      <button class='button radius' id="BypassRoute">Bypass</button>
+      <button class='button radius' id="NormalRoute">Normal</button>
     </div>
 
     <div class="reveal" id="callPolicePopup" data-reveal>

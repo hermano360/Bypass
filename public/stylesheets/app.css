@@ -30,6 +30,17 @@ h1 {
 }
 /* only affects input tag placeholder color - END */
 
+.bottomRightNav {
+  right: 20px;
+  bottom: 10px;
+  position: absolute;
+  width:80px;
+}
+
+.bottomRightNav > button {
+  margin-bottom: 10px;
+}
+
 .directions-textbox {
   width:100%;
   padding:7px 13px;
@@ -84,7 +95,7 @@ h1 {
 
 #routeNameForm {
 	position: absolute;
-	bottom: 150px;
+	bottom: 170px;
 	right: 0px;
 	color: white;
 	background:black;
@@ -102,7 +113,7 @@ h1 {
 	position: absolute;
 	background: green;
 	color: white;
-	bottom: 80px;
+	bottom: 150px;
 	right: 0px;
 }
 
@@ -110,7 +121,7 @@ h1 {
 	position: absolute;
 	background: red;
 	color: white;
-	bottom: 50px;
+	bottom: 130px;
 	right: 0px;
 }
 
