@@ -1178,42 +1178,17 @@ routeParams.outSpatialReference = {"wkid":102100};
       </div>
     </div>
 
+    <input type="button" style='position:absolute; right:0; top:150px; z-index:10;' class='button radius' value="Find" id="submitStartAddress">
+
     <div class="row">
       <div id='map_row' class="large-12 columns">
         <div id="map"></div>
-        <div id="safefast">
-          <form id="routeNameForm">
-            <input type="radio" name="routeRadioButtons" id="route1" checked value="Route 1"/> <label for="route1">Safe</label>
-            <input type="radio" name="routeRadioButtons" id="route2" unchecked value="Route 2"/> <label for="route2">Balanced</label>
-            <input type="radio" name="routeRadioButtons" id="route3" unchecked value="Route 3"/> <label for="route3">Fast</label>
-
-          </form>
-        </div>
-
-        <button id="addBarriersBtn">Add Barriers</button>
-        <form id="severityForm">
-          <input type="radio" name="severityRadioButtons" id="severity1" checked value="1" disabled="true"/> <label for="severity1">1</label>
-          <input type="radio" name="severityRadioButtons" id="severity2" unchecked value="2"/> <label for="severity2">2</label>
-          <input type="radio" name="severityRadioButtons" id="severity3" unchecked value="3"/> <label for="severity3">3</label>
-        </form>
 
         <div id="rightControlPanel">
           <button id="addStopsBtn">Click Here To Begin!</button>
           <button id="clearRoutesBtn">Clear Screen</button>
           <div id="rightToolbar">
-            <form id="extraSettings">
-              <input type="radio" name="myRadioButtons" id="bufferzone" value="1" checked/> <label for="bufferzone">Buffer Zone</label><br/>
-              <input type="radio" name="myRadioButtons" id="icons" value="2" unchecked/> <label for="icons">Icons</label><br/><br/>
-              <input type="checkbox" checked="checked" id="streetlights" unchecked /> <label for="streetlights">Street Lights</label><br/>
-            </form>
             <div><button id="DensityGrid">Density Grid</button></div>
-            <div><button id="ClusterGrid">Cluster Grid</button></div>
-          </div>
-
-          <form action="addressLookup">
-            <input type="text" name="startAddress" id="startAddress">
-            <input type="button" value="Find" id="submitStartAddress">
-          </form>
           </div>
 
       </div>

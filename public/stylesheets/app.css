@@ -125,22 +125,6 @@ h1 {
 	right: 0px;
 }
 
-#addBarriersBtn {
-	position: absolute;
-	bottom: 420px;
-	right:0px;
-	color: white;
-	background:black;
-}
-
-#severityForm {
-	position: absolute;
-	bottom:450px;
-	right:0px;
-	color: white;
-	background:black;
-}
-
 .esriSimpleSlider {
   margin-top:15px;
   z-index:inherit !important;
