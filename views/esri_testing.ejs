@@ -147,7 +147,10 @@
           xhr.get("SMpopdataFormat1.csv", {
             handleAs: "text",
           }).then(function(data) {
-
+            // navigator.geolocation.getCurrentPosition(function(position){
+            //   console.log("your current latitude is " + position.coords.latitude);
+            //   console.log("your current longitude is " + position.coords.longitude);
+            // });
             businessLocations = formatBusinesses(data.split(","));
 
             footTrafficArray = gridDensity(businessLocations);
@@ -170,14 +173,15 @@
               barrierToggle=0;
             }
           });
+          //need to add fix this section to reflect the functionality goals
           $('#submitStartAddress').click(function() {
             if($('#startAddress').val()){
               requestAddress($('#startAddress').val());
             }
-
-
-
           });
+
+
+
           $("#clearRoutesBtn").click( function () {
             clearStops();
             clearBarriers();
