@@ -11,6 +11,7 @@
   <link rel="stylesheet" href="https://js.arcgis.com/3.17/dijit/themes/claro/claro.css">
   <link rel="stylesheet" href="https://js.arcgis.com/3.17/esri/css/esri.css">
 
+
   <script type="text/javascript">
     var dojoConfig = {
       parseOnLoad: true
@@ -28,6 +29,7 @@
       "esri/config",
       "esri/map",
       "esri/graphic",
+      "esri/dijit/Search",
       "esri/IdentityManager",
       "esri/tasks/RouteTask",
       "esri/tasks/RouteParameters",
@@ -56,7 +58,7 @@
       "dijit/form/HorizontalSlider",
       "dijit/form/HorizontalRuleLabels"
       ], function (
-        urlUtils, esriConfig, Map, Graphic, esriId, RouteTask, RouteParameters, RouteResult,
+        urlUtils, esriConfig, Map, Graphic, Search, esriId, RouteTask, RouteParameters, RouteResult,
         FeatureSet, SimpleMarkerSymbol, SimpleLineSymbol, SimpleFillSymbol, Polyline,
         Color, array, on, dom, registry, djQuery, webMercatorUtils, Circle, Point, request, xhr,ready
         )
@@ -66,7 +68,9 @@
         ];
 
         var map, routeTask, routeParams, routeParamsNormal, routes = [];
-        var stopSymbol, barrierSymbol, barrierSymbol1, routeSymbols, polygonBarrierSymbol;
+        var barriers = [], routeStops = [];
+        var irreleventBarriers = [];
+        var stopSymbol, barrierSymbol, barrierSymbol1, customRouteSymbol, routeSymbols, polygonBarrierSymbol;
         var mapOnClick_addStops_connect, mapOnClick_addBarriers_connect, mapOnClick_addPolygonBarriers_connect, mapOnClick_testCrime_connect, mapOnClick_mapIndex_connect;
         var stopCounter = 0;
         var barrierToggle = 0;
@@ -83,6 +87,12 @@
         var businessLocations;
         var footTrafficArray;
         var globalToken;
+        var normalRoute;
+        var bypassRoute;
+        var sRouteWB;
+        var sRoute;
+        var irreleventBarriersLimit=0;
+        var densityGridOn = false;
 
         var SantaMonicaCoordinates= {
           xmin:-13193161.542197285, //western-most x-coordinate (corresponds to GPS)
@@ -105,19 +115,33 @@
           basemap: "streets",
           center: [-118.49132, 34.01455],
           zoom: 14,
-          scrollWheelZoom:true
+          isScrollWheelZoom:true
+        });
 
+        var search = new Search({
+            map: map
+         }, "search");
+         console.log(search);
+
+        
+
+        function resetBarriers(){
+          if(densityGridOn){
+            clearBarriers();
+            mapAllIndices(densityArray);
+          }
         }
-        );
-        //uploading csv data
+
+        
         ready(function() {
-          xhr.get("cached_danger_influences.csv", {
+          xhr.get("cached_danger_influences.csv", { //uploading csv data
             handleAs: "text",
           }).then(function(data) {
-            globalvariable = data.split(",");
+            globalvariable = data.replace(/\n/g, "," ).split(",");
             sortedData = filterBySeverity(globalvariable);
             formatedData = formatGlobal(globalvariable);
-            $("#severity1").prop("disabled",false);
+            densityArray = gridDensity(formatedData);
+            on(map, "extent-change", resetBarriers);
           });
 
           xhr.get("SMpopdataFormat1.csv", {
@@ -127,7 +151,7 @@
             businessLocations = formatBusinesses(data.split(","));
 
             footTrafficArray = gridDensity(businessLocations);
-            console.log(footTrafficArray);
+            //console.log(footTrafficArray);
           });
 
 
@@ -146,6 +170,14 @@
               barrierToggle=0;
             }
           });
+          $('#submitStartAddress').click(function() {
+            if($('#startAddress').val()){
+              requestAddress($('#startAddress').val());
+            }
+            
+
+
+          });
           $("#clearRoutesBtn").click( function () {
             clearStops();
             clearBarriers();
@@ -155,10 +187,16 @@
             showBufferZones(sortedData);
           });
           $("#icons").click( function () {
-            showIcons();
-            phoneStore();
-
+            console.log(map);
           });
+          $("#BypassRoute").click(function () {
+            chooseBypass();
+          });
+
+          $("#NormalRoute").click( function () {
+            chooseNormal();
+          });          
+
           $("#routeNameForm").click( function() {
             sortedData = filterBySeverity(globalvariable);
             if($("#bufferzone").is(':checked')) {
@@ -166,8 +204,8 @@
             }
           });
           $("#streetlights").click( function() {
-            console.log(routeParams.returnDirections);
-            console.log(routeParams);
+            //console.log(routeParams.returnDirections);
+            //console.log(routeParams);
             mapAllIndices(footTrafficArray);
 
           });
@@ -179,16 +217,16 @@
 
 
           $("#DensityGrid").click( function () {
-            densityArray = gridDensity(formatedData);
-            mapAllIndices(densityArray);
+            if(!densityGridOn){
+              mapAllIndices(densityArray)
+            };
+            densityGridOn = true;
           });
 
           $("#ClusterGrid").click( function () {
             weightedSpatialArray = crimeCluster(formatedData);
             mapAllIndices(weightedSpatialArray);
           });
-
-
         });
 
 //The globalvariable below is only going to be available after ajax request is successful.
@@ -234,7 +272,7 @@ function filterBySeverity(data) {
   } else if(currentSeverity == "Route 3"){
     bufferSeverity = 3;
   }
-  console.log(bufferSeverity + " " + currentSeverity);
+  
   for(var i = 4; i < data.length; i += 4){
     if(data[i+3]==bufferSeverity){
       filteredData[sortCounter] = data[i];
@@ -245,6 +283,28 @@ function filterBySeverity(data) {
     }
   }
   return filteredData;
+}
+
+function requestAddress(givenAddress){
+  
+  var finalGeocodingURL = "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/geocodeAddresses?addresses={%22records%22:[{%22attributes%22:{%22OBJECTID%22:1,%22SingleLine%22:%22" + givenAddress.replace(" ","%20") + "%22}}]}&sourceCountry=USA&token=" + globalToken + "&f=pjson";
+
+            $.ajax({
+            type: 'POST',
+            url: finalGeocodingURL,
+            success: function (results, textStatus, xhr) {
+              console.log(results);
+            },
+            error: function (xhr, textStatus, errorThrown) {
+              console.log("test failed");
+              console.log("ERROR:" + xhr.responseText + xhr.status + errorThrown);
+              return false;
+            }
+          });
+
+
+  /*http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/geocodeAddresses?addresses={%22records%22:[{%22attributes%22:{%22OBJECTID%22:1,%22SingleLine%22:%221629%20Second%20St.,%20Duarte%22}},{%22attributes%22:{%22OBJECTID%22:2,%22SingleLine%22:%221%20World%20Way,%20Los%20Angeles,%20CA,%2090045%22}}]}&sourceCountry=USA&token=7_A0TBUoW42kZ4KvXgwuTZWlDPplPv-S7BDx62lXoD-DOgflqqsX562tFl0dZ5gajaAYgXgdLp4hphxbkRKO6STBwgaB67GmdGg1lQktcfZLtjnlziU5oOQJPELU8cgJlYXjAFkxh1zAJ0UKIv1Nyg..&f=pjson
+  */
 }
 
 function formatGlobal(dataz) {
@@ -279,7 +339,7 @@ function formatBusinesses(dataz) {
 		rowData = [0,0,0,0];
 	}
 
-  console.log(formattedBusinessArray);
+  //console.log(formattedBusinessArray);
   return formattedBusinessArray;
 
 }
@@ -301,7 +361,6 @@ $.ajax({
   success: function (results, textStatus, xhr) {
     //console.log(results);
     var tokenObject = JSON.parse(results);
-
     globalToken = tokenObject.access_token;
     var tokenParameters = {expires: (Date.now() + 86400).toString(),server:'https://route.arcgis.com/arcgis/rest/services/World/Route/NAServer/Route_World', ssl:true, token:tokenObject.access_token, userId:authdata.client_id};
 
@@ -340,7 +399,7 @@ routeParams.polygonBarriers = new esri.tasks.FeatureSet();
 routeParams.returnDirections = true;
 
 polygonBarrierSymbol = new esri.symbol.SimpleFillSymbol();
-var fakeRouteSymbol = new esri.symbol.SimpleLineSymbol();
+customRouteSymbol = new SimpleLineSymbol();
 
 routeParams.outSpatialReference = {"wkid":102100};
         //dojo.ready(function() { routeTask.on("solve-complete", showRoute); });
@@ -370,8 +429,8 @@ routeParams.outSpatialReference = {"wkid":102100};
         });
         var barrierSymbol1 = new SimpleFillSymbol().setColor(null).outline.setColor("blue");
         routeSymbols = {
-          "Route 1": new SimpleLineSymbol().setColor(new Color([0,255,0,0.5])).setWidth(5),
-          "Route 2": new SimpleLineSymbol().setColor(new Color([255,255,0,0.5])).setWidth(5),
+          "Route 1": new SimpleLineSymbol().setColor(new Color([169,169,169,.75])).setWidth(5),
+          "Route 2": new SimpleLineSymbol().setColor(new Color([34, 139, 34,1])).setWidth(5),
           "Route 3": new SimpleLineSymbol().setColor(new Color([255,0,255,0.5])).setWidth(5)
         };
         //button click event listeners can't be added directly in HTML when the code is wrapped in an AMD callback
@@ -400,7 +459,7 @@ routeParams.outSpatialReference = {"wkid":102100};
         }
         //Adds a stop. The stop is associated with the route currently displayed in the dropdown
         function addStop(evt) {
-          console.log($("input[name=routeRadioButtons]:checked").val())
+          //console.log($("input[name=routeRadioButtons]:checked").val())
           var node2 = dom.byId("addStopsBtn");
           node2.style.backgroundColor= "yellow";
           if (stopCounter == 0) {
@@ -428,7 +487,7 @@ routeParams.outSpatialReference = {"wkid":102100};
             solveRoute();
           }
           //
-          console.log("addStop", evt.mapPoint);
+          //console.log("addStop", evt.mapPoint);
         }
         //Begins listening for click events to add barriers
         function addBarriers() {
@@ -442,45 +501,17 @@ routeParams.outSpatialReference = {"wkid":102100};
         //Fast mode
         function clearBarriers() {
           removeEventHandlers();
-          for (var i=routeParams.barriers.features.length-1; i>=0; i--) {
-            map.graphics.remove(routeParams.barriers.features.splice(i, 1)[0]);
+          for (var i=barriers.length-1; i>=0; i--) {
+            map.graphics.remove(barriers.splice(i, 1)[0]);
+          }
+          for (var i=irreleventBarriers.length-1; i>=0; i--) {
+            map.graphics.remove(irreleventBarriers.splice(i, 1)[0]);
           }
           clearCircleBarrier();
-          //Create a new PictureMarkerSymbol based on the static image and set a few properties.
-          //Change url to customize
-          // Create barriers
-          //11:20-not sure if this is supposed to be here?
-          // barrierSymbol = new esri.symbol.PictureMarkerSymbol({
-          //   "angle": 0,
-          //   "xoffset": 0,
-          //   "yoffset": 12,
-          //   "type": "esriPMS",
-          //   "url": "http://static.arcgis.com/images/Symbols/Basic/YellowStickpin.png",
-          //   "contentType": "image/png",
-          //   "width": 24,
-          //   "height": 24
-          // });
-          // console.log("showIcons() middle");
-          //This creates pins in place of existing barriers. Might be useful later...
-          /*
-          for (var i = 0; i < data.length; i = i+4) {
-            if(data[i+3] > 2) {
-              console.log(data[i+2]+', '+data[i+1]+'\n');
-              routeParams.barriers.features.push(
-                map.graphics.add(
-                  new esri.Graphic(
-                    new esri.geometry.Point(data[i+1], data[i+2]),
-                    barrierSymbol
-                    )
-                  )
-                );
-            }
-          }
-          */
         }
         //Adds a barrier
         function addBarrier(evt) {
-          routeParams.barriers.features.push(
+          barriers.push(
             map.graphics.add(
               new esri.Graphic(
                 evt.mapPoint,
@@ -491,7 +522,7 @@ routeParams.outSpatialReference = {"wkid":102100};
 
 
           //
-          console.log("addBarrier", evt.mapPoint);
+          //console.log("addBarrier", evt.mapPoint);
         }
         function addBarrier1(evt) {
           var latLongEvt = webMercatorUtils.xyToLngLat(evt.mapPoint["x"], evt.mapPoint["y"], true);
@@ -499,7 +530,7 @@ routeParams.outSpatialReference = {"wkid":102100};
           addCircleBarrier1(latLongEvt[0],latLongEvt[1],severityEvt);
 
           /*
-          routeParams.barriers.features.push(
+          barriers.push(
             map.graphics.add(
               new esri.Graphic(
                 evt.mapPoint,
@@ -510,7 +541,7 @@ routeParams.outSpatialReference = {"wkid":102100};
             */
 
           //
-          console.log("addBarrier1", evt.mapPoint);
+          //console.log("addBarrier1", evt.mapPoint);
         }
 
 
@@ -534,6 +565,9 @@ routeParams.outSpatialReference = {"wkid":102100};
               addSquareBarrier(xcenter,ycenter,max,array);
             }
           }
+          console.log(barriers.length);
+          console.log(irreleventBarriers.length);
+
 
         }
 
@@ -552,16 +586,21 @@ routeParams.outSpatialReference = {"wkid":102100};
 
           var op = array[xdata][ydata]/max;
           var impedance = op*10;
+          var outlineop;
 
           xcenter = -118.51618659213699 + xdata * 0.001651218959260686;
           ycenter = 34.047981411250944 - ydata * 0.0013911360369712373;
 
 
           //Change square color
-          polygonBarrierSymbol.setColor(new Color([0,0,0,op]));
+          polygonBarrierSymbol.setColor(new Color([255,0,0,op]));
           //Change square outline
-          polygonBarrierSymbol.setOutline(
-            new SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new Color([255,255,255,0]), 2));
+          if(impedance > 1){
+            outlineop = .2
+          } else{
+            outlineop = 0;
+          }
+          polygonBarrierSymbol.setOutline(new SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new Color([255,0,0,outlineop]), 2));
 
           var center = new esri.geometry.Point([xcenter, ycenter]);
 
@@ -577,12 +616,15 @@ routeParams.outSpatialReference = {"wkid":102100};
           var square = new esri.geometry.Polygon(ring);
           var polygonbarrier = new esri.Graphic(square,polygonBarrierSymbol);
           polygonbarrier.attributes= {BarrierType: 1, Attr_TravelTime: impedance};
-          if(impedance > 1.2){
-          routeParams.polygonBarriers.features.push(
-            map.graphics.add(
-              polygonbarrier)
-            );
-        }
+
+
+          if(impedance > 1){
+            barriers.push(map.graphics.add(polygonbarrier));
+          }else {
+            irreleventBarriers.push(map.graphics.add(polygonbarrier));
+          }
+
+        
         }
 
 
@@ -611,7 +653,7 @@ routeParams.outSpatialReference = {"wkid":102100};
           polygonBarrierSymbol.setOutline(
             new SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new Color([255,255,255,0]), 2));
 
-          console.log([long, lat]);
+          //console.log([long, lat]);
           var center = new esri.geometry.Point([long, lat]);
 
           var ring = []; // point that make up the circle
@@ -632,7 +674,7 @@ routeParams.outSpatialReference = {"wkid":102100};
           var polygonbarrier = new esri.Graphic(circle,polygonBarrierSymbol);
           polygonbarrier.attributes= {barrierType: 1, attr_length : 100
           };
-          routeParams.polygonBarriers.features.push(
+          barriers.push(
             map.graphics.add(
               polygonbarrier)
               // new esri.Graphic(
@@ -669,7 +711,7 @@ routeParams.outSpatialReference = {"wkid":102100};
           var xyUnits = webMercatorUtils.lngLatToXY(long, lat);
           var pt = new Point(xyUnits[0],xyUnits[1],map.spatialReference);
 
-          routeParams.polygonBarriers.features.push(
+          barriers.push(
             map.graphics.add(
               new esri.Graphic(
                 pt,
@@ -687,8 +729,8 @@ routeParams.outSpatialReference = {"wkid":102100};
         //Remove all circle(polygon) barriers
         function clearCircleBarrier() {
           removeEventHandlers();
-          for (var i=routeParams.polygonBarriers.features.length-1; i>=0; i--) {
-            map.graphics.remove(routeParams.polygonBarriers.features.splice(i, 1)[0]);
+          for (var i=barriers.length-1; i>=0; i--) {
+            map.graphics.remove(barriers.splice(i, 1)[0]);
           }
         }
 
@@ -713,14 +755,98 @@ routeParams.outSpatialReference = {"wkid":102100};
         }
 
         function syncRouteWB(RouteParams) { //With Barriers
+          var stops = [[RouteParams.stops.features[0].geometry.x,RouteParams.stops.features[0].geometry.y],[RouteParams.stops.features[1].geometry.x,RouteParams.stops.features[1].geometry.y]];
+
+          stops[0]=webMercatorUtils.xyToLngLat(stops[0][0], stops[0][1], true);
+          stops[1]=webMercatorUtils.xyToLngLat(stops[1][0], stops[1][1], true);
+
+          var polygonBarriersURL= "{\"features\":[";
+          
+          for(var i = 0; i< barriers.length; i++){
+            
+            polygonBarriersURL += "{\"geometry\":{\"rings\":[[";
+            for(var j = 0; j < 5/*barriers[i].geometry.rings[0].length*/; j++){
+ 
+ 
+               polygonBarriersURL += "["+barriers[i].geometry.rings[0][j][0]+","+barriers[i].geometry.rings[0][j][1]+"]";
+               if(j<4){
+                polygonBarriersURL += ",";
+               }
+                      }
+                      polygonBarriersURL += "]]},\"attributes\":{\"BarrierType\":1,\"Attr_TravelTime\":"+barriers[i].attributes.Attr_TravelTime+"}}";
+                      if(i<barriers.length-1){
+                        polygonBarriersURL += ",";
+                      }
+                      
+
+          }
+          polygonBarriersURL += "]}";
 
 
+          
+ 
 
-//http://route.arcgis.com/arcgis/rest/services/World/Route/NAServer/Route_World/solve?token=<yourToken>&stops=-122.4079,37.78356;-122.404,37.782&f=json
+          polygonBarriersURL= "polygonBarriers=" + polygonBarriersURL;
 
+          var finalSynchronousBarriersURL = 'http://route.arcgis.com/arcgis/rest/services/World/Route/NAServer/Route_World/solve?token='+globalToken+'&stops='+stops[0][0]+','+stops[0][1]+';'+stops[1][0]+','+stops[1][1]+"&"+ polygonBarriersURL+'&f=json&returnPolygonBarriers=true';
+
+          
+
+          $.ajax({
+            type: 'POST',
+            url: finalSynchronousBarriersURL,
+            
+
+            success: function (results, textStatus, xhr) {
+              $("BypassRoute").prop('disabled', false);
+              sRouteWB = JSON.parse(results);
+              console.log("sRouteWB");
+              console.log(sRouteWB);
+
+              bypassRoute = new esri.geometry.Polyline(sRouteWB.routes.features[0].geometry.paths[0]);
+              routes.push(map.graphics.add(new esri.Graphic(bypassRoute,routeSymbols["Route 2"])));
+
+              for(var i = 0 ; i < sRouteWB.directions[0].features.length; i++)
+              {
+                //console.log(sRouteWB.directions[0].features[i].attributes.text); shows directions
+              };
+              
+
+
+            },
+            error: function (xhr, textStatus, errorThrown) {
+              console.log("test failed");
+              console.log("ERROR:" + xhr.responseText + xhr.status + errorThrown);
+              return false;
+            }
+          });
         }
 
+        function chooseBypass(){
+          
+          $("chooseBypass").css("background-color","blue");
+          $("chooseNormal").css("background-color","grey");
+          clearRoutes();
+
+          routes.push(map.graphics.add(new esri.Graphic(normalRoute,routeSymbols["Route 1"])));
+          routes.push(map.graphics.add(new esri.Graphic(bypassRoute,routeSymbols["Route 2"])));
+          
+        }
+
+        function chooseNormal(){
+          
+          $("chooseNormal").css("background-color","blue");
+          $("chooseBypass").css("background-color","grey");
+          clearRoutes();
+
+          routes.push(map.graphics.add(new esri.Graphic(bypassRoute,routeSymbols["Route 1"])));
+          routes.push(map.graphics.add(new esri.Graphic(normalRoute,routeSymbols["Route 2"])));
+          
+        }
+
+
         function syncRouteWOB(RouteParams) {//Without Barriers
+          console.log("without Barriers called");
 
           var stops = [[RouteParams.stops.features[0].geometry.x,RouteParams.stops.features[0].geometry.y],[RouteParams.stops.features[1].geometry.x,RouteParams.stops.features[1].geometry.y]];
 
@@ -732,25 +858,17 @@ routeParams.outSpatialReference = {"wkid":102100};
             url: 'http://route.arcgis.com/arcgis/rest/services/World/Route/NAServer/Route_World/solve?token='+globalToken+'&stops='+stops[0][0]+','+stops[0][1]+';'+stops[1][0]+','+stops[1][1]+'&f=json',
 
             success: function (results, textStatus, xhr) {
-              var sRoute = JSON.parse(results);
-              console.log("sRoute");
-              console.log(sRoute);
+              $("NormalRoute").prop('disabled', false);
+              sRoute = JSON.parse(results);
+              console.log(sRoute.travelMode);
+              normalRoute = new esri.geometry.Polyline(sRoute.routes.features[0].geometry.paths[0]);
+              routes.push(map.graphics.add(new esri.Graphic(normalRoute,routeSymbols["Route 1"])));
+
               for(var i = 0 ; i < sRoute.directions[0].features.length; i++)
               {
-                console.log(sRoute.directions[0].features[i].attributes.text);
+                //console.log(sRoute.directions[0].features[i].attributes.text); shows written directions
               };
-
-              var routeLineJson = {
-              "paths":[sRoute.routes.features[0].geometry.paths[0]],
-              "spatialReference":{"wkid":102100}
-            };
-
-            fakeRouteSymbol.setColor(new Color([0,0,0,1]));
-
-            var routeLine = new esri.Graphic(routeLineJson,fakeRouteSymbol);
-
-
-                        map.graphics.add(routeLine);
+              
 
             },
             error: function (xhr, textStatus, errorThrown) {
@@ -774,8 +892,12 @@ routeParams.outSpatialReference = {"wkid":102100};
         //Solves the routes. Any errors will trigger the errorHandler function.
         function solveRoute() {
             removeEventHandlers();
-            syncRouteWOB(routeParams);
-            routeTask.solve(routeParams);
+
+            syncRouteWB(routeParams);
+            if(barriers.length>0){
+              syncRouteWOB(routeParams);
+            }
+            //routeTask.solve(routeParams);
         }
         //Clears all routes
         function clearRoutes() {
@@ -786,9 +908,7 @@ routeParams.outSpatialReference = {"wkid":102100};
         }
         //Draws the resulting routes on the map
         function showRoute(evt) {
-          //Make sure data is ready?
-          //dojo.ready(function() {
-            console.log("782");
+
             console.log(evt.result.routeResults);
             clearRoutes();
             array.forEach(evt.result.routeResults, function(routeResult, i) {
@@ -798,6 +918,9 @@ routeParams.outSpatialReference = {"wkid":102100};
                   )
                 );
             });
+
+            console.log(map.graphics);
+
 
             var msgs = ["Server messages:"];
             array.forEach(evt.result.messages, function(message) {
@@ -857,8 +980,8 @@ routeParams.outSpatialReference = {"wkid":102100};
 
         var longLatTL = webMercatorUtils.xyToLngLat(xmin, ymax, true); //converts the top left xy coordinate into longitude and latitude
         var longLatRB = webMercatorUtils.xyToLngLat(xmax, ymin, true); //converts the right bottom xy coordinate into longitude and latitude
-        console.log(longLatTL); //shows it to make sure it reflects reality
-        console.log(longLatRB); //shows it to make sure it reflects reality
+        //console.log(longLatTL); //shows it to make sure it reflects reality
+        //console.log(longLatRB); //shows it to make sure it reflects reality
 
         var xdata;
         var ydata;
@@ -899,7 +1022,7 @@ routeParams.outSpatialReference = {"wkid":102100};
           	}
           }
 
-          console.log(maxValue);
+          
 
             return calculatedArray;
           }
@@ -940,7 +1063,7 @@ routeParams.outSpatialReference = {"wkid":102100};
           		calculatedArray.push([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]);//had problems getting array not to point to same object, just added 0's so that I knew for sure they wouldn't be pointing at the same array;
           	}
 
-          	console.log(calculatedArray);
+          	//console.log(calculatedArray);
 
 
           	for(var i = 0; i < xcells; i++){
@@ -956,7 +1079,7 @@ routeParams.outSpatialReference = {"wkid":102100};
           			}
           			if(calculatedArray[i][k]<minValue){
           				minValue = calculatedArray[i][k];
-          				console.log(minValue);
+          				//console.log(minValue);
           			}
           		}
           	}
@@ -969,7 +1092,7 @@ routeParams.outSpatialReference = {"wkid":102100};
 
 
 
-          	console.log(calculatedArray);
+          	//console.log(calculatedArray);
 
           	return calculatedArray;
           }
@@ -981,8 +1104,8 @@ routeParams.outSpatialReference = {"wkid":102100};
             var longLatEvt = webMercatorUtils.xyToLngLat(evt.mapPoint["x"], evt.mapPoint["y"], true);
             var xcell = Math.round((longLatEvt[0]-globalxydata[1][0])/globalxydata[0][0]);
             var ycell = Math.round((globalxydata[1][1]-longLatEvt[1])/globalxydata[0][1]);
-            console.log(crimeArray[xcell][ycell]);
-            console.log("The longitude is " + longLatEvt[0] + ",latitude is " + longLatEvt[1] );
+            //console.log(crimeArray[xcell][ycell]);
+            //console.log("The longitude is " + longLatEvt[0] + ",latitude is " + longLatEvt[1] );
           }
 
 
@@ -993,7 +1116,7 @@ routeParams.outSpatialReference = {"wkid":102100};
 
 
           function showIcons() {
-            console.log("showIcons() called");
+            //console.log("showIcons() called");
             clearAll();
           //Create a new PictureMarkerSymbol based on the static image and set a few properties.
           //Change url to customize
@@ -1008,11 +1131,11 @@ routeParams.outSpatialReference = {"wkid":102100};
             "width": 24,
             "height": 24
           });
-          console.log("showIcons() middle");
+          //console.log("showIcons() middle");
           for (var i = 0; i < data.length; i = i+4) {
             //if(data[i+3] > 2) {
               console.log(data[i+2]+', '+data[i+1]+'\n');
-              routeParams.barriers.features.push(
+              barriers.push(
                 map.graphics.add(
                   new esri.Graphic(
                     new esri.geometry.Point(data[i+1], data[i+2]),
@@ -1038,6 +1161,7 @@ routeParams.outSpatialReference = {"wkid":102100};
       </div>
     </div>
 
+
     <div class="row">
       <div class="large-12 columns">
 				<form action="addressLookup">
@@ -1052,6 +1176,7 @@ routeParams.outSpatialReference = {"wkid":102100};
 						</div>
 					</div>
 				</form>
+
       </div>
     </div>
 
@@ -1063,6 +1188,7 @@ routeParams.outSpatialReference = {"wkid":102100};
             <input type="radio" name="routeRadioButtons" id="route1" checked value="Route 1"/> <label for="route1">Safe</label>
             <input type="radio" name="routeRadioButtons" id="route2" unchecked value="Route 2"/> <label for="route2">Balanced</label>
             <input type="radio" name="routeRadioButtons" id="route3" unchecked value="Route 3"/> <label for="route3">Fast</label>
+
           </form>
         </div>
 
@@ -1087,7 +1213,16 @@ routeParams.outSpatialReference = {"wkid":102100};
             <div><button id="BypassRoute">Bypass</button></div>
             <div><button id="NormalRoute">Normal</button></div>
           </div>
-        </div>
+
+          <div>
+          <button id="NormalRoute">Normal</button>
+          </div>
+          <form action="addressLookup">
+            <input type="text" name="startAddress" id="startAddress">
+            <input type="button" value="Find" id="submitStartAddress">
+          </form>       
+          </div>
+
       </div>
     </div>
 
