@@ -94,6 +94,7 @@ h1 {
 
 .esriSimpleSlider {
   margin-top:15px;
+  z-index:inherit !important;
 }
 
 #map {
