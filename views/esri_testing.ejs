@@ -101,6 +101,10 @@
         var myLocationAddress;
         var whichStopAddressInput;
 
+        var walkModeUrl = "";
+        //walkModeUrl = "travelMode={\"paramName\": \"defaultTravelMode\",\"dataType\": \"GPString\",\"value\": \"caFAgoThrvUpkFBW\"}&"
+
+
         var SantaMonicaCoordinates= {
           xmin:-13193161.542197285, //western-most x-coordinate (corresponds to GPS)
           xmax:-13185441.402340494, //eastern-most x-coordinate (corresponds to GPS)
@@ -206,6 +210,19 @@
             addDestinationStop();
           });
 
+          $('#startAddress').keyup(function(){
+            if($('#startAddress').val() && $('#destinationAddress').val()){
+              $('#solveRoute').css('display',"inline");
+            }
+          });
+
+
+         $('#destinationAddress').keyup(function(){
+            if($('#startAddress').val() && $('#destinationAddress').val()){
+              $('#solveRoute').css('display',"inline");
+            }
+          });          
+
 
 
           $('#cancel').click(function() {
@@ -223,6 +240,7 @@
             clearRoutes();
             $('#startAddress').val("");
             $('#destinationAddress').val("");
+            $('#solveRoute').css("display","none");
             barrierVisibility = false;
             mapAllIndices(densityArray);
 
@@ -239,9 +257,7 @@
             console.log(routes.length);
           });
           $("#NormalRoute").click( function () {
-
-              chooseNormal();
-
+            chooseNormal();
           });
 
 
@@ -257,7 +273,6 @@
             //console.log(routeParams.returnDirections);
             //console.log(routeParams);
             mapAllIndices(footTrafficArray);
-
           });
 
 
@@ -434,6 +449,7 @@ $.ajax({
     //console.log(results);
     var tokenObject = JSON.parse(results);
     globalToken = tokenObject.access_token;
+    console.log(globalToken);
     var tokenParameters = {expires: (Date.now() + 86400).toString(),server:'https://route.arcgis.com/arcgis/rest/services/World/Route/NAServer/Route_World', ssl:true, token:tokenObject.access_token, userId:authdata.client_id};
 
     esriId.registerToken(tokenParameters);
@@ -517,10 +533,20 @@ routeParams.outSpatialReference = {"wkid":102100};
         //Begins listening for click events to add stop
 
         function inputAddress(){
+          clearRoutes();
+          $('#solveRoute').css("display","none");
+          $('#solveRoute').val("Solve!");
          navigator.geolocation.getCurrentPosition(function(position){
               long = position.coords.longitude;
               lat = position.coords.latitude;
               centerpoint = new Point(long,lat);
+              if(whichStopAddressInput == "start"){
+                map.graphics.remove(routeStops.shift());
+                routeStops.unshift(map.graphics.add(new esri.Graphic(centerpoint,startSymbol)));
+              } else if(whichStopAddressInput == "end"){
+                map.graphics.remove(routeStops.pop());
+                routeStops.push(map.graphics.add(new esri.Graphic(centerpoint,stopSymbol)));
+              }
 
 
               $.ajax({
@@ -534,6 +560,10 @@ routeParams.outSpatialReference = {"wkid":102100};
                     $("#destinationAddress").val(parsedResults.address.Match_addr);
                   }
                   $("#myLocation").off('click', inputAddress);
+
+                  if($('#startAddress').val() && $('#destinationAddress').val()){
+                    $('#solveRoute').css('display',"inline");
+                  }
                 },
                 error: function (xhr, textStatus, errorThrown) {
                   console.log("test failed");
@@ -549,6 +579,9 @@ routeParams.outSpatialReference = {"wkid":102100};
 
         function addStartStop(){
           removeEventHandlers();
+          $('#solveRoute').css("display","none");
+          $('#solveRoute').val("Solve!");
+
           $("#myLocation").on('click', inputAddress);
           mapOnClick_addStops_connect = map.on("click", function(evt){
             clearRoutes();
@@ -583,6 +616,8 @@ removeEventHandlers();
         }
 
         function addDestinationStop(){
+          $('#solveRoute').css("display","none");
+          $('#solveRoute').val("Solve!");
           removeEventHandlers();
           $("#myLocation").on('click', inputAddress);
           mapOnClick_addStops_connect = map.on("click", function(evt){
@@ -761,8 +796,8 @@ removeEventHandlers();
                 "type": "esriPMS",
                 "url": "/images/myLocation.png",
                 "contentType": "image/png",
-                "width": 5,
-                "height": 5
+                "width": 8,
+                "height": 8
               });
 
 
@@ -1018,7 +1053,9 @@ removeEventHandlers();
 
           polygonBarriersURL= "polygonBarriers=" + polygonBarriersURL;
 
-          var finalSynchronousBarriersURL = 'http://route.arcgis.com/arcgis/rest/services/World/Route/NAServer/Route_World/solve?token='+globalToken+'&stops='+stops[0][0]+','+stops[0][1]+';'+stops[1][0]+','+stops[1][1]+"&"+ polygonBarriersURL+'&f=json&returnPolygonBarriers=true';
+
+
+          var finalSynchronousBarriersURL = 'http://route.arcgis.com/arcgis/rest/services/World/Route/NAServer/Route_World/solve?'+walkModeUrl+'token='+globalToken+'&stops='+stops[0][0]+','+stops[0][1]+';'+stops[1][0]+','+stops[1][1]+"&"+ polygonBarriersURL+'&f=json&returnPolygonBarriers=true';
 
           //console.log(finalSynchronousBarriersURL);
 
@@ -1092,7 +1129,7 @@ removeEventHandlers();
 
           $.ajax({
             type: 'POST',
-            url: 'http://route.arcgis.com/arcgis/rest/services/World/Route/NAServer/Route_World/solve?token='+globalToken+'&stops='+stops[0][0]+','+stops[0][1]+';'+stops[1][0]+','+stops[1][1]+'&f=json',
+            url: 'http://route.arcgis.com/arcgis/rest/services/World/Route/NAServer/Route_World/solve?'+walkModeUrl+'token='+globalToken+'&stops='+stops[0][0]+','+stops[0][1]+';'+stops[1][0]+','+stops[1][1]+'&f=json',
 
             success: function (results, textStatus, xhr) {
               sRoute = JSON.parse(results);
