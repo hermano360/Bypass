@@ -96,7 +96,7 @@
         var routeCheckerStop;
         var barrierVisibility = false;
         var chosenRoute;
-        //The Directions are going to be located as an array at chosenRoute.directions[0].features 
+        //The Directions are going to be located as an array at chosenRoute.directions[0].features[i].attributes.text
 
         var SantaMonicaCoordinates= {
           xmin:-13193161.542197285, //western-most x-coordinate (corresponds to GPS)
@@ -160,8 +160,10 @@
 
           $("#solveRoute").click( function(){
             if($('#solveRoute').val()==="Go!"){
+              $('#solveRoute').css("display","none");
+              $('#solveRoute').val("Solve!");
               if(routes.length > 1){
-                routes.shift();
+                map.graphics.remove(routes.shift());
               }
 
               $("#BypassRoute").css('display',"none");
@@ -1088,11 +1090,10 @@ routeParams.outSpatialReference = {"wkid":102100};
         function solveRoute() {
             removeEventHandlers();
             console.log(routeStops);
-
+            syncRouteWOB(routeStops);
             syncRouteWB(routeStops);
-            if(barriers.length>0){
-              syncRouteWOB(routeStops);
-            }
+
+
             //routeTask.solve(routeParams);
         }
         //Clears all routes
