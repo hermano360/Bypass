@@ -95,7 +95,8 @@
         var densityGridOn = true;
         var routeCheckerStop;
         var barrierVisibility = false;
-        var displayDirections = [];
+        var chosenRoute;
+        //The Directions are going to be located as an array at chosenRoute.directions[0].features 
 
         var SantaMonicaCoordinates= {
           xmin:-13193161.542197285, //western-most x-coordinate (corresponds to GPS)
@@ -104,10 +105,6 @@
           ymin:4028520.119932615,  //southern-most y-coordinate (corresponds to GPS)
           blockWidthXY: 187.02, //This is what correponds most closely to about 300' in terms of xy coordinates
         }
-
-
-
-
 
         //  urlUtils.addProxyRule({
         //  urlPrefix: "route.arcgis.com",
@@ -118,7 +115,7 @@
           basemap: "streets",
           center: [-118.49132, 34.01455],
           zoom: 14,
-          smartNavigation: false //by adding this, the scroll mouse goes in and out, rather than up and down. perhaps the other way is better, idk.
+          smartNavigation: false //by adding this, the scroll mouse goes in and out, rather than up and down. perhaps the other way is better though, idk.
         });
 
 
@@ -162,13 +159,23 @@
           });
 
           $("#solveRoute").click( function(){
-            clearStops();
-            clearRoutes();
-            routeStops = [{},{}];
-            routeCheckerStop = [0,0];
-            requestAddress($('#startAddress').val(),"start");
-            requestAddress($('#destinationAddress').val(),"end");
+            if($('#solveRoute').val()==="Go!"){
+              if(routes.length > 1){
+                routes.shift();
+              }
 
+              $("#BypassRoute").css('display',"none");
+              $("#NormalRoute").css('display',"none");
+
+
+            } else{
+              clearStops();
+              clearRoutes();
+              routeStops = [{},{}];
+              routeCheckerStop = [0,0];
+              requestAddress($('#startAddress').val(),"start");
+              requestAddress($('#destinationAddress').val(),"end");
+            }
           })
 
           $("#addBarriersBtn").click( function () {
@@ -190,7 +197,6 @@
 
           $('#destinationAddress').click(function() {
             addDestinationStop();
-
           });
 
 
@@ -214,6 +220,7 @@
             mapAllIndices(densityArray);
 
           });
+
           $("#bufferzone").click( function () {
             showBufferZones(sortedData);
           });
@@ -507,6 +514,8 @@ routeParams.outSpatialReference = {"wkid":102100};
             clearRoutes();
             map.graphics.remove(routeStops.shift());
             routeStops.unshift(map.graphics.add(new esri.Graphic(evt.mapPoint,startSymbol)));
+
+
             var longlat = webMercatorUtils.xyToLngLat(evt.mapPoint["x"], evt.mapPoint["y"], true);
             $.ajax({
             type: 'POST',
@@ -515,6 +524,10 @@ routeParams.outSpatialReference = {"wkid":102100};
               var parsedResults = JSON.parse(results);
               $("#startAddress").val(parsedResults.address.Match_addr);
 
+              if($('#startAddress').val() && $('#destinationAddress').val()){
+                $('#solveRoute').css('display',"inline");
+              }
+
             },
             error: function (xhr, textStatus, errorThrown) {
               console.log("test failed");
@@ -526,6 +539,10 @@ routeParams.outSpatialReference = {"wkid":102100};
             removeEventHandlers();
 
           });
+
+
+
+
         }
 
         function addDestinationStop(){
@@ -534,6 +551,10 @@ routeParams.outSpatialReference = {"wkid":102100};
             clearRoutes();
             map.graphics.remove(routeStops.pop());
             routeStops.push(map.graphics.add(new esri.Graphic(evt.mapPoint,stopSymbol)));
+
+            if($('#startAddress').val() && $('#destinationAddress').val()){
+              $('#solveRoute').css('display',"inline");
+            }
             var longlat = webMercatorUtils.xyToLngLat(evt.mapPoint["x"], evt.mapPoint["y"], true);
             $.ajax({
             type: 'POST',
@@ -541,6 +562,9 @@ routeParams.outSpatialReference = {"wkid":102100};
             success: function (results, textStatus, xhr) {
               var parsedResults = JSON.parse(results);
               $("#destinationAddress").val(parsedResults.address.Match_addr);
+              if($('#startAddress').val() && $('#destinationAddress').val()){
+                $('#solveRoute').css('display',"inline");
+              }
 
             },
             error: function (xhr, textStatus, errorThrown) {
@@ -552,6 +576,7 @@ routeParams.outSpatialReference = {"wkid":102100};
 
             removeEventHandlers();
           });
+
         }
 
 
@@ -934,38 +959,29 @@ routeParams.outSpatialReference = {"wkid":102100};
 
           var stops = [[routeStops[0].geometry.x,routeStops[0].geometry.y],[routeStops[1].geometry.x,routeStops[1].geometry.y]];
 
-
           var polygonBarriersURL= "{\"features\":[";
 
           for(var i = 0; i< barriers.length; i++){
 
             polygonBarriersURL += "{\"geometry\":{\"rings\":[[";
             for(var j = 0; j < 5/*barriers[i].geometry.rings[0].length*/; j++){
-
-
-               polygonBarriersURL += "["+barriers[i].geometry.rings[0][j][0]+","+barriers[i].geometry.rings[0][j][1]+"]";
+              polygonBarriersURL += "["+barriers[i].geometry.rings[0][j][0]+","+barriers[i].geometry.rings[0][j][1]+"]";
                if(j<4){
                 polygonBarriersURL += ",";
                }
-                      }
-                      polygonBarriersURL += "]]},\"attributes\":{\"BarrierType\":1,\"Attr_TravelTime\":"+barriers[i].attributes.Attr_TravelTime+"}}";
-                      if(i<barriers.length-1){
-                        polygonBarriersURL += ",";
-                      }
-
-
+             }
+             polygonBarriersURL += "]]},\"attributes\":{\"BarrierType\":1,\"Attr_TravelTime\":"+barriers[i].attributes.Attr_TravelTime+"}}";
+             if(i<barriers.length-1){
+              polygonBarriersURL += ",";
+            }
           }
           polygonBarriersURL += "]}";
-
-
-
-
 
           polygonBarriersURL= "polygonBarriers=" + polygonBarriersURL;
 
           var finalSynchronousBarriersURL = 'http://route.arcgis.com/arcgis/rest/services/World/Route/NAServer/Route_World/solve?token='+globalToken+'&stops='+stops[0][0]+','+stops[0][1]+';'+stops[1][0]+','+stops[1][1]+"&"+ polygonBarriersURL+'&f=json&returnPolygonBarriers=true';
 
-          console.log(finalSynchronousBarriersURL);
+          //console.log(finalSynchronousBarriersURL);
 
 
 
@@ -983,6 +999,8 @@ routeParams.outSpatialReference = {"wkid":102100};
               routes.push(map.graphics.add(new esri.Graphic(bypassRoute,routeSymbols["Route 2"])));
               $("#BypassRoute").css('display',"inline");
               $("#NormalRoute").css('display',"inline");
+              chosenRoute = sRouteWB;
+              $("#solveRoute").val('Go!');
 
               for(var i = 0 ; i < sRouteWB.directions[0].features.length; i++)
               {
@@ -998,28 +1016,29 @@ routeParams.outSpatialReference = {"wkid":102100};
               return false;
             }
           });
+
+          console.log(routes);
         }
 
         function chooseBypass(){
 
           $("#chooseBypass").css("background-color","blue");
           $("#chooseNormal").css("background-color","grey");
-          clearRoutes();
 
           routes.push(map.graphics.add(new esri.Graphic(normalRoute,routeSymbols["Route 1"])));
           routes.push(map.graphics.add(new esri.Graphic(bypassRoute,routeSymbols["Route 2"])));
-
+          chosenRoute = bypassRoute;
         }
 
         function chooseNormal(){
 
           $("#chooseNormal").css("background-color","blue");
           $("#chooseBypass").css("background-color","grey");
-          clearRoutes();
+          
 
           routes.push(map.graphics.add(new esri.Graphic(bypassRoute,routeSymbols["Route 1"])));
           routes.push(map.graphics.add(new esri.Graphic(normalRoute,routeSymbols["Route 2"])));
-
+          chosenRoute = bypassRoute;
         }
 
 
@@ -1356,7 +1375,7 @@ routeParams.outSpatialReference = {"wkid":102100};
       </div>
     </div>
 
-    <input type="button" style='position:absolute; right:0; top:150px; z-index:10;' class='button radius' value="Solve!" id="solveRoute">
+    <input type="button" style='position:absolute; right:0; top:150px; z-index:10; display:none;' class='button radius' value="Solve!" id="solveRoute">
 
     <div class="row">
       <div id='map_row' class="large-12 columns">
