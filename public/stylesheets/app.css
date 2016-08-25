@@ -76,11 +76,15 @@ h1 {
 }
 
 #startAddress.directions-textbox {
-  background:url('../images/directions_arrow.png') left center no-repeat;
+  background-image:url('../images/directions_arrow.png');
 }
 
 #destinationAddress.directions-textbox {
-  background:url('../images/pin.png') left center no-repeat;
+  background-image:url('../images/pin.png');
+}
+
+.dynamicDirectionsRow {
+  padding:5px 59px;
 }
 
 .directions-textbox {
@@ -89,14 +93,21 @@ h1 {
   padding:7px 0;
   color: white;
   border:none;
-  border-bottom: gray 1px solid;
+  border-bottom: 1px solid #BBBBBB;
   font-weight:bold;
+  background-color: #8CD4CC;
+  background-position: left center;
+  background-repeat: no-repeat;
+}
+
+.directions-nav-bar > form:first-child > .row,
+.directions-nav-bar > form > .row:last-child,  {
+  background: #8CD4CC;
 }
 
 .directions-nav-bar {
   padding-left:0;
   padding-right:0;
-  background: #8CD4CC;
 }
 
 .close-button {
@@ -126,7 +137,30 @@ h1 {
 .nav-bar {
   height:65px;
   background: #F8F8F8;
-  border-bottom: #556270 1px solid;
+  border-bottom: 1px solid #BBBBBB;
+}
+
+.filter-directions-nav-bar {
+  font-weight:bold;
+  border-bottom: 1px solid #BBBBBB;
+}
+
+.filter-directions-nav-bar > .row > .columns:first-child {
+  border-right: 1px solid #BBBBBB;
+}
+
+.filter-directions-nav-bar > .row > .columns:last-child {
+  padding-left: 6px;
+}
+
+#filterButton > span {
+  background:url('../images/filter.png') left center no-repeat;
+  padding-left:30px;
+}
+
+#directionsButton > span {
+  background:url('../images/directions_selected.png') left center no-repeat;
+  padding-left:28px;
 }
 
 .nav-bar div {

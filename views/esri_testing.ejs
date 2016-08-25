@@ -24,6 +24,7 @@
   <script src="javascripts/what-input.js"></script>
 
   <script>
+        var chosenRoute;
     require( [
       "esri/urlUtils",
       "esri/config",
@@ -95,8 +96,7 @@
         var densityGridOn = true;
         var routeCheckerStop;
         var barrierVisibility = false;
-        var chosenRoute;
-        //The Directions are going to be located as an array at chosenRoute.directions[0].features 
+        //The Directions are going to be located as an array at chosenRoute.directions[0].features
 
         var SantaMonicaCoordinates= {
           xmin:-13193161.542197285, //western-most x-coordinate (corresponds to GPS)
@@ -153,6 +153,27 @@
             //console.log(footTrafficArray);
           });
 
+          $("#directionsButton").click( function () {
+            if ($('#directionsDisplay').text().length != 0 ) {
+              $('#directionsDisplay').empty();
+            }
+            else {
+              var border_style = "";
+              for(var i = 1 ; i < chosenRoute.directions[0].features.length; i++)
+              {
+                if (i != chosenRoute.directions[0].features.length)
+                {
+                  border_style = " style='border-bottom: 1px solid #BBBBBB' ";
+                }
+                else
+                {
+                  border_style = ""
+                }
+
+                $("#directionsDisplay").append("<div class='row'" + border_style + "><div class='large-12 columns dynamicDirectionsRow'>" + chosenRoute.directions[0].features[i].attributes.text + "</div></div>");
+              };
+            }
+          });
 
           $("#addStopsBtn").click( function () {
             addStops();
@@ -1034,7 +1055,7 @@ routeParams.outSpatialReference = {"wkid":102100};
 
           $("#chooseNormal").css("background-color","blue");
           $("#chooseBypass").css("background-color","grey");
-          
+
 
           routes.push(map.graphics.add(new esri.Graphic(bypassRoute,routeSymbols["Route 1"])));
           routes.push(map.graphics.add(new esri.Graphic(normalRoute,routeSymbols["Route 2"])));
@@ -1357,6 +1378,20 @@ routeParams.outSpatialReference = {"wkid":102100};
 				<div><a data-open="infoPopup"><img class='icon-wrapper' src="/images/info_icon.png" /></a></div>
       </div>
     </div>
+
+    <div class="row">
+      <div class="filter-directions-nav-bar large-12 columns">
+				<div class="row">
+					<div class="small-6 large-6 columns">
+            <button id='filterButton'><span>Filter</span></button>
+          </div>
+					<div class="small-6 large-6 columns">
+            <button id='directionsButton'><span>Directions</span></button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="row">
       <div class="directions-nav-bar large-12 columns">
 				<form action="addressLookup">
@@ -1365,6 +1400,9 @@ routeParams.outSpatialReference = {"wkid":102100};
 					  	<input class='directions-textbox' type="text" name="startAddress" id="startAddress" placeholder='Choose your starting point'>
 						</div>
 					</div>
+          <div class="row">
+						<div id="directionsDisplay" class="large-12 columns"></div>
+          </div>
 					<div class="row">
 						<div class="large-12 columns">
 					  	<input class='directions-textbox' type="text" name="destinationAddress" id="destinationAddress" placeholder='Choose your destination'>
