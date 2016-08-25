@@ -98,6 +98,9 @@
         var chosenRoute;
         //The Directions are going to be located as an array at chosenRoute.directions[0].features[i].attributes.text
 
+        var myLocationAddress;
+        var whichStopAddressInput;
+
         var SantaMonicaCoordinates= {
           xmin:-13193161.542197285, //western-most x-coordinate (corresponds to GPS)
           xmax:-13185441.402340494, //eastern-most x-coordinate (corresponds to GPS)
@@ -193,11 +196,13 @@
           });
           //need to add fix this section to reflect the functionality goals
           $('#startAddress').click(function() {
+            whichStopAddressInput = "start";
             addStartStop();
 
           });
 
           $('#destinationAddress').click(function() {
+            whichStopAddressInput = "end";
             addDestinationStop();
           });
 
@@ -509,10 +514,42 @@ routeParams.outSpatialReference = {"wkid":102100};
         //on(dom.byId("clearBarriersBtn"), "click", clearBarriers);
         //on(dom.byId("solveRoutesBtn"), "click", solveRoute);
         //on(dom.byId("clearRoutesBtn"), "click", clearRoutes);
-        //Begins listening for click events to add stops
+        //Begins listening for click events to add stop
+
+        function inputAddress(){
+         navigator.geolocation.getCurrentPosition(function(position){
+              long = position.coords.longitude;
+              lat = position.coords.latitude;
+              centerpoint = new Point(long,lat);
+
+
+              $.ajax({
+                type: 'POST',
+                url: "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/reverseGeocode?location="+long+"%2C+"+lat+"&distance=200&outSR=&f=pjson",
+                success: function (results, textStatus, xhr) {
+                  var parsedResults = JSON.parse(results);
+                  if(whichStopAddressInput == "start"){
+                    $("#startAddress").val(parsedResults.address.Match_addr);
+                  } else if(whichStopAddressInput == "end"){
+                    $("#destinationAddress").val(parsedResults.address.Match_addr);
+                  }
+                  $("#myLocation").off('click', inputAddress);
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                  console.log("test failed");
+                  console.log("ERROR:" + xhr.responseText + xhr.status + errorThrown);
+                  return false;
+                }
+              });
+
+
+            });
+        }
+
 
         function addStartStop(){
           removeEventHandlers();
+          $("#myLocation").on('click', inputAddress);
           mapOnClick_addStops_connect = map.on("click", function(evt){
             clearRoutes();
             map.graphics.remove(routeStops.shift());
@@ -543,16 +580,11 @@ removeEventHandlers();
 
           });
 
-
-
-
-
-            
-
         }
 
         function addDestinationStop(){
           removeEventHandlers();
+          $("#myLocation").on('click', inputAddress);
           mapOnClick_addStops_connect = map.on("click", function(evt){
             clearRoutes();
             map.graphics.remove(routeStops.pop());
@@ -747,6 +779,7 @@ removeEventHandlers();
                 url: "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/reverseGeocode?location="+long+"%2C+"+lat+"&distance=200&outSR=&f=pjson",
                 success: function (results, textStatus, xhr) {
                   var parsedResults = JSON.parse(results);
+                  //console.log(parsedResults.address.Match_addr);
                 },
                 error: function (xhr, textStatus, errorThrown) {
                   console.log("test failed");
@@ -955,6 +988,7 @@ removeEventHandlers();
           if (myLocationToAddress_connect) {
             myLocationToAddress_connect.remove();
           }
+          $("#myLocation").off('click', inputAddress);
 
         }
 
