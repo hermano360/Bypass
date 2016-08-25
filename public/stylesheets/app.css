@@ -129,6 +129,28 @@ h1 {
   border-bottom: #556270 1px solid;
 }
 
+.filter-directions-nav-bar {
+  font-weight:bold;
+}
+
+.filter-directions-nav-bar > .row > .columns:first-child {
+  border-right: 1px solid #BBBBBB;
+}
+
+.filter-directions-nav-bar > .row > .columns:last-child {
+  padding-left: 6px;
+}
+
+#filterButton > span {
+  background:url('../images/filter.png') left center no-repeat;
+  padding-left:30px;
+}
+
+#directionsButton > span {
+  background:url('../images/directions_selected.png') left center no-repeat;
+  padding-left:28px;
+}
+
 .nav-bar div {
   float:left;
   width:33%;
