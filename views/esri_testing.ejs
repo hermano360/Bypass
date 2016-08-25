@@ -95,6 +95,7 @@
         var densityGridOn = true;
         var routeCheckerStop;
         var barrierVisibility = false;
+        var displayDirections = [];
 
         var SantaMonicaCoordinates= {
           xmin:-13193161.542197285, //western-most x-coordinate (corresponds to GPS)
@@ -985,7 +986,7 @@ routeParams.outSpatialReference = {"wkid":102100};
 
               for(var i = 0 ; i < sRouteWB.directions[0].features.length; i++)
               {
-                //console.log(sRouteWB.directions[0].features[i].attributes.text); shows directions
+                console.log(sRouteWB.directions[0].features[i].attributes.text); 
               };
 
 
