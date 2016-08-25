@@ -231,11 +231,12 @@
           });
           $("#BypassRoute").click(function () {
             chooseBypass();
+            console.log(routes.length);
           });
           $("#NormalRoute").click( function () {
-            if(barriers.length>0){
+
               chooseNormal();
-            }
+
           });
 
 
@@ -538,12 +539,15 @@ routeParams.outSpatialReference = {"wkid":102100};
             }
           });
 
-            removeEventHandlers();
+removeEventHandlers();
 
           });
 
 
 
+
+
+            
 
         }
 
@@ -743,7 +747,6 @@ routeParams.outSpatialReference = {"wkid":102100};
                 url: "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/reverseGeocode?location="+long+"%2C+"+lat+"&distance=200&outSR=&f=pjson",
                 success: function (results, textStatus, xhr) {
                   var parsedResults = JSON.parse(results);
-                  $("#GPSdiv").html(parsedResults.address.Match_addr);
                 },
                 error: function (xhr, textStatus, errorThrown) {
                   console.log("test failed");
@@ -752,7 +755,7 @@ routeParams.outSpatialReference = {"wkid":102100};
                 }
               });
 
-              $( "GPSdiv" ).html( str );
+
             });
 
         }
@@ -1023,6 +1026,7 @@ routeParams.outSpatialReference = {"wkid":102100};
         }
 
         function chooseBypass(){
+          clearRoutes();
 
           $("#chooseBypass").css("background-color","blue");
           $("#chooseNormal").css("background-color","grey");
@@ -1033,6 +1037,7 @@ routeParams.outSpatialReference = {"wkid":102100};
         }
 
         function chooseNormal(){
+          clearRoutes();
 
           $("#chooseNormal").css("background-color","blue");
           $("#chooseBypass").css("background-color","grey");
@@ -1098,13 +1103,13 @@ routeParams.outSpatialReference = {"wkid":102100};
         }
         //Clears all routes
         function clearRoutes() {
-          $("#BypassRoute").css('display',"none");
-          $("#NormalRoute").css('display',"none");
+
           for (var i=routes.length-1; i>=0; i--) {
             map.graphics.remove(routes.splice(i, 1)[0]);
           }
-          routes = [];
         }
+
+
         //Draws the resulting routes on the map
         function showRoute(evt) {
 
