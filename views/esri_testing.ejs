@@ -727,7 +727,7 @@ routeParams.outSpatialReference = {"wkid":102100};
                 "height": 5
               });
 
-          
+
             navigator.geolocation.getCurrentPosition(function(position){
               long = position.coords.longitude;
               lat = position.coords.latitude;
@@ -949,7 +949,7 @@ routeParams.outSpatialReference = {"wkid":102100};
           }
           if (myLocationToAddress_connect) {
             myLocationToAddress_connect.remove();
-          }          
+          }
 
         }
 
@@ -1004,7 +1004,7 @@ routeParams.outSpatialReference = {"wkid":102100};
 
               for(var i = 0 ; i < sRouteWB.directions[0].features.length; i++)
               {
-                console.log(sRouteWB.directions[0].features[i].attributes.text); 
+                console.log(sRouteWB.directions[0].features[i].attributes.text);
               };
 
 
@@ -1358,7 +1358,7 @@ routeParams.outSpatialReference = {"wkid":102100};
       </div>
     </div>
     <div class="row">
-      <div class="middle-nav-bar large-12 columns">
+      <div class="directions-nav-bar large-12 columns">
 				<form action="addressLookup">
 					<div class="row">
 						<div class="large-12 columns">
@@ -1382,20 +1382,17 @@ routeParams.outSpatialReference = {"wkid":102100};
         <div id="map"></div>
 
         <div id="rightControlPanel">
-          <button id="addStopsBtn">Click Here To Begin!</button>
-          <button id="clearRoutesBtn">Clear Screen</button>
-          <div id="rightToolbar">
-            <div><button id="DensityGrid" style='z-index:10;'>Density Grid</button></div>
-          </div>
+          <button id="clearRoutesBtn" class='button' style='right:0; top:250px; position:absolute;'>Clear Screen</button>
+          <button id="DensityGrid" class='button' style='right:0; top:200px; position:absolute;'>Density Grid</button>
 
       </div>
     </div>
 
     <div class='bottomRightNav'>
-      <button class='button radius' id="BypassRoute" style="display:none;">Bypass</button>
-      <button class='button radius' id="NormalRoute" style="display:none;">Normal</button>
+      <button class='button radius' id="BypassRoute" style="display:none;"><span>Bypass</span></button>
+      <button class='button radius' id="NormalRoute" style="display:none;"><span>Normal</span></button>
       <button class='button radius' id="cancel">Cancel</button>
-      <button class='button radius' id="myLocation">My Location</button>
+      <a class='button radius' id="myLocation"><img src='../images/crosshair.png'></img></a>
       <div id="GPSdiv" style="display:none;"></div>
     </div>
 
