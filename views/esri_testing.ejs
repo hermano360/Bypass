@@ -96,7 +96,19 @@
         var densityGridOn = true;
         var routeCheckerStop;
         var barrierVisibility = false;
+<<<<<<< HEAD
         //The Directions are going to be located as an array at chosenRoute.directions[0].features
+=======
+        var chosenRoute;
+        //The Directions are going to be located as an array at chosenRoute.directions[0].features[i].attributes.text
+
+        var myLocationAddress;
+        var whichStopAddressInput;
+
+        var walkModeUrl = "";
+        //walkModeUrl = "travelMode={\"paramName\": \"defaultTravelMode\",\"dataType\": \"GPString\",\"value\": \"caFAgoThrvUpkFBW\"}&"
+
+>>>>>>> @{-1}
 
         var SantaMonicaCoordinates= {
           xmin:-13193161.542197285, //western-most x-coordinate (corresponds to GPS)
@@ -181,8 +193,10 @@
 
           $("#solveRoute").click( function(){
             if($('#solveRoute').val()==="Go!"){
+              $('#solveRoute').css("display","none");
+              $('#solveRoute').val("Solve!");
               if(routes.length > 1){
-                routes.shift();
+                map.graphics.remove(routes.shift());
               }
 
               $("#BypassRoute").css('display',"none");
@@ -212,13 +226,28 @@
           });
           //need to add fix this section to reflect the functionality goals
           $('#startAddress').click(function() {
+            whichStopAddressInput = "start";
             addStartStop();
 
           });
 
           $('#destinationAddress').click(function() {
+            whichStopAddressInput = "end";
             addDestinationStop();
           });
+
+          $('#startAddress').keyup(function(){
+            if($('#startAddress').val() && $('#destinationAddress').val()){
+              $('#solveRoute').css('display',"inline");
+            }
+          });
+
+
+         $('#destinationAddress').keyup(function(){
+            if($('#startAddress').val() && $('#destinationAddress').val()){
+              $('#solveRoute').css('display',"inline");
+            }
+          });          
 
 
 
@@ -237,6 +266,7 @@
             clearRoutes();
             $('#startAddress').val("");
             $('#destinationAddress').val("");
+            $('#solveRoute').css("display","none");
             barrierVisibility = false;
             mapAllIndices(densityArray);
 
@@ -250,11 +280,10 @@
           });
           $("#BypassRoute").click(function () {
             chooseBypass();
+            console.log(routes.length);
           });
           $("#NormalRoute").click( function () {
-            if(barriers.length>0){
-              chooseNormal();
-            }
+            chooseNormal();
           });
 
 
@@ -270,7 +299,6 @@
             //console.log(routeParams.returnDirections);
             //console.log(routeParams);
             mapAllIndices(footTrafficArray);
-
           });
 
 
@@ -447,6 +475,7 @@ $.ajax({
     //console.log(results);
     var tokenObject = JSON.parse(results);
     globalToken = tokenObject.access_token;
+    console.log(globalToken);
     var tokenParameters = {expires: (Date.now() + 86400).toString(),server:'https://route.arcgis.com/arcgis/rest/services/World/Route/NAServer/Route_World', ssl:true, token:tokenObject.access_token, userId:authdata.client_id};
 
     esriId.registerToken(tokenParameters);
@@ -527,10 +556,59 @@ routeParams.outSpatialReference = {"wkid":102100};
         //on(dom.byId("clearBarriersBtn"), "click", clearBarriers);
         //on(dom.byId("solveRoutesBtn"), "click", solveRoute);
         //on(dom.byId("clearRoutesBtn"), "click", clearRoutes);
-        //Begins listening for click events to add stops
+        //Begins listening for click events to add stop
+
+        function inputAddress(){
+          clearRoutes();
+          $('#solveRoute').css("display","none");
+          $('#solveRoute').val("Solve!");
+         navigator.geolocation.getCurrentPosition(function(position){
+              long = position.coords.longitude;
+              lat = position.coords.latitude;
+              centerpoint = new Point(long,lat);
+              if(whichStopAddressInput == "start"){
+                map.graphics.remove(routeStops.shift());
+                routeStops.unshift(map.graphics.add(new esri.Graphic(centerpoint,startSymbol)));
+              } else if(whichStopAddressInput == "end"){
+                map.graphics.remove(routeStops.pop());
+                routeStops.push(map.graphics.add(new esri.Graphic(centerpoint,stopSymbol)));
+              }
+
+
+              $.ajax({
+                type: 'POST',
+                url: "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/reverseGeocode?location="+long+"%2C+"+lat+"&distance=200&outSR=&f=pjson",
+                success: function (results, textStatus, xhr) {
+                  var parsedResults = JSON.parse(results);
+                  if(whichStopAddressInput == "start"){
+                    $("#startAddress").val(parsedResults.address.Match_addr);
+                  } else if(whichStopAddressInput == "end"){
+                    $("#destinationAddress").val(parsedResults.address.Match_addr);
+                  }
+                  $("#myLocation").off('click', inputAddress);
+
+                  if($('#startAddress').val() && $('#destinationAddress').val()){
+                    $('#solveRoute').css('display',"inline");
+                  }
+                },
+                error: function (xhr, textStatus, errorThrown) {
+                  console.log("test failed");
+                  console.log("ERROR:" + xhr.responseText + xhr.status + errorThrown);
+                  return false;
+                }
+              });
+
+
+            });
+        }
+
 
         function addStartStop(){
           removeEventHandlers();
+          $('#solveRoute').css("display","none");
+          $('#solveRoute').val("Solve!");
+
+          $("#myLocation").on('click', inputAddress);
           mapOnClick_addStops_connect = map.on("click", function(evt){
             clearRoutes();
             map.graphics.remove(routeStops.shift());
@@ -557,17 +635,17 @@ routeParams.outSpatialReference = {"wkid":102100};
             }
           });
 
-            removeEventHandlers();
+removeEventHandlers();
 
           });
-
-
-
 
         }
 
         function addDestinationStop(){
+          $('#solveRoute').css("display","none");
+          $('#solveRoute').val("Solve!");
           removeEventHandlers();
+          $("#myLocation").on('click', inputAddress);
           mapOnClick_addStops_connect = map.on("click", function(evt){
             clearRoutes();
             map.graphics.remove(routeStops.pop());
@@ -744,8 +822,8 @@ routeParams.outSpatialReference = {"wkid":102100};
                 "type": "esriPMS",
                 "url": "/images/myLocation.png",
                 "contentType": "image/png",
-                "width": 5,
-                "height": 5
+                "width": 8,
+                "height": 8
               });
 
 
@@ -762,7 +840,7 @@ routeParams.outSpatialReference = {"wkid":102100};
                 url: "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/reverseGeocode?location="+long+"%2C+"+lat+"&distance=200&outSR=&f=pjson",
                 success: function (results, textStatus, xhr) {
                   var parsedResults = JSON.parse(results);
-                  $("#GPSdiv").html(parsedResults.address.Match_addr);
+                  //console.log(parsedResults.address.Match_addr);
                 },
                 error: function (xhr, textStatus, errorThrown) {
                   console.log("test failed");
@@ -771,7 +849,7 @@ routeParams.outSpatialReference = {"wkid":102100};
                 }
               });
 
-              $( "GPSdiv" ).html( str );
+
             });
 
         }
@@ -971,6 +1049,7 @@ routeParams.outSpatialReference = {"wkid":102100};
           if (myLocationToAddress_connect) {
             myLocationToAddress_connect.remove();
           }
+          $("#myLocation").off('click', inputAddress);
 
         }
 
@@ -1000,7 +1079,9 @@ routeParams.outSpatialReference = {"wkid":102100};
 
           polygonBarriersURL= "polygonBarriers=" + polygonBarriersURL;
 
-          var finalSynchronousBarriersURL = 'http://route.arcgis.com/arcgis/rest/services/World/Route/NAServer/Route_World/solve?token='+globalToken+'&stops='+stops[0][0]+','+stops[0][1]+';'+stops[1][0]+','+stops[1][1]+"&"+ polygonBarriersURL+'&f=json&returnPolygonBarriers=true';
+
+
+          var finalSynchronousBarriersURL = 'http://route.arcgis.com/arcgis/rest/services/World/Route/NAServer/Route_World/solve?'+walkModeUrl+'token='+globalToken+'&stops='+stops[0][0]+','+stops[0][1]+';'+stops[1][0]+','+stops[1][1]+"&"+ polygonBarriersURL+'&f=json&returnPolygonBarriers=true';
 
           //console.log(finalSynchronousBarriersURL);
 
@@ -1042,6 +1123,7 @@ routeParams.outSpatialReference = {"wkid":102100};
         }
 
         function chooseBypass(){
+          clearRoutes();
 
           $("#chooseBypass").css("background-color","blue");
           $("#chooseNormal").css("background-color","grey");
@@ -1052,6 +1134,7 @@ routeParams.outSpatialReference = {"wkid":102100};
         }
 
         function chooseNormal(){
+          clearRoutes();
 
           $("#chooseNormal").css("background-color","blue");
           $("#chooseBypass").css("background-color","grey");
@@ -1072,7 +1155,7 @@ routeParams.outSpatialReference = {"wkid":102100};
 
           $.ajax({
             type: 'POST',
-            url: 'http://route.arcgis.com/arcgis/rest/services/World/Route/NAServer/Route_World/solve?token='+globalToken+'&stops='+stops[0][0]+','+stops[0][1]+';'+stops[1][0]+','+stops[1][1]+'&f=json',
+            url: 'http://route.arcgis.com/arcgis/rest/services/World/Route/NAServer/Route_World/solve?'+walkModeUrl+'token='+globalToken+'&stops='+stops[0][0]+','+stops[0][1]+';'+stops[1][0]+','+stops[1][1]+'&f=json',
 
             success: function (results, textStatus, xhr) {
               sRoute = JSON.parse(results);
@@ -1109,22 +1192,21 @@ routeParams.outSpatialReference = {"wkid":102100};
         function solveRoute() {
             removeEventHandlers();
             console.log(routeStops);
-
+            syncRouteWOB(routeStops);
             syncRouteWB(routeStops);
-            if(barriers.length>0){
-              syncRouteWOB(routeStops);
-            }
+
+
             //routeTask.solve(routeParams);
         }
         //Clears all routes
         function clearRoutes() {
-          $("#BypassRoute").css('display',"none");
-          $("#NormalRoute").css('display',"none");
+
           for (var i=routes.length-1; i>=0; i--) {
             map.graphics.remove(routes.splice(i, 1)[0]);
           }
-          routes = [];
         }
+
+
         //Draws the resulting routes on the map
         function showRoute(evt) {
 
