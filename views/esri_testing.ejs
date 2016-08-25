@@ -24,6 +24,13 @@
   <script src="javascripts/what-input.js"></script>
 
   <script>
+        var chosenRoute;
+        var sRouteWB;
+        var normalRoute;
+        var bypassRoute;
+        var chosenRouteDirections;
+        var normalRouteDirections;
+        var bypassRouteDirections;
     require( [
       "esri/urlUtils",
       "esri/config",
@@ -87,15 +94,11 @@
         var businessLocations;
         var footTrafficArray;
         var globalToken;
-        var normalRoute;
-        var bypassRoute;
-        var sRouteWB;
         var sRoute;
         var irreleventBarriersLimit=0;
         var densityGridOn = true;
         var routeCheckerStop;
         var barrierVisibility = false;
-        var chosenRoute;
         //The Directions are going to be located as an array at chosenRoute.directions[0].features
 
         var myLocationAddress;
@@ -165,9 +168,9 @@
             }
             else {
               var border_style = "";
-              for(var i = 1 ; i < chosenRoute.directions[0].features.length; i++)
+              for(var i = 1 ; i < chosenRouteDirections[0].features.length; i++)
               {
-                if (i != chosenRoute.directions[0].features.length)
+                if (i != chosenRouteDirections[0].features.length)
                 {
                   border_style = " style='border-bottom: 1px solid #BBBBBB' ";
                 }
@@ -176,7 +179,7 @@
                   border_style = ""
                 }
 
-                $("#directionsDisplay").append("<div class='row'" + border_style + "><div class='large-12 columns dynamicDirectionsRow'>" + chosenRoute.directions[0].features[i].attributes.text + "</div></div>");
+                $("#directionsDisplay").append("<div class='row'" + border_style + "><div class='large-12 columns dynamicDirectionsRow'>" + chosenRouteDirections[0].features[i].attributes.text + "</div></div>");
               };
             }
           });
@@ -1088,6 +1091,7 @@ removeEventHandlers();
 
             success: function (results, textStatus, xhr) {
               sRouteWB = JSON.parse(results);
+              bypassRouteDirections = JSON.parse(results).directions;
               console.log("sRouteWB");
               console.log(sRouteWB);
 
@@ -1096,6 +1100,7 @@ removeEventHandlers();
               $("#BypassRoute").css('display',"inline");
               $("#NormalRoute").css('display',"inline");
               chosenRoute = sRouteWB;
+              chosenRouteDirections = sRouteWB.directions;
               $("#solveRoute").val('Go!');
 
               for(var i = 0 ; i < sRouteWB.directions[0].features.length; i++)
@@ -1124,7 +1129,7 @@ removeEventHandlers();
 
           routes.push(map.graphics.add(new esri.Graphic(normalRoute,routeSymbols["Route 1"])));
           routes.push(map.graphics.add(new esri.Graphic(bypassRoute,routeSymbols["Route 2"])));
-          chosenRoute = bypassRoute;
+          chosenRouteDirections = bypassRouteDirections;
         }
 
         function chooseNormal(){
@@ -1136,7 +1141,7 @@ removeEventHandlers();
 
           routes.push(map.graphics.add(new esri.Graphic(bypassRoute,routeSymbols["Route 1"])));
           routes.push(map.graphics.add(new esri.Graphic(normalRoute,routeSymbols["Route 2"])));
-          chosenRoute = bypassRoute;
+          chosenRouteDirections = normalRouteDirections;
         }
 
 
@@ -1153,6 +1158,7 @@ removeEventHandlers();
 
             success: function (results, textStatus, xhr) {
               sRoute = JSON.parse(results);
+              normalRouteDirections = JSON.parse(results).directions;
               console.log(sRoute.travelMode);
               normalRoute = new esri.geometry.Polyline(sRoute.routes.features[0].geometry.paths[0]);
               routes.push(map.graphics.add(new esri.Graphic(normalRoute,routeSymbols["Route 1"])));
