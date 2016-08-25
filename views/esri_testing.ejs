@@ -154,10 +154,25 @@
           });
 
           $("#directionsButton").click( function () {
-              for(var i = 0 ; i < chosenRoute.directions[0].features.length; i++)
+            if ($('#directionsDisplay').text().length != 0 ) {
+              $('#directionsDisplay').empty();
+            }
+            else {
+              var border_style = "";
+              for(var i = 1 ; i < chosenRoute.directions[0].features.length; i++)
               {
-                console.log(chosenRoute.directions[0].features[i].attributes.text);
+                if (i != chosenRoute.directions[0].features.length)
+                {
+                  border_style = " style='border-bottom: 1px solid #BBBBBB' ";
+                }
+                else
+                {
+                  border_style = ""
+                }
+
+                $("#directionsDisplay").append("<div class='row'" + border_style + "><div class='large-12 columns dynamicDirectionsRow'>" + chosenRoute.directions[0].features[i].attributes.text + "</div></div>");
               };
+            }
           });
 
           $("#addStopsBtn").click( function () {
@@ -1385,6 +1400,9 @@ routeParams.outSpatialReference = {"wkid":102100};
 					  	<input class='directions-textbox' type="text" name="startAddress" id="startAddress" placeholder='Choose your starting point'>
 						</div>
 					</div>
+          <div class="row">
+						<div id="directionsDisplay" class="large-12 columns"></div>
+          </div>
 					<div class="row">
 						<div class="large-12 columns">
 					  	<input class='directions-textbox' type="text" name="destinationAddress" id="destinationAddress" placeholder='Choose your destination'>
