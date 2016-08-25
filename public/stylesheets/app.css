@@ -11,27 +11,61 @@ h1 {
 .reveal {
   padding-top:20px;
 }
+
+.button {
+  background-color: #FFFFFF;
+  color: #000000;
+  border: #BBBBBB solid 2px;
+  font-weight:bold;
+  transition:none;
+}
+
+.button:hover {
+  background-color: #26A69A;
+}
 /* zurb foundation overrides - END */
 
 /* only affects input tag placeholder color - BEGIN */
 ::-webkit-input-placeholder { /* WebKit, Blink, Edge */
-  color: #FEF9F0;
+  color: #FEFDFA;
 }
 :-moz-placeholder { /* Mozilla Firefox 4 to 18 */
-  color: #FEF9F0;
+  color: #FEFDFA;
   opacity: 1;
 }
 ::-moz-placeholder { /* Mozilla Firefox 19+ */
-  color: #FEF9F0;
+  color: #FEFDFA;
   opacity: 1;
 }
 :-ms-input-placeholder { /* Internet Explorer 10-11 */
-  color: #FEF9F0;
+  color: #FEFDFA;
 }
 /* only affects input tag placeholder color - END */
 
+#BypassRoute > span {
+  background:url('../images/curved_arrow_black.png') left center no-repeat;
+  padding-left:21px;
+}
+
+#BypassRoute:hover > span {
+  background:url('../images/curved_arrow_white.png') left center no-repeat;
+}
+
+#NormalRoute > span {
+  background:url('../images/curved_arrow_black.png') left center no-repeat;
+  padding-left:21px;
+}
+
+#NormalRoute:hover > span {
+  background:url('../images/curved_arrow_white.png') left center no-repeat;
+}
+
+#myLocation {
+  padding:0;
+}
+
 .bottomRightNav {
-  right: 20px;
+  right: 30px;
   bottom: 10px;
   position: absolute;
   width:80px;
@@ -41,20 +75,28 @@ h1 {
   margin-bottom: 10px;
 }
 
+#startAddress.directions-textbox {
+  background:url('../images/directions_arrow.png') left center no-repeat;
+}
+
+#destinationAddress.directions-textbox {
+  background:url('../images/pin.png') left center no-repeat;
+}
+
 .directions-textbox {
+  text-indent:45px;
   width:100%;
-  padding:7px 13px;
-  background: #8CD4CC;
+  padding:7px 0;
   color: white;
   border:none;
   border-bottom: gray 1px solid;
   font-weight:bold;
 }
 
-.middle-nav-bar {
+.directions-nav-bar {
   padding-left:0;
   padding-right:0;
-
+  background: #8CD4CC;
 }
 
 .close-button {
