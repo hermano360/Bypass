@@ -143,30 +143,6 @@ h1 {
 	background:black;
 }
 
-#rightToolbar {
-	position: absolute;
-	bottom: 200px;
-	right:0px;
-	background:black;
-	color: white;
-}
-
-#addStopsBtn {
-	position: absolute;
-	background: green;
-	color: white;
-	bottom: 150px;
-	right: 0px;
-}
-
-#clearRoutesBtn {
-	position: absolute;
-	background: red;
-	color: white;
-	bottom: 130px;
-	right: 0px;
-}
-
 .esriSimpleSlider {
   margin-top:15px;
   z-index:inherit !important;
