@@ -24,7 +24,6 @@
   <script src="javascripts/what-input.js"></script>
 
   <script>
-        var chosenRoute;
     require( [
       "esri/urlUtils",
       "esri/config",
@@ -96,19 +95,14 @@
         var densityGridOn = true;
         var routeCheckerStop;
         var barrierVisibility = false;
-<<<<<<< HEAD
-        //The Directions are going to be located as an array at chosenRoute.directions[0].features
-=======
         var chosenRoute;
-        //The Directions are going to be located as an array at chosenRoute.directions[0].features[i].attributes.text
+        //The Directions are going to be located as an array at chosenRoute.directions[0].features
 
         var myLocationAddress;
         var whichStopAddressInput;
 
         var walkModeUrl = "";
         //walkModeUrl = "travelMode={\"paramName\": \"defaultTravelMode\",\"dataType\": \"GPString\",\"value\": \"caFAgoThrvUpkFBW\"}&"
-
->>>>>>> @{-1}
 
         var SantaMonicaCoordinates= {
           xmin:-13193161.542197285, //western-most x-coordinate (corresponds to GPS)
@@ -247,7 +241,7 @@
             if($('#startAddress').val() && $('#destinationAddress').val()){
               $('#solveRoute').css('display',"inline");
             }
-          });          
+          });
 
 
 
