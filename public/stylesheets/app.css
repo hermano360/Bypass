@@ -23,6 +23,13 @@ h1 {
 .button:hover {
   background-color: #26A69A;
 }
+
+// remove the iphone bug where the input boxes are rounded
+input {
+  -webkit-border-radius: 0px;
+  -webkit-appearance: none;
+  border-radius: 0px;
+}
 /* zurb foundation overrides - END */
 
 /* only affects input tag placeholder color - BEGIN */
