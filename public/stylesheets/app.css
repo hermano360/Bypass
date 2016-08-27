@@ -184,8 +184,27 @@ button:focus {
   padding-bottom:2px;
 }
 
-#directionsButton > span {
-  background:url('../images/directions_selected.png') left center no-repeat;
+.directionsButtonUnselected {
+  background-color: #FFFFFF;
+  color: #000000;
+}
+
+.directionsButtonUnselected > span {
+  background-image:url('../images/directions_unselected.png');
+  background-position: left center;
+  background-repeat: no-repeat;
+  padding-left:28px;
+}
+
+.directionsButtonSelected {
+  background-color: #8CD4CC;
+  color: #FFFFFF;
+}
+
+.directionsButtonSelected > span {
+  background-image:url('../images/directions_selected.png');
+  background-position: left center;
+  background-repeat: no-repeat;
   padding-left:28px;
 }
 
