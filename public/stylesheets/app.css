@@ -157,12 +157,24 @@ button:focus {
 }
 
 .filter-directions-nav-bar > .row > .columns:last-child {
-  padding-left: 6px;
+  padding-left: 10px;
+}
+
+#filterButton {
+  cursor:pointer;
+  padding-top:3px;
+  padding-bottom:2px;
 }
 
 #filterButton > span {
   background:url('../images/filter.png') left center no-repeat;
   padding-left:30px;
+}
+
+#directionsButton {
+  cursor:pointer;
+  padding-top:3px;
+  padding-bottom:2px;
 }
 
 #directionsButton > span {
