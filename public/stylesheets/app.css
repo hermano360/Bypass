@@ -42,6 +42,13 @@ h1 {
 }
 /* only affects input tag placeholder color - END */
 
+input:focus,
+select:focus,
+textarea:focus,
+button:focus {
+    outline: none;
+}
+
 #BypassRoute > span {
   background:url('../images/curved_arrow_black.png') left center no-repeat;
   padding-left:21px;
