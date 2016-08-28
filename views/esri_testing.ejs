@@ -160,6 +160,26 @@
 
           });
 
+          xhr.get("CompleteDataSet.csv", {
+            handleAs: "text",
+          }).then(function(data) {
+
+            allLocations = formatCompleteDataset(data.replace(/\n/g, "," ).split(","));
+            console.log(allLocations[0][0].getFullYear());
+
+            //mapPoints(businessLocations); //mapped each individual point that was in this array
+            
+            //adjustableMapIndices(footTrafficArray); //gridded out array of foottraffic estimate
+            //plots the TL and BR point of our map
+            //normalizedArray = crimeNormalizer(densityArray, footTrafficArray);
+            //mapAllIndices(normalizedArray);
+          });
+
+
+
+
+          
+
 
 
           $("#directionsButton").click( function () {
@@ -465,6 +485,7 @@ $.ajax({
     var tokenParameters = {expires: (Date.now() + 86400).toString(),server:'https://route.arcgis.com/arcgis/rest/services/World/Route/NAServer/Route_World', ssl:true, token:tokenObject.access_token, userId:authdata.client_id};
 
     esriId.registerToken(tokenParameters);
+    //getGPSLocations();
   },
 
   error: function (xhr, textStatus, errorThrown) {
@@ -1529,6 +1550,67 @@ removeEventHandlers();
         }
 
 
+
+        function getGPSLocations(){
+          var xCoord = 0;
+          var yCoord = 0;
+          var finalResults;
+          var finalGeocodingURL;
+
+
+
+          var addresses = [""];//put addresses here
+          var givenAddress;
+          console.log(addresses.length);
+
+          for(var i = 0; i < addresses.length; i++ ) {
+            givenAddress = addresses[i];
+
+            //console.log(givenAddress);
+  
+            finalGeocodingURL = "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/geocodeAddresses?addresses={%22records%22:[{%22attributes%22:{%22OBJECTID%22:1,%22SingleLine%22:%22" + givenAddress.replace(" ","%20") + "%22}}]}&sourceCountry=USA&token=" + globalToken + "&f=pjson";
+
+            $.ajax({
+              type: 'POST',
+              url: finalGeocodingURL,
+              success: function (results, textStatus, xhr) {
+                finalResults = JSON.parse(results);
+                xCoord = finalResults.locations[0].location.x;
+                yCoord = finalResults.locations[0].location.y;
+                console.log(finalResults.locations[0].address,xCoord,yCoord);
+              },
+              error: function (xhr, textStatus, errorThrown) {
+                
+                console.log("test failed");
+                console.log("ERROR:" + xhr.responseText + xhr.status + errorThrown);
+                return false;
+              }
+            });
+          }
+
+        }
+
+
+        function formatCompleteDataset(dataz) {
+          console.log(dataz);
+          var formattedBusinessArray = [];
+          var rowData = new Array(6);//May need to add one more column for severity
+
+          for(var k = 6; k < dataz.length-5; k = k+6){
+            rowData[0] = new Date(dataz[k]);//Data Occured
+            rowData[1] = dataz[k+1];//Description
+            rowData[2] = Number(dataz[k+2]);//Latitude
+            rowData[3] = Number(dataz[k+3]);//Longitude
+            rowData[4]= dataz[k+4];//Category
+            rowData[5]= dataz[k+5];//Dataset
+
+            formattedBusinessArray.push(rowData);
+            rowData = [0,0,0,0,0,0];
+          }
+          return formattedBusinessArray;
+        }
+
+
       });
     </script>
 
@@ -1577,11 +1659,13 @@ removeEventHandlers();
       </div>
     </div>
 
+
     <div class="row">
       <div id="solveRoute" class="directions-nav-bar large-12 columns" style='display:none;'>
         Solve!
       </div>
     </div>
+
 
     <div class="row">
       <div id='map_row' class="large-12 columns">
