@@ -5,7 +5,7 @@
   <meta http-equiv="x-ua-compatible" content="ie=edge">
   <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
   <title>Bypass</title>
-
+  <link rel="shortcut icon" type="image/png" href="/images/favicon.png"/>
   <link rel="stylesheet" href="stylesheets/foundation.min.css" />
   <link rel="stylesheet" href="stylesheets/app.css" />
   <link rel="stylesheet" href="https://js.arcgis.com/3.17/dijit/themes/claro/claro.css">
@@ -103,9 +103,14 @@
 
         var myLocationAddress;
         var whichStopAddressInput;
+        var filteredPoints = [];
+        var footTrafficSquares = [];
+        var normalizedArray;
+        var normalizedArrayGraphics = [];
 
         var walkModeUrl = "";
-        //walkModeUrl = "travelMode={\"paramName\": \"defaultTravelMode\",\"dataType\": \"GPString\",\"value\": \"caFAgoThrvUpkFBW\"}&"
+        walkModeUrl = "travelMode={\"attributeParameterValues\":[{\"parameterName\":\"Restriction Usage\",\"attributeName\":\"Walking\",\"value\":\"PROHIBITED\"},{\"parameterName\":\"Restriction Usage\",\"attributeName\":\"Preferred for Pedestrians\",\"value\":\"PREFER_LOW\"},{\"parameterName\":\"Walking Speed (mph)\",\"attributeName\":\"TravelTime\",\"value\":5}],\"description\":\"Follows paths and roads that allow pedestrian traffic and finds solutions that optimize travel time. The walking speed is set to 5 miles per hour.\",\"impedanceAttributeName\":\"Miles\",\"simplificationToleranceUnits\":\"esriMeters\",\"uturnAtJunctions\":\"esriNFSBAllowBacktrack\",\"restrictionAttributeNames\":[\"Preferred for Pedestrians\",\"Walking\"],\"useHierarchy\":false,\"simplificationTolerance\":2,\"timeAttributeName\":\"TravelTime\",\"distanceAttributeName\":\"Miles\",\"type\":\"WALK\",\"id\":\"caFAgoThrvUpkFBW\",\"name\":\"Walking Time\"}&";
+
 
         var SantaMonicaCoordinates= {
           xmin:-13193161.542197285, //western-most x-coordinate (corresponds to GPS)
@@ -113,6 +118,12 @@
           ymax:4035246.5784217017,  //northern-most y-coordinate (corresponds to GPS)
           ymin:4028520.119932615,  //southern-most y-coordinate (corresponds to GPS)
           blockWidthXY: 187.02, //This is what correponds most closely to about 300' in terms of xy coordinates
+          latmax:  webMercatorUtils.xyToLngLat(-13193161.542197285, 4035246.5784217017, true)[1],
+          longmin: webMercatorUtils.xyToLngLat(-13193161.542197285, 4035246.5784217017, true)[0], 
+
+          latmin:  webMercatorUtils.xyToLngLat(-13185441.402340494, 4028520.119932615, true)[1],
+          longmax: webMercatorUtils.xyToLngLat(-13185441.402340494, 4028520.119932615, true)[0]
+          
         }
 
         //  urlUtils.addProxyRule({
@@ -121,46 +132,46 @@
         // });
 
         map = new Map("map", {
-          basemap: "streets",
+          basemap: "topo",
           center: [-118.49132, 34.01455],
           zoom: 14,
           smartNavigation: false //by adding this, the scroll mouse goes in and out, rather than up and down. perhaps the other way is better though, idk.
         });
 
-
-
-
-
-
-
         function resetBarriers(){
           if(densityGridOn){
             clearBarriers();
-            mapAllIndices(densityArray);
+            mapAllIndices(normalizedArray);
           }
         }
 
 
         ready(function() {
+
           xhr.get("cached_danger_influences.csv", { //uploading csv data
             handleAs: "text",
           }).then(function(data) {
             globalvariable = data.replace(/\n/g, "," ).split(",");
             formatedData = formatGlobal(globalvariable);
             densityArray = dangerAlgorithm(formatedData);
-            mapAllIndices(densityArray);
+            //mapAllIndices(densityArray);
             on(map, "extent-change", resetBarriers);
-          });
 
-          xhr.get("SMpopdataFormat1.csv", {
+            xhr.get("SMpopdataFormat1.csv", {
             handleAs: "text",
           }).then(function(data) {
 
             businessLocations = formatBusinesses(data.split(","));
-
-            footTrafficArray = dangerAlgorithm(businessLocations);
-            //console.log(footTrafficArray);
+            //mapPoints(businessLocations); //mapped each individual point that was in this array
+            footTrafficArray = footTrafficCalculator(businessLocations);
+            //adjustableMapIndices(footTrafficArray); //gridded out array of foottraffic estimate
+            TLandBR();//plots the TL and BR point of our map
+            normalizedArray = crimeNormalizer(densityArray, footTrafficArray);
+            mapAllIndices(normalizedArray);
           });
+          });
+
+
 
           $("#directionsButton").click( function () {
             if ($('#directionsDisplay').text().length != 0 ) {
@@ -265,7 +276,7 @@
             $('#destinationAddress').val("");
             $('#solveRoute').css("display","none");
             barrierVisibility = false;
-            mapAllIndices(densityArray);
+            mapAllIndices(normalizedArray);
 
           });
 
@@ -292,11 +303,7 @@
               showBufferZones(sortedData);
             }
           });
-          $("#streetlights").click( function() {
-            //console.log(routeParams.returnDirections);
-            //console.log(routeParams);
-            mapAllIndices(footTrafficArray);
-          });
+
 
 
           $("#mapCrimeIndex").click( function () {
@@ -307,7 +314,7 @@
           $("#DensityGrid").click( function () {
             barrierVisibility = !barrierVisibility;
             clearBarriers();
-            mapAllIndices(densityArray);
+            mapAllIndices(normalizedArray);
           });
 
           $("#ClusterGrid").click( function () {
@@ -388,7 +395,7 @@ function requestAddress(givenAddress,stopOption){
               xCoord = finalResults.locations[0].location.x;
               yCoord = finalResults.locations[0].location.y;
 
-              console.log(stopOption,xCoord,yCoord);
+              //console.log(stopOption,xCoord,yCoord);
 
               var instancePoint = new Point(xCoord,yCoord);
 
@@ -544,16 +551,7 @@ routeParams.outSpatialReference = {"wkid":102100};
           "Route 2": new SimpleLineSymbol().setColor(new Color([140,212,204,1])).setWidth(5),
           "Route 3": new SimpleLineSymbol().setColor(new Color([255,0,255,0.5])).setWidth(5)
         };
-        //button click event listeners can't be added directly in HTML when the code is wrapped in an AMD callback
-        //using APIs?
 
-        //on(dom.byId("addStopsBtn"), "click", addStops);
-        //on(dom.byId("clearStopsBtn"), "click", clearStops);
-        //on(dom.byId("addBarriersBtn"), "click", addBarriers);
-        //on(dom.byId("clearBarriersBtn"), "click", clearBarriers);
-        //on(dom.byId("solveRoutesBtn"), "click", solveRoute);
-        //on(dom.byId("clearRoutesBtn"), "click", clearRoutes);
-        //Begins listening for click events to add stop
 
         function inputAddress(){
           clearRoutes();
@@ -767,45 +765,11 @@ removeEventHandlers();
           var severityEvt = $("input[name=severityRadioButtons]:checked").val();
           addCircleBarrier1(latLongEvt[0],latLongEvt[1],severityEvt);
 
-          /*
-          barriers.push(
-            map.graphics.add(
-              new esri.Graphic(
-                evt.mapPoint,
-                barrierSymbol
-                )
-              )
-            );
-            */
 
-          //
-          //console.log("addBarrier1", evt.mapPoint);
         }
 
 
-        function mapAllIndices(array) {
-          var xcenter;
-          var ycenter;
-          var max = 0;
-          for(var i = 0; i < array.length; i++){
-            for(var j = 0; j < array[i].length; j++){
-              if(array[i][j]>max){
-                max = array[i][j];
-              }
-            }
-          }
 
-
-          for(var i = 0; i < array.length; i = i+1){
-            for(var j = 0; j < array[i].length; j=j+1){
-              xcenter = -118.51618659213699 + i * 0.001651218959260686;
-              ycenter = 34.047981411250944 - j * 0.0013911360369712373;
-              addSquareBarrier(xcenter,ycenter,max,array);
-            }
-          }
-          console.log(barriers.length);
-          console.log(irreleventBarriers.length);
-        }
 
         function addMyLocationDot() {
           clearMyLocation();
@@ -855,29 +819,20 @@ removeEventHandlers();
             map.graphics.remove(myLocation.splice(0, 1)[0]);
         }
 
-
-
-        function addSquareBarrier(long, lat,max,array) {
+        function addSquareBarrier(long, lat,max,value) {
           //op as opacity, radius as radius
 
-
-
-
-
-          var xdata = Math.round((long-(-118.51618659213699))/0.001651218959260686);
-
-          var ydata = Math.round((34.047981411250944-lat)/0.0013911360369712373);
-
-          var op = array[xdata][ydata]/max;
+          var op = value/max;
           var impedance = op*10;
           var outlineop;
 
-          xcenter = -118.51618659213699 + xdata * 0.001651218959260686;
-          ycenter = 34.047981411250944 - ydata * 0.0013911360369712373;
+          xmin = long;
+          ymax = lat;
 
 
 
           //Change square outline
+
           if(impedance > 1){
             outlineop = .2
           } else{
@@ -889,27 +844,30 @@ removeEventHandlers();
             outlineop = 0;
           }
           //Change square color
+
+          //just for a testing
+
           polygonBarrierSymbol.setColor(new Color([255,0,0,op]));
 
-          polygonBarrierSymbol.setOutline(new SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new Color([255,0,0,outlineop]), 2));
+          polygonBarrierSymbol.setOutline(new SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new Color([250,0,0,outlineop]), 2));
 
-          var center = new esri.geometry.Point([xcenter, ycenter]);
+          var topLeftPoint = new esri.geometry.Point([xmin, ymax]);
 
           var ring = []; // point that make up the circle
 
 
-          ring.push([center.x - .5 * 0.001651218959260686 * .95, center.y + .5 * 0.0013911360369712373* .95]);
-          ring.push([center.x + .5 * 0.001651218959260686* .95, center.y + .5 * 0.0013911360369712373* .95]);
-          ring.push([center.x + .5 * 0.001651218959260686* .95, center.y - .5 * 0.0013911360369712373* .95]);
-          ring.push([center.x - .5 * 0.001651218959260686* .95, center.y - .5 * 0.0013911360369712373* .95]);
+          ring.push([topLeftPoint.x,topLeftPoint.y]);
+          ring.push([topLeftPoint.x + 0.001651218959260686, topLeftPoint.y]);
+          ring.push([topLeftPoint.x + 0.001651218959260686, topLeftPoint.y - 0.0013911360369712373]);
+          ring.push([topLeftPoint.x, topLeftPoint.y - 0.0013911360369712373]);
 
           ring.push(ring[0]); // start point needs to == end point
           var square = new esri.geometry.Polygon(ring);
           var polygonbarrier = new esri.Graphic(square,polygonBarrierSymbol);
-          polygonbarrier.attributes= {BarrierType: 1, Attr_TravelTime: impedance};
+          polygonbarrier.attributes= {BarrierType: 1, Attr_Miles: impedance};
 
 
-          if(impedance > 1){
+          if(impedance > 1.2){//Readjust here in case there are too many barriers on the screen
             barriers.push(map.graphics.add(polygonbarrier));
           }else {
             irreleventBarriers.push(map.graphics.add(polygonbarrier));
@@ -1052,7 +1010,7 @@ removeEventHandlers();
 
         function syncRouteWB(routeStops) { //With Barriers
 
-          console.log(routeStops);
+          
 
           var stops = [[routeStops[0].geometry.x,routeStops[0].geometry.y],[routeStops[1].geometry.x,routeStops[1].geometry.y]];
 
@@ -1067,7 +1025,7 @@ removeEventHandlers();
                 polygonBarriersURL += ",";
                }
              }
-             polygonBarriersURL += "]]},\"attributes\":{\"BarrierType\":1,\"Attr_TravelTime\":"+barriers[i].attributes.Attr_TravelTime+"}}";
+             polygonBarriersURL += "]]},\"attributes\":{\"BarrierType\":1,\"Attr_Miles\":"+barriers[i].attributes.Attr_Miles+"}}";
              if(i<barriers.length-1){
               polygonBarriersURL += ",";
             }
@@ -1092,11 +1050,12 @@ removeEventHandlers();
             success: function (results, textStatus, xhr) {
               sRouteWB = JSON.parse(results);
               bypassRouteDirections = JSON.parse(results).directions;
-              console.log("sRouteWB");
-              console.log(sRouteWB);
+              //console.log(sRouteWB);
 
               bypassRoute = new esri.geometry.Polyline(sRouteWB.routes.features[0].geometry.paths[0]);
               routes.push(map.graphics.add(new esri.Graphic(bypassRoute,routeSymbols["Route 2"])));
+
+              //console.log(sRouteWB.directions[0].features,sRoute.directions[0].features)
               $("#BypassRoute").css('display',"inline");
               $("#NormalRoute").css('display',"inline");
               chosenRoute = sRouteWB;
@@ -1105,10 +1064,14 @@ removeEventHandlers();
 
               for(var i = 0 ; i < sRouteWB.directions[0].features.length; i++)
               {
-                console.log(sRouteWB.directions[0].features[i].attributes.text);
+                //console.log(sRouteWB.directions[0].features[i].attributes.text);
               };
+              var pluralityMinutes = "minutes"
+              if(((sRouteWB.directions[0].summary.totalLength - sRoute.directions[0].summary.totalLength)*60/3.1).toFixed(0)==1){
+                pluralityMinutes = "minute"
+              }
 
-
+              console.log("The Bypass route is " + sRouteWB.directions[0].summary.totalLength.toFixed(2) + " miles, adding " + (sRouteWB.directions[0].summary.totalLength - sRoute.directions[0].summary.totalLength).toFixed(2) + " miles or " + ((sRouteWB.directions[0].summary.totalLength - sRoute.directions[0].summary.totalLength)*60/3.1).toFixed(0) + " "+ pluralityMinutes + " to your trip.");
 
             },
             error: function (xhr, textStatus, errorThrown) {
@@ -1118,14 +1081,11 @@ removeEventHandlers();
             }
           });
 
-          console.log(routes);
+          //console.log(routes);
         }
 
         function chooseBypass(){
           clearRoutes();
-
-          $("#chooseBypass").css("background-color","blue");
-          $("#chooseNormal").css("background-color","grey");
 
           routes.push(map.graphics.add(new esri.Graphic(normalRoute,routeSymbols["Route 1"])));
           routes.push(map.graphics.add(new esri.Graphic(bypassRoute,routeSymbols["Route 2"])));
@@ -1134,11 +1094,6 @@ removeEventHandlers();
 
         function chooseNormal(){
           clearRoutes();
-
-          $("#chooseNormal").css("background-color","blue");
-          $("#chooseBypass").css("background-color","grey");
-
-
           routes.push(map.graphics.add(new esri.Graphic(bypassRoute,routeSymbols["Route 1"])));
           routes.push(map.graphics.add(new esri.Graphic(normalRoute,routeSymbols["Route 2"])));
           chosenRouteDirections = normalRouteDirections;
@@ -1146,7 +1101,7 @@ removeEventHandlers();
 
 
         function syncRouteWOB(routeStops) {//Without Barriers
-          console.log("without Barriers called");
+          //console.log("without Barriers called");
 
           var stops = [[routeStops[0].geometry.x,routeStops[0].geometry.y],[routeStops[1].geometry.x,routeStops[1].geometry.y]];
 
@@ -1159,7 +1114,7 @@ removeEventHandlers();
             success: function (results, textStatus, xhr) {
               sRoute = JSON.parse(results);
               normalRouteDirections = JSON.parse(results).directions;
-              console.log(sRoute.travelMode);
+              
               normalRoute = new esri.geometry.Polyline(sRoute.routes.features[0].geometry.paths[0]);
               routes.push(map.graphics.add(new esri.Graphic(normalRoute,routeSymbols["Route 1"])));
 
@@ -1191,7 +1146,7 @@ removeEventHandlers();
         //Solves the routes. Any errors will trigger the errorHandler function.
         function solveRoute() {
             removeEventHandlers();
-            console.log(routeStops);
+            //console.log(routeStops);
             syncRouteWOB(routeStops);
             syncRouteWB(routeStops);
 
@@ -1293,18 +1248,20 @@ removeEventHandlers();
         var yval;
         var wval;
 
+
         //This reflects how far the center of each cell is from eachother, in terms of [longitude, latitude]. This is approximate since earth is round
         var deltaLngLat = [(-longLatTL[0]+longLatRB[0])/xcells,(-longLatRB[1]+longLatTL[1])/ycells];
 
         for(var i = 0; i < xcells; i++){
-          calculatedArray.push([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]);//had problems getting array not to point to same object, just added 0's so that I knew for sure they wouldn't be pointing at the same array;
-
+          calculatedArray[i]=[];//sets the stage for a new column
+          for(var m = 0; m < ycells; m++){
+            calculatedArray[i].push(0);//adds the indicated number of rows in each column
+          }
         }
 
-
         for(var j = 0; j < dataz.length; j++){ //this calculates each of the xcell/ycell combos that are going to get a point added.
-          xdata = Math.round((dataz[j][2]-longLatTL[0])/deltaLngLat[0]); //represents the x coordinate of the grid.  This represents which ycell column we are looking at
-          ydata = Math.round((longLatTL[1]-dataz[j][1])/deltaLngLat[1]); //represents the y coordinate of the grid.  This represents which element in the ycell column we are referring to
+          xdata = Math.floor((dataz[j][2]-longLatTL[0])/deltaLngLat[0]); //represents the x coordinate of the grid.  This represents which ycell column we are looking at
+          ydata = Math.floor((longLatTL[1]-dataz[j][1])/deltaLngLat[1]); //represents the y coordinate of the grid.  This represents which element in the ycell column we are referring to
           pointWeight = dataz[j][3];//This is the weight of the point we are looking at
 
           if(xdata<42 && xdata>=0 && ydata<36 && ydata>=0){
@@ -1328,75 +1285,6 @@ removeEventHandlers();
             return calculatedArray;
           }
 
-
-          function crimeCluster(dataz){
-
-          	var calculatedArray = [];
-
-
-          	var xmin=SantaMonicaCoordinates.xmin;
-          	var xmax=SantaMonicaCoordinates.xmax;
-          	var ymax=SantaMonicaCoordinates.ymax;
-          	var ymin=SantaMonicaCoordinates.ymin;
-
-          	var xcells = Math.ceil((xmax-xmin)/SantaMonicaCoordinates.blockWidthXY); //defines how many 300' sections in x direction
-
-          	var ycells = Math.ceil((ymax-ymin)/SantaMonicaCoordinates.blockWidthXY); //defines how many 300' sections in y direction
-
-          	var longLatTL = webMercatorUtils.xyToLngLat(xmin, ymax, true); //converts the top left xy coordinate into longitude and latitude
-
-          	var longLatRB = webMercatorUtils.xyToLngLat(xmax, ymin, true); //converts the right bottom xy coordinate into longitude and latitude
-
-          	var pointDistance;
-          	var pointWeight;
-
-          	var minValue;
-          	var cellLong;
-          	var cellLat;
-          	var wval;
-          	var testSpatialWeight = [];
-
-          	//This reflects how far the center of each cell is from eachother, in terms of [longitude, latitude]. This is approximate since earth is round
-
-          	var deltaLngLat = [(-longLatTL[0]+longLatRB[0])/xcells,(-longLatRB[1]+longLatTL[1])/ycells];
-
-          	for(var i = 0; i < xcells; i++){
-          		calculatedArray.push([0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]);//had problems getting array not to point to same object, just added 0's so that I knew for sure they wouldn't be pointing at the same array;
-          	}
-
-          	//console.log(calculatedArray);
-
-
-          	for(var i = 0; i < xcells; i++){
-          		cellLong = i * deltaLngLat[0] + .5 * deltaLngLat[0];
-          		for(var k = 0; k < ycells; k++){
-          			cellLat = k * deltaLngLat[1] + .5 * deltaLngLat[1];
-          			for(var j = 0; j < 1/*dataz.length*/; j++){
-          				pointDistance = Math.pow(Math.pow((cellLong-dataz[j][2]),2)+Math.pow((cellLat-dataz[j][1]),2),.5);
-          				calculatedArray[i][k] += dataz[j][3]/pointDistance;
-          			}
-          			if(i==0 & k==0){
-          				minValue = calculatedArray[0][0];
-          			}
-          			if(calculatedArray[i][k]<minValue){
-          				minValue = calculatedArray[i][k];
-          				//console.log(minValue);
-          			}
-          		}
-          	}
-
-          	for(var i = 0; i < xcells; i++){
-          		for(var k = 0; k < ycells; k++){
-          			calculatedArray[i][k] -= minValue;
-          		}
-          	}
-
-
-
-          	//console.log(calculatedArray);
-
-          	return calculatedArray;
-          }
 
 
 
@@ -1447,6 +1335,269 @@ removeEventHandlers();
             //}
           }
         }
+
+/////Added 8/27/16
+        function mapPoints(pointLocations){
+          //logic tester to see if already been called? tbd
+
+
+          for (var i = 0; i < pointLocations.length; i ++) { //The 4 depends on the array coming in, may need to changed depending on how many metadata columns we add
+            var long = pointLocations[i][2];
+            var lat = pointLocations[i][1];
+            var weight = pointLocations[i][3];//probably just going to be used as 1 for this purpose
+
+            addDataPoint(long, lat, weight);
+
+          }
+        }
+
+        function TLandBR() {
+
+          var normalDataPoint = new esri.symbol.PictureMarkerSymbol();
+          normalDataPoint.setOffset(0, 0);
+          normalDataPoint.setAngle(230);
+          normalDataPoint.setHeight(10);
+          normalDataPoint.setWidth(10);
+          normalDataPoint.setUrl("/images/redDot.png");
+
+          var plotPoint1 = new esri.Graphic(new esri.geometry.Point([-118.51618659213699, 34.04798141125096]),normalDataPoint);
+
+          var plotPoint2 = new esri.Graphic(new esri.geometry.Point([-118.44683539584804, 33.997900513919994]),normalDataPoint);
+
+
+          filteredPoints.push(map.graphics.add(plotPoint1));
+          filteredPoints.push(map.graphics.add(plotPoint2));
+
+        }
+
+        function addDataPoint(longitude, latitude, weight) {
+          
+          var normalDataPoint = new esri.symbol.PictureMarkerSymbol();
+          normalDataPoint.setOffset(0, 0);
+          normalDataPoint.setAngle(230);
+          normalDataPoint.setHeight(10);
+          normalDataPoint.setWidth(10);
+          normalDataPoint.setUrl("/images/blackDot.png");
+
+          var center = new esri.geometry.Point([longitude, latitude]);
+
+          var plotPoint = new esri.Graphic(center,normalDataPoint);
+
+
+          filteredPoints.push(map.graphics.add(plotPoint));
+        }
+
+        function footTrafficCalculator (dataz) {
+
+        var calculatedArray = [];
+
+        var xmin=SantaMonicaCoordinates.xmin;
+        var xmax=SantaMonicaCoordinates.xmax;
+        var ymax=SantaMonicaCoordinates.ymax;
+        var ymin=SantaMonicaCoordinates.ymin;
+
+        var desiredBlockSize = 1200;
+        var blockSizeFactor = 300/desiredBlockSize;
+
+        var xcells = Math.ceil(blockSizeFactor*(xmax-xmin)/SantaMonicaCoordinates.blockWidthXY); //defines how many 600' sections in x direction
+        var ycells = Math.ceil(blockSizeFactor*(ymax-ymin)/SantaMonicaCoordinates.blockWidthXY); //defines how many 600' sections in y direction
+
+        var longLatTL = webMercatorUtils.xyToLngLat(xmin, ymax, true); //converts the top left xy coordinate into longitude and latitude
+        var longLatRB = webMercatorUtils.xyToLngLat(xmax, ymin, true); //converts the right bottom xy coordinate into longitude and latitude
+
+
+        var xdata;
+        var ydata;
+        var pointWeight;
+        var weightCollection=[];
+
+        var xval;
+        var yval;
+        var wval;
+
+
+        //This reflects how far the center of each cell is from eachother, in terms of [longitude, latitude]. This is approximate since earth is round
+        var deltaLngLat = [(-longLatTL[0]+longLatRB[0])/xcells,(-longLatRB[1]+longLatTL[1])/ycells];
+
+        for(var i = 0; i < xcells; i++){
+          calculatedArray[i]=[];//sets the stage for a new column
+          for(var m = 0; m < ycells; m++){
+            calculatedArray[i].push(0);//adds the indicated number of rows in each column
+          }
+        }
+
+        for(var j = 0; j < dataz.length; j++){ //this calculates each of the xcell/ycell combos that are going to get a point added.
+          xdata = Math.floor((dataz[j][2]-longLatTL[0])/deltaLngLat[0]); //represents the x coordinate of the grid.  This represents which ycell column we are looking at
+          ydata = Math.floor((longLatTL[1]-dataz[j][1])/deltaLngLat[1]); //represents the y coordinate of the grid.  This represents which element in the ycell column we are referring to
+          pointWeight = dataz[j][3];//This is the weight of the point we are looking at
+
+          if(xdata<xcells && xdata>=0 && ydata<ycells && ydata>=0){
+            weightCollection.push([xdata,ydata,pointWeight]);//sets up an array that designates which cell the severity weight (included as well) will be added to, while making sure it fits in the extents of the calculated array
+          }
+      }
+
+      var maxValue = 0
+          for(var m = 0; m < weightCollection.length; m++) {
+            xval = weightCollection[m][0];
+            yval = weightCollection[m][1];
+            wval = weightCollection[m][2];
+            calculatedArray[xval][yval] += wval;//If you want to just count the dataPoints in the area, change wval to 1;
+            if(calculatedArray[xval][yval]>maxValue){
+              maxValue = calculatedArray[xval][yval];
+            }
+          }
+
+
+
+            return calculatedArray;
+          }
+
+          function adjustableMapIndices(array) {
+            var xmin;
+            var ymax;
+            var max = 0;
+            for(var i = 0; i < array.length; i++){
+              for(var j = 0; j < array[i].length; j++){
+                if(array[i][j]>max){
+                  max = array[i][j];
+
+                }
+              }
+            }
+            for(var i = 0; i < array.length; i = i+1){
+              for(var j = 0; j < array[i].length; j=j+1){
+                xmin = SantaMonicaCoordinates.longmin + i * 4* 0.001651218959260686;
+                ymax = SantaMonicaCoordinates.latmax - j * 4* 0.0013911360369712373;
+                customSquareBarrier(xmin,ymax,max,array[i][j]);
+              }
+            }
+          }
+
+          function customSquareBarrier (long, lat,max,value) {
+
+            var op = value/max;
+            xmin = long;
+            ymax = lat;
+
+            var polygonPopulationSymbol = new esri.symbol.SimpleFillSymbol();
+
+            polygonPopulationSymbol.setColor(new Color([0,0,0,op]));
+            //polygonPopulationSymbol.setOutline(new SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new Color([0,0,0,op]), 2));
+
+            var TLpoint = new esri.geometry.Point([xmin, ymax]);
+
+            var ring = []; // points that make up the square
+
+            ring.push([TLpoint.x, TLpoint.y]);
+            ring.push([TLpoint.x + 4* 0.001651218959260686, TLpoint.y]);
+            ring.push([TLpoint.x + 4* 0.001651218959260686, TLpoint.y-4*0.0013911360369712373]);
+            ring.push([TLpoint.x, TLpoint.y-4*0.0013911360369712373]);
+
+            ring.push(ring[0]); // start point needs to == end point
+            var square = new esri.geometry.Polygon(ring);
+            var polygonbarrier = new esri.Graphic(square,polygonPopulationSymbol);
+            footTrafficSquares.push(map.graphics.add(polygonbarrier));
+          
+        }
+
+        function crimeNormalizer (crimeArray, ftArray){
+
+          var normalizedArray = [];
+          for(var i = 0; i < crimeArray.length; i++){
+          normalizedArray[i]=[];//sets the stage for a new column
+          for(var m = 0; m < crimeArray[i].length; m++){
+            normalizedArray[i].push(0);//adds the indicated number of rows in each column
+          }
+        }
+          for(var i = 0; i < crimeArray.length; i++){
+            var k = Math.floor(i/4);
+            for(var j = 0; j < crimeArray[i].length; j++){
+              var l = Math.floor(j/4);
+              if(crimeArray[i][j]>0 && ftArray[k][l]>0){
+                  normalizedArray[i][j] = crimeArray[i][j]/ftArray[k][l];
+              }
+            }
+          }
+
+          return normalizedArray;
+        }
+
+
+        function mapNormalizedIndices(array) {
+          var xmin;
+          var ymax;
+          var max = 0;
+          for(var i = 0; i < array.length; i++){
+            for(var j = 0; j < array[i].length; j++){
+              if(array[i][j]>max){
+                max = array[i][j];
+              }
+            }
+          }
+
+
+          for(var i = 0; i < array.length; i = i+1){
+            for(var j = 0; j < array[i].length; j=j+1){
+              xmin = -118.51618659213699 + i * 0.001651218959260686;
+              ymax = 34.047981411250944 - j * 0.0013911360369712373;
+              if(array[i][j]>0) {
+              console.log(i,j,array[i][j]);
+            }
+              addFilteredSquareGrid(xmin,ymax,max,array[i][j]);
+            }
+          }
+        }
+
+        function addFilteredSquareGrid (long, lat,max,value) {
+
+            var op = value/max;
+            xmin = long;
+            ymax = lat;
+
+            var polygonGridSymbol = new esri.symbol.SimpleFillSymbol();
+
+            polygonGridSymbol.setColor(new Color([0,150,0,op]));
+            polygonGridSymbol.setOutline(new SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new Color([0,150,0,op]), 2));
+
+            var TLpoint = new esri.geometry.Point([xmin, ymax]);
+
+            var ring = []; // points that make up the square
+
+            ring.push([TLpoint.x, TLpoint.y]);
+            ring.push([TLpoint.x + 0.001651218959260686, TLpoint.y]);
+            ring.push([TLpoint.x + 0.001651218959260686, TLpoint.y-0.0013911360369712373]);
+            ring.push([TLpoint.x, TLpoint.y-0.0013911360369712373]);
+
+            ring.push(ring[0]); // start point needs to == end point
+            var square = new esri.geometry.Polygon(ring);
+            normalizedArrayGraphics.push(map.graphics.add(new esri.Graphic(square,polygonGridSymbol)));
+          
+        }
+
+        function mapAllIndices(array) {
+          var xmin;
+          var ymax;
+          var maxNormalizer;//Used to take the xth largest value, as normalizer, not largest
+          var organizer = [];
+          for(var i = 0; i < array.length; i++){
+            for(var j = 0; j < array[i].length; j++){
+              organizer.push(array[i][j]);
+            }
+          }
+          maxNormalizer = organizer.sort(function(a,b){return a-b})[organizer.length-5];//This is to avoid one anomaly from affecting the entire set. The whole anonymous function is because sorting with decimals is difficult otherwise;
+          //console.log(maxNormalizer);
+
+
+          for(var i = 0; i < array.length; i = i+1){
+            for(var j = 0; j < array[i].length; j=j+1){
+              xmin = SantaMonicaCoordinates.longmin + i * 0.001651218959260686;
+              ymax = SantaMonicaCoordinates.latmax - j * 0.0013911360369712373;
+              addSquareBarrier(xmin,ymax,maxNormalizer,array[i][j]);
+            }
+          }
+        }
+
+
       });
     </script>
 
