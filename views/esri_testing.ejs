@@ -11,7 +11,6 @@
   <link rel="stylesheet" href="https://js.arcgis.com/3.17/dijit/themes/claro/claro.css">
   <link rel="stylesheet" href="https://js.arcgis.com/3.17/esri/css/esri.css">
 
-
   <script type="text/javascript">
     var dojoConfig = {
       parseOnLoad: true
@@ -24,13 +23,6 @@
   <script src="javascripts/what-input.js"></script>
 
   <script>
-        var chosenRoute;
-        var sRouteWB;
-        var normalRoute;
-        var bypassRoute;
-        var chosenRouteDirections;
-        var normalRouteDirections;
-        var bypassRouteDirections;
     require( [
       "esri/urlUtils",
       "esri/config",
@@ -84,11 +76,9 @@
         var sortedData;
         var plotCount = 0;
         var routeResults;
-        var formatedData;
         var crimeArray = [];
         var globalxydata;
         var severityAll = [];
-        var densityArray;
         var weightedSpatialArray;
         var phoneNumber;
         var businessLocations;
@@ -99,7 +89,14 @@
         var densityGridOn = true;
         var routeCheckerStop;
         var barrierVisibility = false;
-        //The Directions are going to be located as an array at chosenRoute.directions[0].features
+        var formatedData;
+        var densityArray;
+        var sRouteWB;
+        var normalRoute;
+        var bypassRoute;
+        var chosenRouteDirections;
+        var normalRouteDirections;
+        var bypassRouteDirections;
 
         var myLocationAddress;
         var whichStopAddressInput;
@@ -145,7 +142,6 @@
           }
         }
 
-
         ready(function() {
 
           xhr.get("cached_danger_influences.csv", { //uploading csv data
@@ -162,6 +158,7 @@
           }).then(function(data) {
 
             businessLocations = formatBusinesses(data.split(","));
+
             //mapPoints(businessLocations); //mapped each individual point that was in this array
             footTrafficArray = footTrafficCalculator(businessLocations);
             //adjustableMapIndices(footTrafficArray); //gridded out array of foottraffic estimate
@@ -169,6 +166,7 @@
             normalizedArray = crimeNormalizer(densityArray, footTrafficArray);
             mapAllIndices(normalizedArray);
           });
+
           });
 
 
@@ -176,8 +174,12 @@
           $("#directionsButton").click( function () {
             if ($('#directionsDisplay').text().length != 0 ) {
               $('#directionsDisplay').empty();
+              $('#directionsButton').addClass("directionsButtonUnselected");
+              $('#directionsButton').removeClass("directionsButtonSelected");
             }
             else {
+              $('#directionsButton').addClass("directionsButtonSelected");
+              $('#directionsButton').removeClass("directionsButtonUnselected");
               var border_style = "";
               for(var i = 1 ; i < chosenRouteDirections[0].features.length; i++)
               {
@@ -192,6 +194,7 @@
 
                 $("#directionsDisplay").append("<div class='row'" + border_style + "><div class='large-12 columns dynamicDirectionsRow'>" + chosenRouteDirections[0].features[i].attributes.text + "</div></div>");
               };
+              $("#directionsDisplay").append("<div style='clear:both;'></div>");
             }
           });
 
@@ -209,7 +212,6 @@
 
               $("#BypassRoute").css('display',"none");
               $("#NormalRoute").css('display',"none");
-
 
             } else{
               clearStops();
@@ -250,14 +252,11 @@
             }
           });
 
-
          $('#destinationAddress').keyup(function(){
             if($('#startAddress').val() && $('#destinationAddress').val()){
               $('#solveRoute').css('display',"inline");
             }
           });
-
-
 
           $('#cancel').click(function() {
             removeEventHandlers();
@@ -267,7 +266,6 @@
             addMyLocationDot();
           });
 
-
           $("#clearRoutesBtn").click( function () {
             clearStops();
             clearBarriers();
@@ -276,32 +274,23 @@
             $('#destinationAddress').val("");
             $('#solveRoute').css("display","none");
             barrierVisibility = false;
+
             mapAllIndices(normalizedArray);
+
 
           });
 
           $("#bufferzone").click( function () {
             showBufferZones(sortedData);
           });
-          $("#icons").click( function () {
-            console.log(map);
-          });
+
           $("#BypassRoute").click(function () {
             chooseBypass();
             console.log(routes.length);
           });
+
           $("#NormalRoute").click( function () {
             chooseNormal();
-          });
-
-
-
-
-          $("#routeNameForm").click( function() {
-            sortedData = filterBySeverity(globalvariable);
-            if($("#bufferzone").is(':checked')) {
-              showBufferZones(sortedData);
-            }
           });
 
 
@@ -309,7 +298,6 @@
           $("#mapCrimeIndex").click( function () {
             mapIndex();
           });
-
 
           $("#DensityGrid").click( function () {
             barrierVisibility = !barrierVisibility;
@@ -437,12 +425,10 @@ function formatGlobal(dataz) {
     rowData = [0,0,0,0];
   }
 
-
   return formatedglobal;
 }
 
 function formatBusinesses(dataz) {
-
 	var formattedBusinessArray = [];
 	var rowData = new Array(4);
 
@@ -458,7 +444,6 @@ function formatBusinesses(dataz) {
 
   //console.log(formattedBusinessArray);
   return formattedBusinessArray;
-
 }
 
 var authdata = {client_id: '9gdUoBaoDjP5INej', client_secret: 'd2368d00106f46ec9e6d5bd9b069704a', grant_type: 'client_credentials', expiration: '1440'}
@@ -483,7 +468,6 @@ $.ajax({
     var tokenParameters = {expires: (Date.now() + 86400).toString(),server:'https://route.arcgis.com/arcgis/rest/services/World/Route/NAServer/Route_World', ssl:true, token:tokenObject.access_token, userId:authdata.client_id};
 
     esriId.registerToken(tokenParameters);
-
   },
 
   error: function (xhr, textStatus, errorThrown) {
@@ -670,13 +654,7 @@ removeEventHandlers();
 
             removeEventHandlers();
           });
-
         }
-
-
-
-
-
 
 
         function addStops() {
@@ -819,17 +797,17 @@ removeEventHandlers();
             map.graphics.remove(myLocation.splice(0, 1)[0]);
         }
 
+
         function addSquareBarrier(long, lat,max,value) {
           //op as opacity, radius as radius
 
           var op = value/max;
+
           var impedance = op*10;
           var outlineop;
 
           xmin = long;
           ymax = lat;
-
-
 
           //Change square outline
 
@@ -872,12 +850,7 @@ removeEventHandlers();
           }else {
             irreleventBarriers.push(map.graphics.add(polygonbarrier));
           }
-
-
         }
-
-
-
 
        //Load-in barrier circle(polygon)
        function addCircleBarrier1(long, lat, severity) {
@@ -970,10 +943,6 @@ removeEventHandlers();
             );
 
           plotCount++;
-
-
-
-
         }
         //Remove all circle(polygon) barriers
         function clearCircleBarrier() {
@@ -1034,13 +1003,7 @@ removeEventHandlers();
 
           polygonBarriersURL= "polygonBarriers=" + polygonBarriersURL;
 
-
-
           var finalSynchronousBarriersURL = 'http://route.arcgis.com/arcgis/rest/services/World/Route/NAServer/Route_World/solve?'+walkModeUrl+'token='+globalToken+'&stops='+stops[0][0]+','+stops[0][1]+';'+stops[1][0]+','+stops[1][1]+"&"+ polygonBarriersURL+'&f=json&returnPolygonBarriers=true';
-
-          //console.log(finalSynchronousBarriersURL);
-
-
 
           $.ajax({
             type: 'POST',
@@ -1050,15 +1013,12 @@ removeEventHandlers();
             success: function (results, textStatus, xhr) {
               sRouteWB = JSON.parse(results);
               bypassRouteDirections = JSON.parse(results).directions;
-              //console.log(sRouteWB);
-
               bypassRoute = new esri.geometry.Polyline(sRouteWB.routes.features[0].geometry.paths[0]);
               routes.push(map.graphics.add(new esri.Graphic(bypassRoute,routeSymbols["Route 2"])));
 
               //console.log(sRouteWB.directions[0].features,sRoute.directions[0].features)
               $("#BypassRoute").css('display',"inline");
               $("#NormalRoute").css('display',"inline");
-              chosenRoute = sRouteWB;
               chosenRouteDirections = sRouteWB.directions;
               $("#solveRoute").val('Go!');
 
@@ -1072,7 +1032,6 @@ removeEventHandlers();
               }
 
               console.log("The Bypass route is " + sRouteWB.directions[0].summary.totalLength.toFixed(2) + " miles, adding " + (sRouteWB.directions[0].summary.totalLength - sRoute.directions[0].summary.totalLength).toFixed(2) + " miles or " + ((sRouteWB.directions[0].summary.totalLength - sRoute.directions[0].summary.totalLength)*60/3.1).toFixed(0) + " "+ pluralityMinutes + " to your trip.");
-
             },
             error: function (xhr, textStatus, errorThrown) {
               console.log("test failed");
@@ -1094,6 +1053,7 @@ removeEventHandlers();
 
         function chooseNormal(){
           clearRoutes();
+
           routes.push(map.graphics.add(new esri.Graphic(bypassRoute,routeSymbols["Route 1"])));
           routes.push(map.graphics.add(new esri.Graphic(normalRoute,routeSymbols["Route 2"])));
           chosenRouteDirections = normalRouteDirections;
@@ -1104,8 +1064,6 @@ removeEventHandlers();
           //console.log("without Barriers called");
 
           var stops = [[routeStops[0].geometry.x,routeStops[0].geometry.y],[routeStops[1].geometry.x,routeStops[1].geometry.y]];
-
-
 
           $.ajax({
             type: 'POST',
@@ -1132,16 +1090,7 @@ removeEventHandlers();
             }
           });
 
-
-
-
         }
-
-
-
-
-
-
 
         //Solves the routes. Any errors will trigger the errorHandler function.
         function solveRoute() {
@@ -1149,7 +1098,6 @@ removeEventHandlers();
             //console.log(routeStops);
             syncRouteWOB(routeStops);
             syncRouteWB(routeStops);
-
 
             //routeTask.solve(routeParams);
         }
@@ -1160,7 +1108,6 @@ removeEventHandlers();
             map.graphics.remove(routes.splice(i, 1)[0]);
           }
         }
-
 
         //Draws the resulting routes on the map
         function showRoute(evt) {
@@ -1219,10 +1166,7 @@ removeEventHandlers();
          plotCount = 0;
        }
 
-
-
-
-          function dangerAlgorithm(dataz) {
+       function dangerAlgorithm(dataz) {
 
         var calculatedArray = [];
 
@@ -1279,12 +1223,8 @@ removeEventHandlers();
           		maxValue = calculatedArray[xval][yval];
           	}
           }
-
-
-
             return calculatedArray;
           }
-
 
 
 
@@ -1296,12 +1236,6 @@ removeEventHandlers();
             //console.log(crimeArray[xcell][ycell]);
             //console.log("The longitude is " + longLatEvt[0] + ",latitude is " + longLatEvt[1] );
           }
-
-
-
-
-
-
 
 
           function showIcons() {
@@ -1615,11 +1549,11 @@ removeEventHandlers();
     <div class="row">
       <div class="filter-directions-nav-bar large-12 columns">
 				<div class="row">
-					<div class="small-6 large-6 columns">
-            <button id='filterButton'><span>Filter</span></button>
+					<div id='filterButton' class="small-6 large-6 columns">
+            <span>Filter</span>
           </div>
-					<div class="small-6 large-6 columns">
-            <button id='directionsButton'><span>Directions</span></button>
+					<div id='directionsButton' class="small-6 large-6 columns directionsButtonUnselected">
+            <span>Directions</span>
           </div>
         </div>
       </div>
@@ -1634,7 +1568,7 @@ removeEventHandlers();
 						</div>
 					</div>
           <div class="row">
-						<div id="directionsDisplay" class="large-12 columns"></div>
+						<div id="directionsDisplay" style='overflow:hidden;' class="large-12 columns"></div>
           </div>
 					<div class="row">
 						<div class="large-12 columns">

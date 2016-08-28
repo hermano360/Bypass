@@ -23,6 +23,13 @@ h1 {
 .button:hover {
   background-color: #26A69A;
 }
+
+// remove the iphone bug where the input boxes are rounded
+input {
+  -webkit-border-radius: 0px;
+  -webkit-appearance: none;
+  border-radius: 0px;
+}
 /* zurb foundation overrides - END */
 
 /* only affects input tag placeholder color - BEGIN */
@@ -41,6 +48,13 @@ h1 {
   color: #FEFDFA;
 }
 /* only affects input tag placeholder color - END */
+
+input:focus,
+select:focus,
+textarea:focus,
+button:focus {
+    outline: none;
+}
 
 #BypassRoute > span {
   background:url('../images/curved_arrow_black.png') left center no-repeat;
@@ -150,7 +164,13 @@ h1 {
 }
 
 .filter-directions-nav-bar > .row > .columns:last-child {
-  padding-left: 6px;
+  padding-left: 10px;
+}
+
+#filterButton {
+  cursor:pointer;
+  padding-top:3px;
+  padding-bottom:2px;
 }
 
 #filterButton > span {
@@ -158,8 +178,33 @@ h1 {
   padding-left:30px;
 }
 
-#directionsButton > span {
-  background:url('../images/directions_selected.png') left center no-repeat;
+#directionsButton {
+  cursor:pointer;
+  padding-top:3px;
+  padding-bottom:2px;
+}
+
+.directionsButtonUnselected {
+  background-color: #FFFFFF;
+  color: #000000;
+}
+
+.directionsButtonUnselected > span {
+  background-image:url('../images/directions_unselected.png');
+  background-position: left center;
+  background-repeat: no-repeat;
+  padding-left:28px;
+}
+
+.directionsButtonSelected {
+  background-color: #8CD4CC;
+  color: #FFFFFF;
+}
+
+.directionsButtonSelected > span {
+  background-image:url('../images/directions_selected.png');
+  background-position: left center;
+  background-repeat: no-repeat;
   padding-left:28px;
 }
 
