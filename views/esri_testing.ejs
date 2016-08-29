@@ -116,11 +116,11 @@
           ymin:4028520.119932615,  //southern-most y-coordinate (corresponds to GPS)
           blockWidthXY: 187.02, //This is what correponds most closely to about 300' in terms of xy coordinates
           latmax:  webMercatorUtils.xyToLngLat(-13193161.542197285, 4035246.5784217017, true)[1],
-          longmin: webMercatorUtils.xyToLngLat(-13193161.542197285, 4035246.5784217017, true)[0], 
+          longmin: webMercatorUtils.xyToLngLat(-13193161.542197285, 4035246.5784217017, true)[0],
 
           latmin:  webMercatorUtils.xyToLngLat(-13185441.402340494, 4028520.119932615, true)[1],
           longmax: webMercatorUtils.xyToLngLat(-13185441.402340494, 4028520.119932615, true)[0]
-          
+
         }
 
         //  urlUtils.addProxyRule({
@@ -203,9 +203,9 @@
           });
 
           $("#solveRoute").click( function(){
-            if($('#solveRoute').val()==="Go!"){
+            if($('#solveRoute').text()==="Go!"){
               $('#solveRoute').css("display","none");
-              $('#solveRoute').val("Solve!");
+              $('#solveRoute').text("Solve!");
               if(routes.length > 1){
                 map.graphics.remove(routes.shift());
               }
@@ -258,10 +258,6 @@
             }
           });
 
-          $('#cancel').click(function() {
-            removeEventHandlers();
-          });
-
           $('#myLocation').click(function() {
             addMyLocationDot();
           });
@@ -286,14 +282,20 @@
 
           $("#BypassRoute").click(function () {
             chooseBypass();
+            $("#BypassRoute").addClass("BypassRouteSelected");
+            $("#BypassRoute").removeClass("BypassRouteUnselected");
+            $("#NormalRoute").removeClass("NormalRouteSelected");
+            $("#NormalRoute").addClass("NormalRouteUnselected");
             console.log(routes.length);
           });
 
           $("#NormalRoute").click( function () {
             chooseNormal();
+            $("#NormalRoute").removeClass("NormalRouteUnselected");
+            $("#NormalRoute").addClass("NormalRouteSelected");
+            $("#BypassRoute").addClass("BypassRouteUnselected");
+            $("#BypassRoute").removeClass("BypassRouteSelected");
           });
-
-
 
           $("#mapCrimeIndex").click( function () {
             mapIndex();
@@ -540,7 +542,7 @@ routeParams.outSpatialReference = {"wkid":102100};
         function inputAddress(){
           clearRoutes();
           $('#solveRoute').css("display","none");
-          $('#solveRoute').val("Solve!");
+          $('#solveRoute').text("Solve!");
          navigator.geolocation.getCurrentPosition(function(position){
               long = position.coords.longitude;
               lat = position.coords.latitude;
@@ -585,7 +587,7 @@ routeParams.outSpatialReference = {"wkid":102100};
         function addStartStop(){
           removeEventHandlers();
           $('#solveRoute').css("display","none");
-          $('#solveRoute').val("Solve!");
+          $('#solveRoute').text("Solve!");
 
           $("#myLocation").on('click', inputAddress);
           mapOnClick_addStops_connect = map.on("click", function(evt){
@@ -622,7 +624,7 @@ removeEventHandlers();
 
         function addDestinationStop(){
           $('#solveRoute').css("display","none");
-          $('#solveRoute').val("Solve!");
+          $('#solveRoute').text("Solve!");
           removeEventHandlers();
           $("#myLocation").on('click', inputAddress);
           mapOnClick_addStops_connect = map.on("click", function(evt){
@@ -979,7 +981,7 @@ removeEventHandlers();
 
         function syncRouteWB(routeStops) { //With Barriers
 
-          
+
 
           var stops = [[routeStops[0].geometry.x,routeStops[0].geometry.y],[routeStops[1].geometry.x,routeStops[1].geometry.y]];
 
@@ -1020,7 +1022,7 @@ removeEventHandlers();
               $("#BypassRoute").css('display',"inline");
               $("#NormalRoute").css('display',"inline");
               chosenRouteDirections = sRouteWB.directions;
-              $("#solveRoute").val('Go!');
+              $("#solveRoute").text('Go!');
 
               for(var i = 0 ; i < sRouteWB.directions[0].features.length; i++)
               {
@@ -1072,7 +1074,7 @@ removeEventHandlers();
             success: function (results, textStatus, xhr) {
               sRoute = JSON.parse(results);
               normalRouteDirections = JSON.parse(results).directions;
-              
+
               normalRoute = new esri.geometry.Polyline(sRoute.routes.features[0].geometry.paths[0]);
               routes.push(map.graphics.add(new esri.Graphic(normalRoute,routeSymbols["Route 1"])));
 
@@ -1305,7 +1307,7 @@ removeEventHandlers();
         }
 
         function addDataPoint(longitude, latitude, weight) {
-          
+
           var normalDataPoint = new esri.symbol.PictureMarkerSymbol();
           normalDataPoint.setOffset(0, 0);
           normalDataPoint.setAngle(230);
@@ -1431,7 +1433,7 @@ removeEventHandlers();
             var square = new esri.geometry.Polygon(ring);
             var polygonbarrier = new esri.Graphic(square,polygonPopulationSymbol);
             footTrafficSquares.push(map.graphics.add(polygonbarrier));
-          
+
         }
 
         function crimeNormalizer (crimeArray, ftArray){
@@ -1505,7 +1507,7 @@ removeEventHandlers();
             ring.push(ring[0]); // start point needs to == end point
             var square = new esri.geometry.Polygon(ring);
             normalizedArrayGraphics.push(map.graphics.add(new esri.Graphic(square,polygonGridSymbol)));
-          
+
         }
 
         function mapAllIndices(array) {
@@ -1580,7 +1582,11 @@ removeEventHandlers();
       </div>
     </div>
 
-    <input type="button" style='position:absolute; right:0; top:150px; z-index:10; display:none;' class='button radius' value="Solve!" id="solveRoute">
+    <div class="row">
+      <div id="solveRoute" class="directions-nav-bar large-12 columns" style='display:none;'>
+        Solve!
+      </div>
+    </div>
 
     <div class="row">
       <div id='map_row' class="large-12 columns">
@@ -1594,10 +1600,9 @@ removeEventHandlers();
     </div>
 
     <div class='bottomRightNav'>
-      <button class='button radius' id="BypassRoute" style="display:none;"><span>Bypass</span></button>
-      <button class='button radius' id="NormalRoute" style="display:none;"><span>Normal</span></button>
-      <button class='button radius' id="cancel">Cancel</button>
       <a class='button radius' id="myLocation"><img src='../images/crosshair.png'></img></a>
+      <button class='button radius BypassRouteUnselected' id="BypassRoute" style="display:none;"><span>Bypass</span></button>
+      <button class='button radius BypassRouteUnselected' id="NormalRoute" style="display:none;"><span>Normal</span></button>
       <div id="GPSdiv" style="display:none;"></div>
     </div>
 

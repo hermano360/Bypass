@@ -20,11 +20,11 @@ h1 {
   transition:none;
 }
 
-.button:hover {
+.button:hover, .button:focus {
   background-color: #26A69A;
+  color: #FFFFFF;
 }
-
-// remove the iphone bug where the input boxes are rounded
+/* remove the iphone bug where the input boxes are rounded */
 input {
   -webkit-border-radius: 0px;
   -webkit-appearance: none;
@@ -53,28 +53,53 @@ input:focus,
 select:focus,
 textarea:focus,
 button:focus {
-    outline: none;
+  outline: none;
 }
 
-#BypassRoute > span {
+.BypassRouteSelected {
+  background-color: #26A69A;
+  color: #FFFFFF;
+}
+
+#BypassRoute:hover > span,
+.BypassRouteSelected > span {
+  background:url('../images/curved_arrow_white.png') left center no-repeat;
+  padding-left:21px;
+}
+
+.BypassRouteUnselected {
+  background-color: #FFFFFF;
+  color: #000000;
+}
+
+.BypassRouteUnselected > span {
   background:url('../images/curved_arrow_black.png') left center no-repeat;
   padding-left:21px;
 }
 
-#BypassRoute:hover > span {
-  background:url('../images/curved_arrow_white.png') left center no-repeat;
+.NormalRouteSelected {
+  background-color: #26A69A;
+  color: #FFFFFF;
 }
 
-#NormalRoute > span {
-  background:url('../images/curved_arrow_black.png') left center no-repeat;
+#NormalRoute:hover > span,
+.NormalRouteSelected > span {
+  background:url('../images/curved_arrow_white.png') left center no-repeat;
   padding-left:21px;
 }
 
-#NormalRoute:hover > span {
-  background:url('../images/curved_arrow_white.png') left center no-repeat;
+.NormalRouteUnselected {
+  background-color: #FFFFFF;
+  color: #000000;
+}
+
+.NormalRouteUnselected > span {
+  background:url('../images/curved_arrow_black.png') left center no-repeat;
+  padding-left:21px;
 }
 
 #myLocation {
+  margin-left:32px;
   padding:0;
 }
 
@@ -212,6 +237,15 @@ button:focus {
   float:left;
   width:33%;
   text-align:center;
+}
+
+#solveRoute {
+  cursor:pointer;
+  text-align: center;
+  font-weight: bold;
+  padding-top:4px;
+  padding-bottom:4px;
+  border-bottom: 1px solid #BBBBBB;
 }
 
 #routeNameForm {
