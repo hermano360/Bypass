@@ -56,6 +56,12 @@ button:focus {
   outline: none;
 }
 
+#resetBtn {
+  position:absolute;
+  left: 20px;
+  bottom: 4px;
+}
+
 .BypassRouteSelected {
   background-color: #26A69A;
   color: #FFFFFF;
@@ -99,19 +105,19 @@ button:focus {
 }
 
 #myLocation {
-  margin-left:32px;
+  margin-left:58px;
   padding:0;
 }
 
 .bottomRightNav {
-  right: 30px;
-  bottom: 10px;
+  right: 20px;
+  bottom: 2px;
   position: absolute;
-  width:80px;
+  width:102px;
 }
 
 .bottomRightNav > button {
-  margin-bottom: 10px;
+  margin-bottom: 18px;
 }
 
 #startAddress.directions-textbox {
