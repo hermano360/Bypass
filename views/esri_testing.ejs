@@ -169,8 +169,7 @@
           }).then(function(data) {
 
             allLocations = formatCompleteDataset(data.replace(/\n/g, "," ).split(","));
-            var none;
-            plotFilteredData("RawData",{crime: ["Assault","Burglary"],pointsOfInterest: ["Wifi Location","Sex Offender"],business: ["School","Retail"]},"Last Month");
+            //plotFilteredData("RawData",{crime: ["Assault","Burglary"],pointsOfInterest: ["Wifi Location","Sex Offender"],business: ["School"]},"Last Year");
           });
 //////8/28
 
@@ -200,6 +199,33 @@
               $("#directionsDisplay").append("<div style='clear:both;'></div>");
             }
           });
+
+//8/28
+          $("#filterButton").click( function(){
+            //address bars hide temporarily
+            //mapFormat, DataSet, TimeFrame appear
+          });
+
+          $("#mapFormatButton").click( function() {
+            //drop down menu of the 3 map options: grid, raw data, heatmap(hopefully)
+              //At this point, each of the options, if clicked, would have its own event
+                //grid: This is the only option needed
+                  //plotFilteredData called with only this one needed, rest left blank
+                //rawdata: this option is stored, to be used once other fields filed
+                //heatmap: this option is stored, to be used once other fields filed
+            //if you click again, the 3 map options go away
+          });
+
+          $("#dataSetButton").click( function() {
+            //drop down menu starts with 3 options, Crime, Points of Interest, Business.  You can select more than one, they would probably change color to indicate you chose them, or maybe just a checkmark
+            //By clicking on each of the options, the respective categories shows up.  Clicking on Crime is going to display all 11 crime categories.  If you click on a different dataset, only the selected ones stay from the previous dataset.
+          });
+
+          $("#TimeFrameButton").click( function() {
+            //drop down menu starts with 4 options: Last Day, Last Week, Last Month, Last Year.  //We discussed that last year would be the default
+            //once this button is selected, or the timeFrameButton is clicked again, the parameters are set and the plotFilteredData is called, using the data provided.
+          });
+///8/28
 
           $("#addStopsBtn").click( function () {
             addStops();
@@ -1545,7 +1571,7 @@ removeEventHandlers();
 
 
 
-          var addresses = [""];//put addresses here
+          var addresses = ["3005 MAIN STREET SANTA MONICA","816 PACIFIC SANTA MONICA", "828 5TH SANTA MONICA","417 16TH ST SANTA MONICA","301 MARINE SANTA MONICA","713 9TH ST SANTA MONICA","1530 7TH ST SANTA MONICA","1427 9TH ST SANTA MONICA","1824 17TH SANTA MONICA","465 HILLSIDE LN SANTA MONICA","929 4TH ST APT D SANTA MONICA","1748 11TH SANTA MONICA","2315 KANSAS SANTA MONICA","1833 19TH STREET SANTA MONICA","1914 18TH STREET SANTA MONICA","848 6TH ST SANTA MONICA","1507 11 ST SANTA MONICA","2512 16TH ST SANTA MONICA","1547 EUCLID ST SANTA MONICA","1817 16TH ST SANTA MONICA","1842 22ND ST SANTA MONICA","828 WILSON PL SANTA MONICA","1128 7TH STREET SANTA MONICA","1427 YALE ST SANTA MONICA"];//put addresses here
           var givenAddress;
           console.log(addresses.length);
 
@@ -1599,6 +1625,7 @@ removeEventHandlers();
 //////////////////////// 8/28/2016
         function plotFilteredData(mapFormat, dataSet, timeFrame) {
 
+          //console.log(allLocations[4][5]);
           
           //I envision the dataSet parameter being a an array like dataSet = {crime: ["w/e","w/e"],pointsOfInterest: ["w/e","w/e"],business: ["w/e","w/e"]};
 
@@ -1638,6 +1665,7 @@ removeEventHandlers();
 
 
           var finalDataSet = [];
+          var timeFiltered = [];
           var categoryChoice = [];
           for (categories in dataSet){
             for (var i = 0; i < dataSet[categories].length; i++){
@@ -1651,22 +1679,65 @@ removeEventHandlers();
           //Go through and cycle through the dataset to get the rows that are required
           if(mapFormat == "CautionGrid"){
             densityGridOn = true;
+            barrierVisibility = true;
             resetBarriers();
             //If order to remove barriers on changing changing screen, add densityGridOn = false; resetBarriers(); to the "directions" on.click event.
           } else{
 
             densityGridOn = false;
+            barrierVisibility = false;
             resetBarriers();
             //In case the user clicked on the CautionGrid intially, this makes sure it clears it out for the rest of the views
+
             
               //Query based on the "Category" column, may need to discuss to see how databases would do this
-              for(var i = 0; i < allLocations.length; i++){
-                for(var j = 0; j<categoryChoice.length; j++){
-                    if(allLocations[i][4]==categoryChoice[j]){
-                      finalDataSet.push(allLocations[i]);
-                    }
+              if(timeFrame == "Last Day"){
+                for(var i=0; i< allLocations.length; i++){
+                  if((new Date()-allLocations[i][0])<=8.64e+7 || allLocations[i][5].slice(0,18) =="Points of Interest" || allLocations[i][5].slice(0,8) =="Business"){
+                    timeFiltered.push(allLocations[i]);
                   }
                 }
+
+              } else if(timeFrame == "Last Week"){
+                for(var i=0; i< allLocations.length; i++){
+                  if((new Date()-allLocations[i][0])<=6.048e+8 || allLocations[i][5].slice(0,18) =="Points of Interest" || allLocations[i][5].slice(0,8) =="Business"){
+                    timeFiltered.push(allLocations[i]);
+                  }
+                }
+
+              } else if(timeFrame == "Last Month"){
+
+                for(var i=0; i< allLocations.length; i++){
+                  if((new Date()-allLocations[i][0])<=2.592e+9 || allLocations[i][5].slice(0,18) =="Points of Interest" || allLocations[i][5].slice(0,8) =="Business"){
+                    timeFiltered.push(allLocations[i]);
+                  }
+                }
+
+              } else if(timeFrame == "Last Year"){
+                                for(var i=0; i< allLocations.length; i++){
+                  if((new Date()-allLocations[i][0])<=3.154e+10 || allLocations[i][5].slice(0,18) =="Points of Interest" || allLocations[i][5].slice(0,8) =="Business"){
+                    timeFiltered.push(allLocations[i]);
+                  }
+                }
+
+              }
+
+              for(var i = 0; i < timeFiltered.length; i++){
+                for(var j = 0; j<categoryChoice.length; j++){
+                    if(timeFiltered[i][4]==categoryChoice[j]){
+
+                      finalDataSet.push(timeFiltered[i]);
+
+
+
+                    }
+                }
+              }
+
+
+
+
+
                 console.log(finalDataSet);//This is the dataSet this is going to get plotted/heatmapped
 
                 if(mapFormat == "RawData"){
@@ -1675,8 +1746,9 @@ removeEventHandlers();
                     var dataOutline = new SimpleLineSymbol();
                     dataOutline.setColor(new Color(dataColors[categoryChoice[i]]));
                     var dataPointMarker = new SimpleMarkerSymbol();
+                    dataPointMarker.setColor(new Color(dataColors[categoryChoice[i]]));
                     dataPointMarker.setOutline(dataOutline);
-                    dataPointMarker.setSize(1);
+                    dataPointMarker.setSize(4);
 
                     for(var j = 0; j<finalDataSet.length;j++){
                       if(finalDataSet[j][4]==categoryChoice[i]){
@@ -1692,8 +1764,6 @@ removeEventHandlers();
               }
 
         }
-
-
 
       });
     </script>
@@ -1715,7 +1785,7 @@ removeEventHandlers();
 					<div id='filterButton' class="small-6 large-6 columns">
             <span>Filter</span>
           </div>
-					<div id='directionsButton' class="small-6 large-6 columns directionsButtonUnselected">
+					<div id='directionsButton' class="small-6 large-6 columns">
             <span>Directions</span>
           </div>
         </div>
@@ -1745,11 +1815,35 @@ removeEventHandlers();
 
 
     <div class="row">
+<<<<<<< fb3cb2d2178cf52b040e42734bbe549fbd2c21c7
       <div id="solveRoute" class="directions-nav-bar large-12 columns" style='display:none;'>
         Solve!
       </div>
     </div>
 
+=======
+      <div class="filter-directions-nav-bar large-12 columns">
+        <div class="row">
+          <div id='mapFormatButton' class="small-4 large-4 columns">
+            <span>Map Format</span>
+          </div>
+          <div id='dataSetButton' class="small-4 large-4 columns">
+            <span>Data Set</span>
+          </div>
+          <div id='timeFrameButton' class="small-4 large-4 columns">
+            <span>Time Frame</span>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+
+
+
+
+    <input type="button" style='position:absolute; right:0; top:150px; z-index:10; display:none;' class='button radius' value="Solve!" id="solveRoute">
+>>>>>>> plotFilteredData ready for filter inputs, added mapformat, dataset, timeframe buttons, and placeholder for click events. didn't want to mess with zurb structure
 
     <div class="row">
       <div id='map_row' class="large-12 columns">
