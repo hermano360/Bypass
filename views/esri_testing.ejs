@@ -185,12 +185,6 @@
           });
 
 
-
-
-          
-
-
-
           $("#directionsButton").click( function () {
             if ($('#directionsDisplay').text().length != 0 ) {
               $('#directionsDisplay').empty();
@@ -355,13 +349,7 @@
 //         }
 //     });
 
-function phoneStore() {
-	if(phoneNumber){
-		alert("Calling " + phoneNumber + "...");
-	} else {
-		phoneNumber = prompt("Please enter an emergency phone number","");
-	}
-}
+
 function filterBySeverity(data) {
   var sortCounter = 0;
   var filteredData = [];
@@ -1611,6 +1599,25 @@ removeEventHandlers();
             rowData = [0,0,0,0,0,0];
           }
           return formattedBusinessArray;
+        }
+
+//////////////////////// 8/28/2016
+        function plotFilteredData(mapFormat, dataSet, timeFrame) {
+
+          var finalData = [];
+          //I envision the dataSet parameter being a an array
+
+          
+
+
+          if(mapFormat == "CautionGrid"){
+            //Plot the existing caution score grid, maybe we give the user ability to alter the algorithm to populate with their custom data choices later
+          } else if(mapFormat == "HeatMap"){
+            //Still need to figure out the best way to display a heat map... but this is going to require choosing the correct dataset. Maybe only allow one either crime or business type data to be shown at a time (larceny and homicide but not larceny and medical locations)
+          } else if(mapFormat == "RawData"){
+            //Plot any data you would want to see.  Need to figure out if points are going to be just dots or actual icons.  What color should each of the 23 categories be?
+          }
+
         }
 
 
