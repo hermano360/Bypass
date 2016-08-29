@@ -204,6 +204,7 @@
               $("#NormalRoute").css('display',"none");
               barrierVisibility = false;
               clearBarriers();
+              $('#myLocation').css("display","block");
             } else{
               clearStops();
               clearRoutes();
@@ -216,6 +217,7 @@
               mapAllIndices(normalizedArray);
               $("#BypassRoute").addClass("BypassRouteSelected");
               $("#BypassRoute").removeClass("BypassRouteUnselected");
+              $('#myLocation').css("display","none");
             }
           })
 
@@ -258,13 +260,16 @@
             addMyLocationDot();
           });
 
-          $("#clearRoutesBtn").click( function () {
+          $("#resetBtn").click( function () {
             clearStops();
             clearBarriers();
             clearRoutes();
             $('#startAddress').val("");
             $('#destinationAddress').val("");
             $('#solveRoute').css("display","none");
+            $('#BypassRoute').css('display',"none");
+            $('#NormalRoute').css('display',"none");
+            $('#myLocation').css('display',"block");
             barrierVisibility = false;
 
             mapAllIndices(normalizedArray);
@@ -1581,11 +1586,10 @@ removeEventHandlers();
     <div class="row">
       <div id='map_row' class="large-12 columns">
         <div id="map"></div>
-
-        <div id="rightControlPanel">
-          <button id="clearRoutesBtn" class='button' style='right:0; top:250px; position:absolute;'>Clear Screen</button>
       </div>
     </div>
+
+    <button id="resetBtn" class='button'>Reset</button>
 
     <div class='bottomRightNav'>
       <a class='button radius' id="myLocation"><img src='../images/crosshair.png'></img></a>
