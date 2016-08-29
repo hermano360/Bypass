@@ -166,13 +166,8 @@
 
             allLocations = formatCompleteDataset(data.replace(/\n/g, "," ).split(","));
             console.log(allLocations[0][0].getFullYear());
-
-            //mapPoints(businessLocations); //mapped each individual point that was in this array
-            
-            //adjustableMapIndices(footTrafficArray); //gridded out array of foottraffic estimate
-            //plots the TL and BR point of our map
-            //normalizedArray = crimeNormalizer(densityArray, footTrafficArray);
-            //mapAllIndices(normalizedArray);
+            var a,none;
+            plotFilteredData(a,{crime: ["w/e","w/e"],pointsOfInterest: ["w/e","w/e"],business: ["w/e","w/e"]},none);
           });
 
 
@@ -1600,11 +1595,16 @@ removeEventHandlers();
 
 //////////////////////// 8/28/2016
         function plotFilteredData(mapFormat, dataSet, timeFrame) {
-
-          var finalData = [];
-          //I envision the dataSet parameter being a an array
-
+          console.log(dataSet);
           
+          //I envision the dataSet parameter being a an array like dataSet = {crime: ["w/e","w/e"],pointsOfInterest: ["w/e","w/e"],business: ["w/e","w/e"]};
+
+          var finalDataSet = [];
+          var categoryChoice = [];
+
+          categoryChoice.push.apply(dataSet.crime, dataSet.pointsOfInterest, dataSet.business);
+
+          console.log(categoryChoice)
 
 
           if(mapFormat == "CautionGrid"){
