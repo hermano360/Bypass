@@ -103,6 +103,8 @@
         var footTrafficSquares = [];
         var normalizedArray;
         var normalizedArrayGraphics = [];
+        var allLocations;
+        var rawDataPointsGraphics = [];
 
         var walkModeUrl = "";
         walkModeUrl = "travelMode={\"attributeParameterValues\":[{\"parameterName\":\"Restriction Usage\",\"attributeName\":\"Walking\",\"value\":\"PROHIBITED\"},{\"parameterName\":\"Restriction Usage\",\"attributeName\":\"Preferred for Pedestrians\",\"value\":\"PREFER_LOW\"},{\"parameterName\":\"Walking Speed (mph)\",\"attributeName\":\"TravelTime\",\"value\":5}],\"description\":\"Follows paths and roads that allow pedestrian traffic and finds solutions that optimize travel time. The walking speed is set to 5 miles per hour.\",\"impedanceAttributeName\":\"Miles\",\"simplificationToleranceUnits\":\"esriMeters\",\"uturnAtJunctions\":\"esriNFSBAllowBacktrack\",\"restrictionAttributeNames\":[\"Preferred for Pedestrians\",\"Walking\"],\"useHierarchy\":false,\"simplificationTolerance\":2,\"timeAttributeName\":\"TravelTime\",\"distanceAttributeName\":\"Miles\",\"type\":\"WALK\",\"id\":\"caFAgoThrvUpkFBW\",\"name\":\"Walking Time\"}&";
@@ -160,16 +162,17 @@
 
           });
 
+/////8/28
+
           xhr.get("CompleteDataSet.csv", {
             handleAs: "text",
           }).then(function(data) {
 
             allLocations = formatCompleteDataset(data.replace(/\n/g, "," ).split(","));
-            console.log(allLocations[0][0].getFullYear());
-            var a,none;
-            plotFilteredData(a,{crime: ["w/e","w/e"],pointsOfInterest: ["w/e","w/e"],business: ["w/e","w/e"]},none);
+            var none;
+            plotFilteredData("RawData",{crime: ["Assault","Burglary"],pointsOfInterest: ["Wifi Location","Sex Offender"],business: ["School","Retail"]},"Last Month");
           });
-
+//////8/28
 
           $("#directionsButton").click( function () {
             if ($('#directionsDisplay').text().length != 0 ) {
@@ -1575,7 +1578,7 @@ removeEventHandlers();
 
 
         function formatCompleteDataset(dataz) {
-          console.log(dataz);
+          //console.log(dataz);
           var formattedBusinessArray = [];
           var rowData = new Array(6);//May need to add one more column for severity
 
@@ -1595,27 +1598,101 @@ removeEventHandlers();
 
 //////////////////////// 8/28/2016
         function plotFilteredData(mapFormat, dataSet, timeFrame) {
-          console.log(dataSet);
+
           
           //I envision the dataSet parameter being a an array like dataSet = {crime: ["w/e","w/e"],pointsOfInterest: ["w/e","w/e"],business: ["w/e","w/e"]};
 
+          /* var line = new SimpleLineSymbol();
+          line.setColor(new Color([255, 0, 0, 1]));
+          var marker = new SimpleMarkerSymbol();
+          marker.setOutline(line);
+          marker.setSize(4);*/
+          var dataColors = {
+          "Beauty/Wellness":[56, 168, 0, 1], 
+          "Entertainment":[56, 168, 0, 1], 
+          "Grocery":[56, 168, 0, 1], 
+          "Medical":[56, 168, 0, 1], 
+          "Repair":[56, 168, 0, 1], 
+          "Residence":[56, 168, 0, 1],
+          "Restaurant/Bar":[56, 168, 0, 1],
+          "Retail":[56, 168, 0, 1], 
+          "School":[56, 168, 0, 1],
+          "Services":[56, 168, 0, 1],
+          "Transportation":[56, 168, 0, 1],
+          "Abduction":[255, 0, 0, 1],
+          "Arson":[255, 0, 0, 1], 
+          "Assault":[255, 0, 0, 1], 
+          "Burglary":[255, 0, 0, 1],
+          "GTA":[255, 0, 0, 1],
+          "Homicide":[255, 0, 0, 1],
+          "Larceny":[255, 0, 0, 1],
+          "Narcotics":[255, 0, 0, 1],
+          "Robbery":[255, 0, 0, 1],
+          "Sex Offense":[255, 0, 0, 1],
+          "Street Nuissance":[255, 0, 0, 1],
+          "Weapon":[255, 0, 0, 1],
+          "Sex Offender":[255, 255, 0, 1],
+          "Wifi Location":[255, 255, 0, 1]
+        };
+
+
+
           var finalDataSet = [];
           var categoryChoice = [];
-
-          categoryChoice.push.apply(dataSet.crime, dataSet.pointsOfInterest, dataSet.business);
-
-          console.log(categoryChoice)
-
-
-          if(mapFormat == "CautionGrid"){
-            //Plot the existing caution score grid, maybe we give the user ability to alter the algorithm to populate with their custom data choices later
-          } else if(mapFormat == "HeatMap"){
-            //Still need to figure out the best way to display a heat map... but this is going to require choosing the correct dataset. Maybe only allow one either crime or business type data to be shown at a time (larceny and homicide but not larceny and medical locations)
-          } else if(mapFormat == "RawData"){
-            //Plot any data you would want to see.  Need to figure out if points are going to be just dots or actual icons.  What color should each of the 23 categories be?
+          for (categories in dataSet){
+            for (var i = 0; i < dataSet[categories].length; i++){
+              categoryChoice.push(dataSet[categories][i]);
+            }
           }
+          console.log(categoryChoice);
+
+
+
+          //Go through and cycle through the dataset to get the rows that are required
+          if(mapFormat == "CautionGrid"){
+            densityGridOn = true;
+            resetBarriers();
+            //If order to remove barriers on changing changing screen, add densityGridOn = false; resetBarriers(); to the "directions" on.click event.
+          } else{
+
+            densityGridOn = false;
+            resetBarriers();
+            //In case the user clicked on the CautionGrid intially, this makes sure it clears it out for the rest of the views
+            
+              //Query based on the "Category" column, may need to discuss to see how databases would do this
+              for(var i = 0; i < allLocations.length; i++){
+                for(var j = 0; j<categoryChoice.length; j++){
+                    if(allLocations[i][4]==categoryChoice[j]){
+                      finalDataSet.push(allLocations[i]);
+                    }
+                  }
+                }
+                console.log(finalDataSet);//This is the dataSet this is going to get plotted/heatmapped
+
+                if(mapFormat == "RawData"){
+                  //need to establish what each symbol is going to look like
+                  for(var i = 0; i< categoryChoice.length;i++){
+                    var dataOutline = new SimpleLineSymbol();
+                    dataOutline.setColor(new Color(dataColors[categoryChoice[i]]));
+                    var dataPointMarker = new SimpleMarkerSymbol();
+                    dataPointMarker.setOutline(dataOutline);
+                    dataPointMarker.setSize(1);
+
+                    for(var j = 0; j<finalDataSet.length;j++){
+                      if(finalDataSet[j][4]==categoryChoice[i]){
+                        rawDataPointsGraphics.push(map.graphics.add(new esri.Graphic(new Point(finalDataSet[j][3],finalDataSet[j][2]),dataPointMarker)));
+                      }
+                    }
+                  }
+
+                } else if(mapFormat == "HeatMap"){
+                  //Still need to figure out the best way to display a heat map... but this is going to require choosing the correct dataset. Maybe only allow one either crime or business type data to be shown at a time (larceny and homicide but not larceny and medical locations)
+                }
+
+              }
 
         }
+
 
 
       });
