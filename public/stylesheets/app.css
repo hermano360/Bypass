@@ -239,6 +239,15 @@ button:focus {
   text-align:center;
 }
 
+#solveRoute {
+  cursor:pointer;
+  text-align: center;
+  font-weight: bold;
+  padding-top:4px;
+  padding-bottom:4px;
+  border-bottom: 1px solid #BBBBBB;
+}
+
 #routeNameForm {
 	position: absolute;
 	bottom: 170px;

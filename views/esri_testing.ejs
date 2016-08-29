@@ -203,9 +203,9 @@
           });
 
           $("#solveRoute").click( function(){
-            if($('#solveRoute').val()==="Go!"){
+            if($('#solveRoute').text()==="Go!"){
               $('#solveRoute').css("display","none");
-              $('#solveRoute').val("Solve!");
+              $('#solveRoute').text("Solve!");
               if(routes.length > 1){
                 map.graphics.remove(routes.shift());
               }
@@ -542,7 +542,7 @@ routeParams.outSpatialReference = {"wkid":102100};
         function inputAddress(){
           clearRoutes();
           $('#solveRoute').css("display","none");
-          $('#solveRoute').val("Solve!");
+          $('#solveRoute').text("Solve!");
          navigator.geolocation.getCurrentPosition(function(position){
               long = position.coords.longitude;
               lat = position.coords.latitude;
@@ -587,7 +587,7 @@ routeParams.outSpatialReference = {"wkid":102100};
         function addStartStop(){
           removeEventHandlers();
           $('#solveRoute').css("display","none");
-          $('#solveRoute').val("Solve!");
+          $('#solveRoute').text("Solve!");
 
           $("#myLocation").on('click', inputAddress);
           mapOnClick_addStops_connect = map.on("click", function(evt){
@@ -624,7 +624,7 @@ removeEventHandlers();
 
         function addDestinationStop(){
           $('#solveRoute').css("display","none");
-          $('#solveRoute').val("Solve!");
+          $('#solveRoute').text("Solve!");
           removeEventHandlers();
           $("#myLocation").on('click', inputAddress);
           mapOnClick_addStops_connect = map.on("click", function(evt){
@@ -1022,7 +1022,7 @@ removeEventHandlers();
               $("#BypassRoute").css('display',"inline");
               $("#NormalRoute").css('display',"inline");
               chosenRouteDirections = sRouteWB.directions;
-              $("#solveRoute").val('Go!');
+              $("#solveRoute").text('Go!');
 
               for(var i = 0 ; i < sRouteWB.directions[0].features.length; i++)
               {
@@ -1582,7 +1582,11 @@ removeEventHandlers();
       </div>
     </div>
 
-    <input type="button" style='position:absolute; right:0; top:150px; z-index:10; display:none;' class='button radius' value="Solve!" id="solveRoute">
+    <div class="row">
+      <div id="solveRoute" class="directions-nav-bar large-12 columns" style='display:none;'>
+        Solve!
+      </div>
+    </div>
 
     <div class="row">
       <div id='map_row' class="large-12 columns">
