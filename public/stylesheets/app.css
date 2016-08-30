@@ -107,6 +107,13 @@ button:focus {
 #myLocation {
   margin-left:58px;
   padding:0;
+  background:url('../images/crosshair_unselected.png') left center no-repeat;
+  width:44px;
+  height:44px;
+}
+
+#myLocation:hover {
+  background:url('../images/crosshair_selected.png') left center no-repeat;
 }
 
 .bottomRightNav {
