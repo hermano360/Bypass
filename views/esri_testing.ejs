@@ -137,7 +137,7 @@
           smartNavigation: false //by adding this, the scroll mouse goes in and out, rather than up and down. perhaps the other way is better though, idk.
         });
 
-        
+
 
         ready(function() {
 
@@ -179,7 +179,6 @@
 
           $("#directionsButton").click( function () {
 
-
             if ($('#directionsDisplay').text().length != 0 ) {
               $('#directionsDisplay').empty();
               $('#directionsButton').addClass("directionsButtonUnselected");
@@ -219,10 +218,10 @@
             }
 
             if(filterParametersCollector[0] && filterParametersCollector[1][0] && filterParametersCollector[2]){
-              
+
               plotFilteredData(filterParameterFormatter());
             }
-            
+
 
             //drop down menu of the 3 map options: grid, raw data, heatmap(hopefully)
               //At this point, each of the options, if clicked, would have its own event
@@ -351,6 +350,10 @@
             clearRoutes();
             $('#startAddress').val("");
             $('#destinationAddress').val("");
+            $('#directionsDisplay').empty();
+            $('.filter-options-nav-bar').css("display","none");
+            $('#directionsButton').addClass("directionsButtonUnselected");
+            $('#directionsButton').removeClass("directionsButtonSelected");
             $('#solveRoute').css("display","none");
             $('#BypassRoute').css('display',"none");
             $('#NormalRoute').css('display',"none");
@@ -1654,7 +1657,7 @@ removeEventHandlers();
             givenAddress = addresses[i];
 
             //console.log(givenAddress);
-  
+
             finalGeocodingURL = "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/geocodeAddresses?addresses={%22records%22:[{%22attributes%22:{%22OBJECTID%22:1,%22SingleLine%22:%22" + givenAddress.replace(" ","%20") + "%22}}]}&sourceCountry=USA&token=" + globalToken + "&f=pjson";
 
             $.ajax({
@@ -1667,7 +1670,7 @@ removeEventHandlers();
                 console.log(finalResults.locations[0].address,xCoord,yCoord);
               },
               error: function (xhr, textStatus, errorThrown) {
-                
+
                 console.log("test failed");
                 console.log("ERROR:" + xhr.responseText + xhr.status + errorThrown);
                 return false;
@@ -1701,7 +1704,7 @@ removeEventHandlers();
         function plotFilteredData([mapFormat, dataSet, timeFrame]) {
 
           //console.log(allLocations[4][5]);
-          
+
           //I envision the dataSet parameter being a an array like dataSet = {crime: ["w/e","w/e"],pointsOfInterest: ["w/e","w/e"],business: ["w/e","w/e"]};
 
           /* var line = new SimpleLineSymbol();
@@ -1710,20 +1713,20 @@ removeEventHandlers();
           marker.setOutline(line);
           marker.setSize(4);*/
           var dataColors = {
-          "Beauty/Wellness":[255,255,255, 1], 
-          "Entertainment":[255,0,0, 1], 
-          "Grocery":[0,255,0, 1], 
-          "Medical":[0,0,255, 1], 
-          "Repair":[255,255,0, 1], 
+          "Beauty/Wellness":[255,255,255, 1],
+          "Entertainment":[255,0,0, 1],
+          "Grocery":[0,255,0, 1],
+          "Medical":[0,0,255, 1],
+          "Repair":[255,255,0, 1],
           "Residence":[0,255,255, 1],
           "Restaurant/Bar":[255,0,255, 1],
-          "Retail":[192,192,192, 1], 
+          "Retail":[192,192,192, 1],
           "School":[128,128,128, 1],
           "Services":[128,0,0, 1],
           "Transportation":[56, 168, 0, 1],
           "Abduction":[128,128,0, 1],
-          "Arson":[0,128,0, 1], 
-          "Assault":[128,0,128, 1], 
+          "Arson":[0,128,0, 1],
+          "Assault":[128,0,128, 1],
           "Burglary":[0,128,128, 1],
           "GTA":[0,0,128, 1],
           "Homicide":[64,224,208, 1],
@@ -1762,7 +1765,7 @@ removeEventHandlers();
 
             //In case the user clicked on the CautionGrid intially, this makes sure it clears it out for the rest of the views
 
-            
+
               //Query based on the "Category" column, may need to discuss to see how databases would do this
               if(timeFrame == "Last Day"){
                 for(var i=0; i< allLocations.length; i++){
@@ -1885,9 +1888,9 @@ removeEventHandlers();
                 outputArray[1].pointsOfInterest.push(filterParametersCollector[1][i]);
               }
             }
-            
+
           }
-          
+
           return outputArray;
 
 
@@ -1947,7 +1950,7 @@ removeEventHandlers();
       </div>
     </div>
 
- 
+
 
 
 
@@ -2017,7 +2020,7 @@ removeEventHandlers();
           </div>
         </div>
       </div>
-    </div> 
+    </div>
 
     <!--         <div class="row">
       <div class="filter-options-nav-bar large-12 columns">
