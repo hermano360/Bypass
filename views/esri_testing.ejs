@@ -183,20 +183,24 @@
               hideDirections();
             }
             else {
-              resetAndShowDirections();
+              showDirections();
             }
           });
 
           function hideDirections() {
-						$('#directionsDisplay').empty();
 						$('#directionsButton').addClass("directionsButtonUnselected");
 						$('#directionsButton').removeClass("directionsButtonSelected");
+						$('#directionsDisplay').empty();
           }
 
-          function resetAndShowDirections() {
-						$('#directionsDisplay').empty();
+          function showDirections() {
             $('#directionsButton').addClass("directionsButtonSelected");
             $('#directionsButton').removeClass("directionsButtonUnselected");
+            resetDirections()
+          }
+
+          function resetDirections() {
+						$('#directionsDisplay').empty();
             var border_style = "";
             var individual_direction = "";
             for(var i = 1 ; i < chosenRouteDirections[0].features.length; i++)
@@ -387,7 +391,9 @@
             $("#NormalRoute").removeClass("NormalRouteSelected");
             $("#NormalRoute").addClass("NormalRouteUnselected");
             console.log(routes.length);
-            resetAndShowDirections();
+            if ($( "#directionsButton" ).hasClass( "directionsButtonSelected" ) == true) {
+              showDirections();
+            }
           });
 
           $("#NormalRoute").click( function () {
@@ -396,7 +402,9 @@
             $("#NormalRoute").addClass("NormalRouteSelected");
             $("#BypassRoute").addClass("BypassRouteUnselected");
             $("#BypassRoute").removeClass("BypassRouteSelected");
-            resetAndShowDirections();
+            if ($( "#directionsButton" ).hasClass( "directionsButtonSelected" ) == true) {
+              showDirections();
+            }
           });
 
           $("#mapCrimeIndex").click( function () {
