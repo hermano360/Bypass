@@ -205,40 +205,45 @@ button:focus {
   padding-left: 10px;
 }
 
-#filterButton {
+#filter-button {
   cursor:pointer;
   padding-top:3px;
   padding-bottom:2px;
 }
-
-#filterButton > span {
-  background:url('../images/filter.png') left center no-repeat;
+#filter-button:hover {
+  background-color: #26A69A;
+  color: #FFFFFF;
+}
+#filter-button:hover > span,
+.filter-button-active > span {
+  background:url('../images/filter_button_active.png') left center no-repeat;
   padding-left:30px;
 }
+.filter-button-unactive > span {
+  background:url('../images/filter_button_unactive.png') left center no-repeat;
+  padding-left:30px;
+}
+
 
 #directionsButton {
   cursor:pointer;
   padding-top:3px;
   padding-bottom:2px;
 }
-
 .directionsButtonUnselected {
   background-color: #FFFFFF;
   color: #000000;
 }
-
 .directionsButtonUnselected > span {
   background-image:url('../images/directions_unselected.png');
   background-position: left center;
   background-repeat: no-repeat;
   padding-left:28px;
 }
-
 .directionsButtonSelected {
   background-color: #8CD4CC;
   color: #FFFFFF;
 }
-
 .directionsButtonSelected > span {
   background-image:url('../images/directions_selected.png');
   background-position: left center;
