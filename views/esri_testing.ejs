@@ -1515,11 +1515,8 @@ function plotFilteredData([mapFormat, dataSet, timeFrame]) {
 
 
 function resetBarriers(evt) {
-
-  if(barrierVisibility){
-    clearBarriers();
-    mapAllIndices(normalizedArray);
-  }
+  clearBarriers();
+  mapAllIndices(normalizedArray);
 }
 
 function filterParameterFormatter(){
