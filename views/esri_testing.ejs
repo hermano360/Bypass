@@ -349,7 +349,9 @@
             $("#NormalRoute").removeClass("NormalRouteSelected");
             $("#NormalRoute").addClass("NormalRouteUnselected");
             console.log(routes.length);
-            activateDirections();
+            if ($( "#directions-button" ).hasClass( "directions-button-active" ) == true) {
+              activateDirections();
+            }
           });
 
           $("#NormalRoute").click( function () {
@@ -358,7 +360,9 @@
             $("#NormalRoute").addClass("NormalRouteSelected");
             $("#BypassRoute").addClass("BypassRouteUnselected");
             $("#BypassRoute").removeClass("BypassRouteSelected");
-            activateDirections();
+            if ($( "#directions-button" ).hasClass( "directions-button-active" ) == true) {
+              activateDirections();
+            }
           });
 
           $("#mapCrimeIndex").click( function () {
