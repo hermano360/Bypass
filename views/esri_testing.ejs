@@ -155,7 +155,7 @@
 
               businessLocations = formatBusinesses(data.split(","));
 
-            //mapPoints(businessLocations); //mapped each individual point that was in this array
+            
             footTrafficArray = footTrafficCalculator(businessLocations);
             //adjustableMapIndices(footTrafficArray); //gridded out array of foottraffic estimate
             TLandBR();//plots the TL and BR point of our map
@@ -858,9 +858,10 @@ routeParams.outSpatialReference = {"wkid":102100};
                 minRoutePathLength=sRoute.routes.features[0].geometry.paths[0].length;
               } else {
                 minRoutePathLength=sRouteWB.routes.features[0].geometry.paths[0].length;
-              }
+              } //deciding minimum length in order to check if routes are the same
 
               for(var i = 0; i < minRoutePathLength; i++){
+                //only if routes are the same do you give the option for bypass and normal routes.
                 if(sRouteWB.routes.features[0].geometry.paths[0][i][1] !=  sRoute.routes.features[0].geometry.paths[0][i][1]){
                   $("#BypassRoute").css('display',"inline");
                   $("#NormalRoute").css('display',"inline");
@@ -868,14 +869,9 @@ routeParams.outSpatialReference = {"wkid":102100};
               }
 
               
-  
               chosenRouteDirections = sRouteWB.directions;
               $("#solveRoute").text('Go!');
 
-              for(var i = 0 ; i < sRouteWB.directions[0].features.length; i++)
-              {
-                //console.log(sRouteWB.directions[0].features[i].attributes.text);
-              };
               var pluralityMinutes = "minutes"
               if(((sRouteWB.directions[0].summary.totalLength - sRoute.directions[0].summary.totalLength)*60/3.1).toFixed(0)==1){
                 pluralityMinutes = "minute"
@@ -994,26 +990,8 @@ routeParams.outSpatialReference = {"wkid":102100};
         function clearAll() {
           clearStops();
           clearBarriers();
-
         }
-        map.on("load", function() {
-          // Create street lights
-          var featureLayer = new esri.layers.FeatureLayer("http://services1.arcgis.com/p84PN4WZvOWzi2j2/arcgis/rest/services/StreetLights/FeatureServer/0",{
-            mode: esri.layers.FeatureLayer.MODE_ONDEMAND,
-            outFields: ["*"]
-          });
-          map.addLayer(featureLayer);
-          //Default
-          // showBufferZones();
-        });
-        function showBufferZones(dataz) {
-          console.log("showBufferZones() called");
-          clearAll();
-          for (var i = 0; i < dataz.length; i = i+4) {
-           addCircleBarrier1(dataz[i+2], dataz[i+1], dataz[i+3]);
-         }
-         plotCount = 0;
-       }
+
 
        function dangerAlgorithm(dataz) {
 
@@ -1078,61 +1056,7 @@ routeParams.outSpatialReference = {"wkid":102100};
 
 
 
-        function testCrime(evt) {
-          var longLatEvt = webMercatorUtils.xyToLngLat(evt.mapPoint["x"], evt.mapPoint["y"], true);
-          var xcell = Math.round((longLatEvt[0]-globalxydata[1][0])/globalxydata[0][0]);
-          var ycell = Math.round((globalxydata[1][1]-longLatEvt[1])/globalxydata[0][1]);
-            //console.log(crimeArray[xcell][ycell]);
-            //console.log("The longitude is " + longLatEvt[0] + ",latitude is " + longLatEvt[1] );
-          }
 
-
-          function showIcons() {
-            //console.log("showIcons() called");
-            clearAll();
-          //Create a new PictureMarkerSymbol based on the static image and set a few properties.
-          //Change url to customize
-          // Create barriers
-          barrierSymbol = new esri.symbol.PictureMarkerSymbol({
-            "angle": 0,
-            "xoffset": 0,
-            "yoffset": 12,
-            "type": "esriPMS",
-            "url": "http://static.arcgis.com/images/Symbols/Basic/YellowStickpin.png",
-            "contentType": "image/png",
-            "width": 24,
-            "height": 24
-          });
-          //console.log("showIcons() middle");
-          for (var i = 0; i < data.length; i = i+4) {
-            //if(data[i+3] > 2) {
-              console.log(data[i+2]+', '+data[i+1]+'\n');
-              barriers.push(
-                map.graphics.add(
-                  new esri.Graphic(
-                    new esri.geometry.Point(data[i+1], data[i+2]),
-                    barrierSymbol
-                    )
-                  )
-                );
-            //}
-          }
-        }
-
-/////Added 8/27/16
-function mapPoints(pointLocations){
-          //logic tester to see if already been called? tbd
-
-
-          for (var i = 0; i < pointLocations.length; i ++) { //The 4 depends on the array coming in, may need to changed depending on how many metadata columns we add
-            var long = pointLocations[i][2];
-            var lat = pointLocations[i][1];
-            var weight = pointLocations[i][3];//probably just going to be used as 1 for this purpose
-
-            addDataPoint(long, lat, weight);
-
-          }
-        }
 
         function TLandBR() {
 
@@ -1383,14 +1307,13 @@ function mapPoints(pointLocations){
 
 
         function getGPSLocations(){
+
+          //used to get gps locations based on given addresses
           var xCoord = 0;
           var yCoord = 0;
           var finalResults;
           var finalGeocodingURL;
-
-
-
-          var addresses = ["3005 MAIN STREET SANTA MONICA","816 PACIFIC SANTA MONICA", "828 5TH SANTA MONICA","417 16TH ST SANTA MONICA","301 MARINE SANTA MONICA","713 9TH ST SANTA MONICA","1530 7TH ST SANTA MONICA","1427 9TH ST SANTA MONICA","1824 17TH SANTA MONICA","465 HILLSIDE LN SANTA MONICA","929 4TH ST APT D SANTA MONICA","1748 11TH SANTA MONICA","2315 KANSAS SANTA MONICA","1833 19TH STREET SANTA MONICA","1914 18TH STREET SANTA MONICA","848 6TH ST SANTA MONICA","1507 11 ST SANTA MONICA","2512 16TH ST SANTA MONICA","1547 EUCLID ST SANTA MONICA","1817 16TH ST SANTA MONICA","1842 22ND ST SANTA MONICA","828 WILSON PL SANTA MONICA","1128 7TH STREET SANTA MONICA","1427 YALE ST SANTA MONICA"];//put addresses here
+          var addresses = [""];//put addresses here
           var givenAddress;
           console.log(addresses.length);
 
@@ -1593,7 +1516,7 @@ function plotFilteredData([mapFormat, dataSet, timeFrame]) {
               }
 
             }
-////8/29
+
 
 function resetBarriers(evt) {
 
