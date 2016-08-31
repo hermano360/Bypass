@@ -198,29 +198,27 @@
             }
           });
 
-
-
-          $("#directionsButton").click( function () {
+          $("#directions-button").click( function () {
             if ($('#directionsDisplay').text().length != 0 ) {
-              hideDirections();
+              deactivateDirections();
             }
             else {
-              showDirections();
+              activateDirections();
+              deactivateFilters();
             }
           });
 
           $("#filter-button").click( function(){
-            if ($("#filter-button").hasClass("filter-button-unactive") == true) {
+            if ($("#filter-button").hasClass("filter-button-inactive") == true) {
              $(".filter-options-nav-bar").css("display","block");
              $(".directions-nav-bar").css("display","none");
-             $("#filter-button").removeClass("filter-button-unactive");
-             $("#filter-button").addClass("filter-button-active");
+             activateFilters();
+             deactivateDirections();
            }
            else {
              $(".filter-options-nav-bar").css("display","none");
              $(".directions-nav-bar").css("display","block");
-             $("#filter-button").removeClass("filter-button-active");
-             $("#filter-button").addClass("filter-button-unactive");
+             deactivateFilters();
            }
          });
 
@@ -332,8 +330,8 @@
             $('#destinationAddress').val("");
             $('#directionsDisplay').empty();
             $('.filter-options-nav-bar').css("display","none");
-            $('#directionsButton').addClass("directionsButtonUnselected");
-            $('#directionsButton').removeClass("directionsButtonSelected");
+            $('#directions-button').addClass("directions-button-inactive");
+            $('#directions-button').removeClass("directions-button-active");
             $('#solveRoute').css("display","none");
             $('#BypassRoute').css('display',"none");
             $('#NormalRoute').css('display',"none");
@@ -351,9 +349,7 @@
             $("#NormalRoute").removeClass("NormalRouteSelected");
             $("#NormalRoute").addClass("NormalRouteUnselected");
             console.log(routes.length);
-            if ($( "#directionsButton" ).hasClass( "directionsButtonSelected" ) == true) {
-              showDirections();
-            }
+            activateDirections();
           });
 
           $("#NormalRoute").click( function () {
@@ -362,9 +358,7 @@
             $("#NormalRoute").addClass("NormalRouteSelected");
             $("#BypassRoute").addClass("BypassRouteUnselected");
             $("#BypassRoute").removeClass("BypassRouteSelected");
-            if ($( "#directionsButton" ).hasClass( "directionsButtonSelected" ) == true) {
-              showDirections();
-            }
+            activateDirections();
           });
 
           $("#mapCrimeIndex").click( function () {
@@ -373,18 +367,24 @@
 
         });
 
-
-function hideDirections() {
-  $('#directionsButton').addClass("directionsButtonUnselected");
-  $('#directionsButton').removeClass("directionsButtonSelected");
-  $('#directionsDisplay').empty();
-}
-
-function showDirections() {
-  $('#directionsButton').addClass("directionsButtonSelected");
-  $('#directionsButton').removeClass("directionsButtonUnselected");
-  resetDirections()
-}
+          function activateFilters() {
+            $("#filter-button").removeClass("filter-button-inactive");
+            $("#filter-button").addClass("filter-button-active");
+          }
+          function deactivateFilters() {
+            $("#filter-button").removeClass("filter-button-active");
+            $("#filter-button").addClass("filter-button-inactive");
+          }
+          function activateDirections() {
+            $("#directions-button").removeClass("directions-button-inactive");
+            $("#directions-button").addClass("directions-button-active");
+            resetDirections()
+          }
+          function deactivateDirections() {
+            $("#directions-button").removeClass("directions-button-active");
+            $("#directions-button").addClass("directions-button-inactive");
+            $('#directionsDisplay').empty();
+          }
 
 function resetDirections() {
   $('#directionsDisplay').empty();
@@ -1575,10 +1575,10 @@ function filterParameterFormatter(){
   <div class="row">
     <div class="filter-directions-nav-bar large-12 columns">
       <div class="row">
-       <div id='filter-button' class="small-6 large-6 columns filter-button-unactive">
+       <div id='filter-button' class="small-6 large-6 columns filter-button-inactive">
         <span>Filter</span>
       </div>
-      <div id='directionsButton' class="small-6 large-6 columns directionsButtonUnselected">
+      <div id='directions-button' class="small-6 large-6 columns directions-button-inactive">
         <span>Directions</span>
       </div>
     </div>

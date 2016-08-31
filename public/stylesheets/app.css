@@ -214,45 +214,47 @@ button:focus {
   padding-top:3px;
   padding-bottom:2px;
 }
-#filter-button:hover {
+#filter-button:hover,
+.filter-button-active {
   background-color: #26A69A;
   color: #FFFFFF;
+}
+.filter-button-inactive {
+  background-color: #FFFFFF;
+  color: #000000;
 }
 #filter-button:hover > span,
 .filter-button-active > span {
   background:url('../images/filter_button_active.png') left center no-repeat;
   padding-left:30px;
 }
-.filter-button-unactive > span {
-  background:url('../images/filter_button_unactive.png') left center no-repeat;
+.filter-button-inactive > span {
+  background:url('../images/filter_button_inactive.png') left center no-repeat;
   padding-left:30px;
 }
 
-
-#directionsButton {
+#directions-button {
   cursor:pointer;
   padding-top:3px;
   padding-bottom:2px;
 }
-.directionsButtonUnselected {
+#directions-button:hover,
+.directions-button-active {
+  background-color: #26A69A;
+  color: #FFFFFF;
+}
+.directions-button-inactive {
   background-color: #FFFFFF;
   color: #000000;
 }
-.directionsButtonUnselected > span {
-  background-image:url('../images/directions_unselected.png');
-  background-position: left center;
-  background-repeat: no-repeat;
-  padding-left:28px;
+#directions-button:hover > span,
+.directions-button-active > span {
+  background:url('../images/directions_btn_active.png') left center no-repeat;
+  padding-left:30px;
 }
-.directionsButtonSelected {
-  background-color: #8CD4CC;
-  color: #FFFFFF;
-}
-.directionsButtonSelected > span {
-  background-image:url('../images/directions_selected.png');
-  background-position: left center;
-  background-repeat: no-repeat;
-  padding-left:28px;
+.directions-button-inactive > span {
+  background:url('../images/directions_btn_inactive.png') left center no-repeat;
+  padding-left:30px;
 }
 
 .nav-bar div {
@@ -310,8 +312,5 @@ button:focus {
 .filter-options-nav-bar > .row > .columns:last-child {
   padding-left: 10px;
 }
-
-
-
 
 
