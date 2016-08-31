@@ -155,7 +155,7 @@
 
               businessLocations = formatBusinesses(data.split(","));
 
-            
+
             footTrafficArray = footTrafficCalculator(businessLocations);
             //adjustableMapIndices(footTrafficArray); //gridded out array of foottraffic estimate
             TLandBR();//plots the TL and BR point of our map
@@ -208,7 +208,6 @@
               showDirections();
             }
           });
-
 
           $("#filter-button").click( function(){
             if ($("#filter-button").hasClass("filter-button-unactive") == true) {
@@ -394,13 +393,9 @@ function resetDirections() {
   for(var i = 1 ; i < chosenRouteDirections[0].features.length; i++)
   {
     individual_direction = chosenRouteDirections[0].features[i].attributes.text
-    if (i != chosenRouteDirections[0].features.length-1)
+    border_style = " style='border-bottom: 1px solid #BBBBBB' ";
+    if (i == chosenRouteDirections[0].features.length-1)
     {
-      border_style = " style='border-bottom: 1px solid #BBBBBB' ";
-    }
-    else
-    {
-      border_style = ""
       individual_direction = individual_direction.replace("Finish at Location 2, ", "");
       // uppercase the first word in sentence
       individual_direction = individual_direction.charAt(0).toUpperCase() + individual_direction.slice(1);
@@ -408,10 +403,7 @@ function resetDirections() {
 
     $("#directionsDisplay").append("<div class='row'" + border_style + "><div class='large-12 columns dynamicDirectionsRow'>" + individual_direction + "</div></div>");
   };
-  $("#directionsDisplay").append("<div style='clear:both;'></div>");
 }
-
-
 
 function requestAddress(givenAddress,stopOption){
   var xCoord = 0;
@@ -868,7 +860,7 @@ routeParams.outSpatialReference = {"wkid":102100};
                 }
               }
 
-              
+
               chosenRouteDirections = sRouteWB.directions;
               $("#solveRoute").text('Go!');
 

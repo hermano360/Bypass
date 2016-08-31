@@ -145,11 +145,14 @@ button:focus {
   padding:7px 0;
   color: white;
   border:none;
-  border-bottom: 1px solid #BBBBBB;
   font-weight:bold;
   background-color: #8CD4CC;
   background-position: left center;
   background-repeat: no-repeat;
+}
+
+#startAddress {
+  border-bottom: 1px solid #BBBBBB;
 }
 
 .directions-nav-bar > form:first-child > .row,
@@ -160,6 +163,7 @@ button:focus {
 .directions-nav-bar {
   padding-left:0;
   padding-right:0;
+  border-bottom: 2px solid #BBBBBB;
 }
 
 .close-button {
@@ -189,16 +193,16 @@ button:focus {
 .nav-bar {
   height:65px;
   background: #F8F8F8;
-  border-bottom: 1px solid #BBBBBB;
+  border-bottom: 2px solid #BBBBBB;
 }
 
 .filter-directions-nav-bar {
   font-weight:bold;
-  border-bottom: 1px solid #BBBBBB;
+  border-bottom: 2px solid #BBBBBB;
 }
 
 .filter-directions-nav-bar > .row > .columns:first-child {
-  border-right: 1px solid #BBBBBB;
+  border-right: 2px solid #BBBBBB;
 }
 
 .filter-directions-nav-bar > .row > .columns:last-child {
@@ -263,7 +267,7 @@ button:focus {
   font-weight: bold;
   padding-top:4px;
   padding-bottom:4px;
-  border-bottom: 1px solid #BBBBBB;
+  border-bottom: 2px solid #BBBBBB;
 }
 
 #routeNameForm {
@@ -291,15 +295,15 @@ button:focus {
 
 .filter-options-nav-bar {
   font-weight:bold;
-  border-bottom: 1px solid #BBBBBB;
+  border-bottom: 2px solid #BBBBBB;
   overflow: hidden;}
 
 .filter-options-nav-bar > .row > .columns:first-child {
-  border-right: 1px solid #BBBBBB;
+  border-right: 2px solid #BBBBBB;
 }
 
 .filter-options-nav-bar > .row > .columns:nth-child(2) {
-  border-right: 1px solid #BBBBBB;
+  border-right: 2px solid #BBBBBB;
   padding-left: 10px;
 }
 
