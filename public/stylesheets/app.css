@@ -228,15 +228,6 @@ button:focus {
   background-color: #FFFFFF;
   color: #000000;
 }
-#filter-button:hover > span,
-.filter-button-active > span {
-  background:url('../images/filter_button_active.png') left center no-repeat;
-  padding-left:30px;
-}
-.filter-button-inactive > span {
-  background:url('../images/filter_button_inactive.png') left center no-repeat;
-  padding-left:30px;
-}
 
 #directions-button {
   cursor:pointer;
@@ -259,6 +250,16 @@ button:focus {
 }
 .directions-button-inactive > span {
   background:url('../images/directions_btn_inactive.png') left center no-repeat;
+  padding-left:30px;
+}
+
+#filter-button:hover > span,
+.filter-button-active > span {
+  background:url('../images/filter_button_active.png') left center no-repeat;
+  padding-left:30px;
+}
+.filter-button-inactive > span {
+  background:url('../images/filter_button_inactive.png') left center no-repeat;
   padding-left:30px;
 }
 
