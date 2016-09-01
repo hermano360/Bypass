@@ -395,7 +395,7 @@
             $("#NormalRoute").removeClass("NormalRouteSelected");
             $("#NormalRoute").addClass("NormalRouteUnselected");
             console.log(routes.length);
-            if ($( "#directions-button" ).hasClass( "directions-button-active" ) == true) {
+            if ($("#directions-button").hasClass("directions-button-active") == true) {
               activateDirections();
             }
           });
@@ -406,7 +406,7 @@
             $("#NormalRoute").addClass("NormalRouteSelected");
             $("#BypassRoute").addClass("BypassRouteUnselected");
             $("#BypassRoute").removeClass("BypassRouteSelected");
-            if ($( "#directions-button" ).hasClass( "directions-button-active" ) == true) {
+            if ($("#directions-button").hasClass("directions-button-active") == true) {
               activateDirections();
             }
           });
@@ -414,7 +414,6 @@
           $("#mapCrimeIndex").click( function () {
             mapIndex();
           });
-
         });
 
           function activateFilters() {
@@ -428,12 +427,12 @@
           function activateDirections() {
             $("#directions-button").removeClass("directions-button-inactive");
             $("#directions-button").addClass("directions-button-active");
-            //resetDirections()
+            resetDirections()
           }
           function deactivateDirections() {
             $("#directions-button").removeClass("directions-button-active");
             $("#directions-button").addClass("directions-button-inactive");
-            //$('#directionsDisplay').empty();
+            $('#directionsDisplay').empty();
           }
 
 function resetDirections() {
@@ -452,7 +451,7 @@ function resetDirections() {
         // uppercase the first word in sentence
         individual_direction = individual_direction.charAt(0).toUpperCase() + individual_direction.slice(1);
       }
-  
+
       $("#directionsDisplay").append("<div class='row'" + border_style + "><div class='large-12 columns dynamicDirectionsRow'>" + individual_direction + "</div></div>");
     };
   }
@@ -757,7 +756,7 @@ routeParams.outSpatialReference = {"wkid":102100};
 
 
           navigator.geolocation.getCurrentPosition(function(position){
-            
+
             long = position.coords.longitude;
             lat = position.coords.latitude;
 
@@ -1623,20 +1622,13 @@ function filterParameterFormatter(){
   }
 
   return outputArray;
-
-
-}
-
-
-
-
-
-
-
+  }
 });
 </script>
-
 </head>
+
+
+
 <body>
 
   <div class="row">
@@ -1650,7 +1642,7 @@ function filterParameterFormatter(){
   <div class="row">
     <div class="filter-directions-nav-bar large-12 columns">
       <div class="row">
-      <div id='directions-button' class="small-6 large-6 columns directions-button-active">
+      <div id='directions-button' class="small-6 large-6 columns directions-button-inactive">
         <span>Directions</span>
       </div>
        <div id='filter-button' class="small-6 large-6 columns filter-button-inactive">
@@ -1663,39 +1655,28 @@ function filterParameterFormatter(){
 <div class="row">
   <div class="directions-nav-bar large-12 columns">
     <form action="addressLookup">
-     <div class="row">
-      <div class="large-12 columns">
-        <input class='directions-textbox' type="text" name="startAddress" id="startAddress" placeholder='Choose your starting point'>
+      <div class="row">
+        <div class="large-12 columns">
+          <input class='directions-textbox' type="text" name="startAddress" id="startAddress" placeholder='Choose your starting point'>
+        </div>
       </div>
-    </div>
-    <div class="row">
-      <div id="directionsDisplay" style='overflow:hidden;' class="large-12 columns"></div>
-    </div>
-    <div class="row">
-      <div class="large-12 columns">
-        <input class='directions-textbox' type="text" name="destinationAddress" id="destinationAddress" placeholder='Choose your destination'>
+      <div class="row">
+        <div id="directionsDisplay" style='overflow:hidden;' class="large-12 columns"></div>
       </div>
-    </div>
-  </form>
-
+      <div class="row">
+        <div class="large-12 columns">
+          <input class='directions-textbox' type="text" name="destinationAddress" id="destinationAddress" placeholder='Choose your destination'>
+        </div>
+      </div>
+    </form>
+  </div>
 </div>
-</div>
-
-
-
-
-
-
 
 <div class="row">
   <div id="solveRoute" class="directions-nav-bar large-12 columns" style='display:none;'>
     Solve!
   </div>
 </div>
-
-
-
-
 
 <div class="row">
   <div class="filter-options-nav-bar large-12 columns" style="display:none;">
@@ -1768,9 +1749,6 @@ function filterParameterFormatter(){
         </div>
       </div>
     </div> -->
-
-
-
 
     <div class="row">
       <div id='map_row' class="large-12 columns">

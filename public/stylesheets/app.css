@@ -15,7 +15,7 @@ h1 {
 .button {
   background-color: #FFFFFF;
   color: #000000;
-  border: #BBBBBB solid 2px;
+  border: 1px solid #BBBBBB;
   font-weight:bold;
   transition:none;
 }
@@ -23,6 +23,30 @@ h1 {
 .button:hover, .button:focus {
   background-color: #26A69A;
   color: #FFFFFF;
+}
+
+[type=color], [type=date], [type=datetime-local], [type=datetime], [type=email], [type=month], [type=number], [type=password], [type=search], [type=tel], [type=text], [type=time], [type=url], [type=week], textarea, [type='text']:focus, [type='password']:focus, [type='date']:focus, [type='datetime']:focus, [type='datetime-local']:focus, [type='month']:focus, [type='week']:focus, [type='email']:focus, [type='number']:focus, [type='search']:focus, [type='tel']:focus, [type='time']:focus, [type='url']:focus, [type='color']:focus, textarea:focus {
+  border: none;
+  background-color: #8CD4CC;
+  outline: none;
+	-webkit-box-shadow: none;
+	-moz-box-shadow: none;
+  box-shadow: none;
+  transition: none;
+}
+
+select {
+  margin:0;
+  border:none;
+  height: 30px;
+  padding-top: 0px;
+  padding-bottom: 0px;
+  line-height: 30px;
+  border-radius:0 !important;
+}
+
+option {
+  min-height:20px;
 }
 /* remove the iphone bug where the input boxes are rounded */
 input {
@@ -34,18 +58,18 @@ input {
 
 /* only affects input tag placeholder color - BEGIN */
 ::-webkit-input-placeholder { /* WebKit, Blink, Edge */
-  color: #FEFDFA;
+  color: #FEFDFA !important;
 }
 :-moz-placeholder { /* Mozilla Firefox 4 to 18 */
-  color: #FEFDFA;
+  color: #FEFDFA !important;
   opacity: 1;
 }
 ::-moz-placeholder { /* Mozilla Firefox 19+ */
-  color: #FEFDFA;
+  color: #FEFDFA !important;
   opacity: 1;
 }
 :-ms-input-placeholder { /* Internet Explorer 10-11 */
-  color: #FEFDFA;
+  color: #FEFDFA !important;
 }
 /* only affects input tag placeholder color - END */
 
@@ -132,10 +156,16 @@ button:focus {
   margin-bottom: 18px;
 }
 
+#startAddress {
+  border-bottom: 1px solid #BBBBBB;
+}
 #startAddress.directions-textbox {
   background-image:url('../images/directions_arrow.png');
 }
 
+#destinationAddress {
+  border-bottom: 1px solid #BBBBBB;
+}
 #destinationAddress.directions-textbox {
   background-image:url('../images/pin.png');
 }
@@ -147,28 +177,25 @@ button:focus {
 .directions-textbox {
   text-indent:45px;
   width:100%;
+  height:34px;
   padding:7px 0;
+  margin:0;
   color: white;
   border:none;
   font-weight:bold;
-  background-color: #8CD4CC;
+  background-color: #8CD4CC !important;
   background-position: left center;
   background-repeat: no-repeat;
-}
-
-#startAddress {
-  border-bottom: 1px solid #BBBBBB;
-}
-
-.directions-nav-bar > form:first-child > .row,
-.directions-nav-bar > form > .row:last-child,  {
-  background: #8CD4CC;
+  border-radius:0;
 }
 
 .directions-nav-bar {
   padding-left:0;
   padding-right:0;
-  border-bottom: 2px solid #BBBBBB;
+}
+.directions-nav-bar > form:first-child > .row,
+.directions-nav-bar > form > .row:last-child,  {
+  background: #8CD4CC;
 }
 
 .close-button {
@@ -198,16 +225,16 @@ button:focus {
 .nav-bar {
   height:65px;
   background: #F8F8F8;
-  border-bottom: 2px solid #BBBBBB;
+  border-bottom: 1px solid #BBBBBB;
 }
 
 .filter-directions-nav-bar {
   font-weight:bold;
-  border-bottom: 2px solid #BBBBBB;
+  border-bottom: 1px solid #BBBBBB;
 }
 
 .filter-directions-nav-bar > .row > .columns:first-child {
-  border-right: 2px solid #BBBBBB;
+  border-right: 1px solid #BBBBBB;
 }
 
 .filter-directions-nav-bar > .row > .columns:last-child {
@@ -275,7 +302,7 @@ button:focus {
   font-weight: bold;
   padding-top:4px;
   padding-bottom:4px;
-  border-bottom: 2px solid #BBBBBB;
+  border-bottom: 1px solid #BBBBBB;
 }
 
 #routeNameForm {
@@ -303,20 +330,27 @@ button:focus {
 
 .filter-options-nav-bar {
   font-weight:bold;
-  border-bottom: 2px solid #BBBBBB;
+  border-bottom: 1px solid #BBBBBB;
   overflow: hidden;}
-
 .filter-options-nav-bar > .row > .columns:first-child {
-  border-right: 2px solid #BBBBBB;
+  border-right: 1px solid #BBBBBB;
 }
-
 .filter-options-nav-bar > .row > .columns:nth-child(2) {
-  border-right: 2px solid #BBBBBB;
-  padding-left: 10px;
+  border-right: 1px solid #BBBBBB;
 }
-
 .filter-options-nav-bar > .row > .columns:last-child {
-  padding-left: 10px;
+}
+.filter-options-nav-bar > .row > .columns {
+  padding:0;
+}
+.filter-options-nav-bar > .row > .columns > select {
+  padding-left:20px;
+  cursor: pointer;
+}
+.filter-options-nav-bar > .row > .columns > select:hover {
+  background-color: #26A69A;
+  color: #FFFFFF;
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="32" height="24" viewBox="0 0 32 24"><polygon points="0,0 32,0 16,24" style="fill: #FFFFFF"></polygon></svg>')
 }
 
 
