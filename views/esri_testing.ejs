@@ -136,7 +136,7 @@
           basemap: "topo",
           center: [-118.49132, 34.01455],
           zoom: 14,
-          minZoom: 12,
+          minZoom: 10,
           smartNavigation: false //by adding this, the scroll mouse goes in and out, rather than up and down. perhaps the other way is better though, idk.
         });
 
@@ -206,6 +206,7 @@
             $("#dataSetButton option:selected").prop('selected', false);
             $("#timeFrameButton option:selected").prop('selected', false);
 
+
             if($('#directions-button').hasClass("directions-button-inactive")){
               console.log("direction btn was inactive");
               $(".filter-options-nav-bar").css("display","none");
@@ -217,8 +218,10 @@
               } else {
                 $('#solveRoute').css("display","none");
               }
+
               activateDirections();
               deactivateFilters();
+              $('#directionsDisplay').empty();
             } else {
               console.log("direction btn was active");
               if ($('#directionsDisplay').text().length != 0 ) {
@@ -253,12 +256,19 @@
             if($("#mapFormatButton option:selected").text() == "Crime Grid"){
               $("#dataSetButton option:selected").prop('selected', false);
               $("#timeFrameButton option:selected").prop('selected', false);
+              $("#dataSetButton").css("display","none");
+              $("#timeFrameButton").css("display","none");
               filterParametersCollector[1][0] = "";
               filterParametersCollector[2] = "";
             densityGridOn = true;
             barrierVisibility = true;
             resetBarriers();
             }else if($("#mapFormatButton option:selected").text() != "Map Format"){
+            	$("#dataSetButton").css("display","block");
+              $("#timeFrameButton").css("display","block");
+            	densityGridOn = false;
+            	barrierVisibility = false;
+            	resetBarriers();
               filterParametersCollector[0] = $("#mapFormatButton option:selected").text();
             }
 
@@ -274,6 +284,7 @@
 
 
           $("#dataSetButton").change( function() {
+          	
             if($("#dataSetButton option:selected").text() != "Data Sets"){
               filterParametersCollector[1][0] = $("#dataSetButton option:selected").text();
               if($("#mapFormatButton option:selected").text()== "Crime Grid"){
@@ -289,6 +300,7 @@
 
 
           $("#timeFrameButton").change( function() {
+          	
             if($("#timeFrameButton option:selected").text() != "Time Frame"){
               filterParametersCollector[2] = $("#timeFrameButton option:selected").text();
               if($("#mapFormatButton option:selected").text()== "Crime Grid"){
@@ -1557,9 +1569,7 @@ function plotFilteredData([mapFormat, dataSet, timeFrame]) {
                   //need to establish what each symbol is going to look like
 
                   clearRawData();
-                  densityGridOn = false;
-                  barrierVisibility = false;
-                  resetBarriers();
+
 
 
                   for(var i = 0; i< categoryChoice.length;i++){
@@ -1583,6 +1593,20 @@ function plotFilteredData([mapFormat, dataSet, timeFrame]) {
                   densityGridOn = false;
                   barrierVisibility = false;
                   resetBarriers();
+
+
+
+                  var heatmapRenderer = new HeatmapRenderer({
+                  	colors: ["rgba(0, 0, 255, 0)","rgb(0, 0, 255)","rgb(255, 0, 255)", "rgb(255, 0, 0)"],
+                  	blurRadius: 12,
+                  	maxPixelIntensity: 250,
+                  	minPixelIntensity: 10
+                  });
+
+
+                  console.log(heatmapRenderer);
+
+
                   //Still need to figure out the best way to display a heat map... but this is going to require choosing the correct dataset. Maybe only allow one either crime or business type data to be shown at a time (larceny and homicide but not larceny and medical locations)
                 }
 
@@ -1688,9 +1712,9 @@ function filterParameterFormatter(){
       <div id='mapFormatButton' class="small-4 large-4 columns ">
         <select>
           <option value="default">Map Format</option>
-          <option>Crime Grid</option>
+          <option value="crimeGrid">Crime Grid</option>
           <option>Raw Data</option>
-          <option>Heat Map</option>
+          <!-- <option>Heat Map</option> -->
         </select>
       </div>
       <div id='dataSetButton' class="small-4 large-4 columns">
