@@ -231,12 +231,12 @@ button:focus {
 .filter-directions-nav-bar {
   font-weight:bold;
   border-bottom: 1px solid #BBBBBB;
+  padding-left:11px;
+  padding-right:11px;
 }
-
 .filter-directions-nav-bar > .row > .columns:first-child {
   border-right: 1px solid #BBBBBB;
 }
-
 .filter-directions-nav-bar > .row > .columns:last-child {
   padding-left: 10px;
 }
@@ -344,7 +344,7 @@ button:focus {
   padding:0;
 }
 .filter-options-nav-bar > .row > .columns > select {
-  padding-left:20px;
+  padding-left:15px;
   cursor: pointer;
 }
 .filter-options-nav-bar > .row > .columns > select:hover {
@@ -352,5 +352,3 @@ button:focus {
   color: #FFFFFF;
   background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="32" height="24" viewBox="0 0 32 24"><polygon points="0,0 32,0 16,24" style="fill: #FFFFFF"></polygon></svg>')
 }
-
-
