@@ -17,11 +17,11 @@ h1 {
   color: #000000;
   border: 1px solid #BBBBBB;
   font-weight:bold;
-  transition:none;
+  transition:all 0.4s ease 0s;
 }
 
 .button:hover, .button:focus {
-  background-color: #26A69A;
+  background-color: #1d92cf;
   color: #FFFFFF;
 }
 
@@ -212,7 +212,7 @@ button:focus {
 }
 
 #infoPopup {
-  background: #B5B5B5;
+  background: linear-gradient(#1d92cf,#24aff4);
   color: white;
 }
 
@@ -225,7 +225,7 @@ button:focus {
 
 .nav-bar {
   height:65px;
-  background: #F8F8F8;
+  background: linear-gradient(#bfbfbf, #cdcdcd);
   border-bottom: 1px solid #BBBBBB;
 }
 
@@ -246,10 +246,11 @@ button:focus {
   cursor:pointer;
   padding-top:3px;
   padding-bottom:2px;
+  transition: all 0.4s ease 0s;
 }
 #filter-button:hover,
 .filter-button-active {
-  background-color: #26A69A;
+  background-color: #1d92cf;
   color: #FFFFFF;
 }
 .filter-button-inactive {
@@ -261,10 +262,11 @@ button:focus {
   cursor:pointer;
   padding-top:3px;
   padding-bottom:2px;
+  transition: all 0.4s ease 0s;
 }
 #directions-button:hover,
 .directions-button-active {
-  background-color: #26A69A;
+  background-color: #1d92cf;
   color: #FFFFFF;
 }
 .directions-button-inactive {
@@ -332,7 +334,10 @@ button:focus {
 .filter-options-nav-bar {
   font-weight:bold;
   border-bottom: 1px solid #BBBBBB;
-  overflow: hidden;}
+  overflow: hidden;
+  margin-top: 12px;
+  margin-bottom: 12px;
+}
 .filter-options-nav-bar > .row > .columns:first-child {
   border-right: 1px solid #BBBBBB;
 }
