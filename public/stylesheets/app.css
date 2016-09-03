@@ -95,22 +95,17 @@ button:focus {
 .BypassRouteSelected {
   background-color: #26A69A;
   color: #FFFFFF;
-  transition:none;
-  
 }
 
 #BypassRoute:hover > span,
 .BypassRouteSelected > span {
   background:url('../images/curved_arrow_white.png') left center no-repeat;
   padding-left:21px;
-  transition:none;
-  
 }
 
 .BypassRouteUnselected {
   background-color: #FFFFFF;
   color: #000000;
-  
 }
 
 .BypassRouteUnselected > span {
@@ -251,7 +246,6 @@ button:focus {
   cursor:pointer;
   padding-top:3px;
   padding-bottom:2px;
-  
 }
 #filter-button:hover,
 .filter-button-active {
@@ -267,13 +261,11 @@ button:focus {
   cursor:pointer;
   padding-top:3px;
   padding-bottom:2px;
-  
 }
 #directions-button:hover,
 .directions-button-active {
   background-color: #26A69A;
   color: #FFFFFF;
-
 }
 .directions-button-inactive {
   background-color: #FFFFFF;
@@ -283,25 +275,20 @@ button:focus {
 .directions-button-active > span {
   background:url('../images/directions_btn_active.png') left center no-repeat;
   padding-left:30px;
-  
 }
 .directions-button-inactive > span {
   background:url('../images/directions_btn_inactive.png') left center no-repeat;
   padding-left:30px;
-  
-  
 }
 
 #filter-button:hover > span,
 .filter-button-active > span {
   background:url('../images/filter_button_active.png') left center no-repeat;
   padding-left:30px;
-  
 }
 .filter-button-inactive > span {
   background:url('../images/filter_button_inactive.png') left center no-repeat;
   padding-left:30px;
-  
 }
 
 .nav-bar div {
@@ -319,9 +306,9 @@ button:focus {
   border-bottom: 1px solid #BBBBBB;
 }
 
-#solveRoute:hover{
+#solveRoute:hover {
   background-color: #26A69A;
-  color: #FFFFFF; 
+  color: #FFFFFF;
 }
 
 #routeNameForm {
