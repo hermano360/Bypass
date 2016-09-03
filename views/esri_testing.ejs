@@ -137,7 +137,7 @@
           basemap: "topo",
           center: [-118.49132, 34.01455],
           zoom: 14,
-          minZoom: 12,
+          //minZoom: 12,
           smartNavigation: false //by adding this, the scroll mouse goes in and out, rather than up and down. perhaps the other way is better though, idk.
         });
 
@@ -216,6 +216,7 @@
               $('#destinationAddress').css('display',"block");
               if($('#solveRoute').text()==="Go!"){
                 $('#solveRoute').css("display","block");
+                $('#directionsDisplay').empty();
               } else {
                 $('#solveRoute').css("display","none");
               }
@@ -255,7 +256,7 @@
 
           $("#mapFormatButton").change( function() {
             if($("#mapFormatButton option:selected").text() == "Crime Grid"){
-            	clearRawData();
+              clearRawData();
               $("#dataSetButton option:selected").prop('selected', false);
               $("#timeFrameButton option:selected").prop('selected', false);
               $("#dataSetButton").css("display","none");
@@ -266,11 +267,11 @@
             barrierVisibility = true;
             resetBarriers();
             }else if($("#mapFormatButton option:selected").text() != "Map Format"){
-            	$("#dataSetButton").css("display","block");
+              $("#dataSetButton").css("display","block");
               $("#timeFrameButton").css("display","block");
-            	densityGridOn = false;
-            	barrierVisibility = false;
-            	resetBarriers();
+              densityGridOn = false;
+              barrierVisibility = false;
+              resetBarriers();
               filterParametersCollector[0] = $("#mapFormatButton option:selected").text();
             }
 
@@ -286,7 +287,7 @@
 
 
           $("#dataSetButton").change( function() {
-          	
+            
             if($("#dataSetButton option:selected").text() != "Data Sets"){
               filterParametersCollector[1][0] = $("#dataSetButton option:selected").text();
               if($("#mapFormatButton option:selected").text()== "Crime Grid"){
@@ -302,7 +303,7 @@
 
 
           $("#timeFrameButton").change( function() {
-          	
+            
             if($("#timeFrameButton option:selected").text() != "Time Frame"){
               filterParametersCollector[2] = $("#timeFrameButton option:selected").text();
               if($("#mapFormatButton option:selected").text()== "Crime Grid"){
@@ -411,9 +412,9 @@
             $("#NormalRoute").addClass("NormalRouteUnselected");
             console.log(routes.length);
             if ($("#directions-button").hasClass("directions-button-active") == true) {
-            	if(!$('#directionsDisplay').is(':empty')){
-            		activateDirections();
-            	}
+              if(!$('#directionsDisplay').is(':empty')){
+                activateDirections();
+              }
             }
           });
 
@@ -424,9 +425,9 @@
             $("#BypassRoute").addClass("BypassRouteUnselected");
             $("#BypassRoute").removeClass("BypassRouteSelected");
             if ($("#directions-button").hasClass("directions-button-active") == true) {
-            	if(!$('#directionsDisplay').is(':empty')){
-            		activateDirections();
-            	}
+              if(!$('#directionsDisplay').is(':empty')){
+                activateDirections();
+              }
             }
           });
 
@@ -1130,7 +1131,7 @@ routeParams.outSpatialReference = {"wkid":102100};
           pointWeight = dataz[j][3];//This is the weight of the point we are looking at
 
           if(xdata<42 && xdata>=0 && ydata<36 && ydata>=0){
-          	weightCollection.push([xdata,ydata,pointWeight]);//sets up an array that designates which cell the severity weight (included as well) will be added to, while making sure it fits in the extents of the calculated array
+            weightCollection.push([xdata,ydata,pointWeight]);//sets up an array that designates which cell the severity weight (included as well) will be added to, while making sure it fits in the extents of the calculated array
           }
         }
 
@@ -1139,10 +1140,10 @@ routeParams.outSpatialReference = {"wkid":102100};
          xval = weightCollection[m][0];
          yval = weightCollection[m][1];
          wval = weightCollection[m][2];
-          	calculatedArray[xval][yval] += wval;//If you want to just count the crimes in the area, change wval to 1;
-          	if(calculatedArray[xval][yval]>maxValue){
-          		maxValue = calculatedArray[xval][yval];
-          	}
+            calculatedArray[xval][yval] += wval;//If you want to just count the crimes in the area, change wval to 1;
+            if(calculatedArray[xval][yval]>maxValue){
+              maxValue = calculatedArray[xval][yval];
+            }
           }
           return calculatedArray;
         }
@@ -1523,18 +1524,20 @@ function plotFilteredData([mapFormat, dataSet, timeFrame]) {
 
             //In case the user clicked on the CautionGrid intially, this makes sure it clears it out for the rest of the views
 
+            var nowDate = new Date(2016, 7,23);//Change this once you get data dynamically
+            console.log(nowDate);
 
               //Query based on the "Category" column, may need to discuss to see how databases would do this
               if(timeFrame == "Last Day"){
                 for(var i=0; i< allLocations.length; i++){
-                  if((new Date()-allLocations[i][0])<=8.64e+7 || allLocations[i][5].slice(0,18) =="Points of Interest" || allLocations[i][5].slice(0,8) =="Business"){
+                  if((nowDate-allLocations[i][0])<=8.64e+7 || allLocations[i][5].slice(0,18) =="Points of Interest" || allLocations[i][5].slice(0,8) =="Business"){
                     timeFiltered.push(allLocations[i]);
                   }
                 }
 
               } else if(timeFrame == "Last Week"){
                 for(var i=0; i< allLocations.length; i++){
-                  if((new Date()-allLocations[i][0])<=6.048e+8 || allLocations[i][5].slice(0,18) =="Points of Interest" || allLocations[i][5].slice(0,8) =="Business"){
+                  if((nowDate-allLocations[i][0])<=6.048e+8 || allLocations[i][5].slice(0,18) =="Points of Interest" || allLocations[i][5].slice(0,8) =="Business"){
                     timeFiltered.push(allLocations[i]);
                   }
                 }
@@ -1542,14 +1545,14 @@ function plotFilteredData([mapFormat, dataSet, timeFrame]) {
               } else if(timeFrame == "Last Month"){
 
                 for(var i=0; i< allLocations.length; i++){
-                  if((new Date()-allLocations[i][0])<=2.592e+9 || allLocations[i][5].slice(0,18) =="Points of Interest" || allLocations[i][5].slice(0,8) =="Business"){
+                  if((nowDate-allLocations[i][0])<=2.592e+9 || allLocations[i][5].slice(0,18) =="Points of Interest" || allLocations[i][5].slice(0,8) =="Business"){
                     timeFiltered.push(allLocations[i]);
                   }
                 }
 
               } else if(timeFrame == "Last Year"){
                 for(var i=0; i< allLocations.length; i++){
-                  if((new Date()-allLocations[i][0])<=3.154e+10 || allLocations[i][5].slice(0,18) =="Points of Interest" || allLocations[i][5].slice(0,8) =="Business"){
+                  if((nowDate-allLocations[i][0])<=3.154e+10 || allLocations[i][5].slice(0,18) =="Points of Interest" || allLocations[i][5].slice(0,8) =="Business"){
                     timeFiltered.push(allLocations[i]);
                   }
                 }
@@ -1606,10 +1609,10 @@ function plotFilteredData([mapFormat, dataSet, timeFrame]) {
 
 
                   var heatmapRenderer = new HeatmapRenderer({
-                  	colors: ["rgba(0, 0, 255, 0)","rgb(0, 0, 255)","rgb(255, 0, 255)", "rgb(255, 0, 0)"],
-                  	blurRadius: 12,
-                  	maxPixelIntensity: 250,
-                  	minPixelIntensity: 10
+                    colors: ["rgba(0, 0, 255, 0)","rgb(0, 0, 255)","rgb(255, 0, 255)", "rgb(255, 0, 0)"],
+                    blurRadius: 12,
+                    maxPixelIntensity: 250,
+                    minPixelIntensity: 10
                   });
 
 
@@ -1729,6 +1732,7 @@ function filterParameterFormatter(){
       <div id='dataSetButton' class="small-4 large-4 columns">
         <select>
           <option value="default">Data Sets</option>
+          <option>----Crimes----</option>
           <option>Abduction</option>
           <option>Arson</option>
           <option>Assault</option>
@@ -1741,7 +1745,7 @@ function filterParameterFormatter(){
           <option>Sex Offense</option>
           <option>Street Nuissance</option>
           <option>Weapon</option>
-          <option>---</option>
+          <option>----Business----</option>
           <option>Beauty/Wellness</option>
           <option>Entertainment</option>
           <option>Grocery</option>
@@ -1753,7 +1757,7 @@ function filterParameterFormatter(){
           <option>School</option>
           <option>Services</option>
           <option>Transportation</option>
-          <option>---</option>
+          <option>----Pts of Interest----</option>
           <option>Sex Offender</option>
           <option>Wifi Location</option>
         </select>
@@ -1811,7 +1815,20 @@ function filterParameterFormatter(){
 
       <div class="reveal" id="infoPopup" data-reveal>
         <h4>About Bypass</h4>
-        <p>Bypass will help you get from A-B using the safest route. Enter your Destination in the 'End Location' bar and the beginning location in the 'Start Location' bar. You can use the filter button to alter the types of historical crimes you will void, see landmarks, well let streets, a heat map of crimes and filter the date of the historical incidents. Pressing the directions button will give you written directions to your desired locations. The 'Red Call' button will call the police and send a message to your allocated emergency contact.</p>
+        <p>Bypass will help you get from A-B using the safest route.
+        <br><br>
+        The 'Red Call' button will call the police and send a message to your allocated emergency contact.
+        <br><br>
+        Enter your destination in the 'End Location' and'Start Location' space by typing in your address, clicking on the map, or clicking on the My Location Button. Once the routes are generated, you can toggle between the Bypass and Normal route.  Pushing Go allows you to choose your route.
+        <br><br>
+
+        Pressing the directions button after route chosen will give you written directions to your desired locations. 
+        <br><br>
+        You can use the filter button to show the map layers available in your area. 
+        <br><br>
+        Crime grid overlays the aggregated anaylsis. Raw data allows see crimes, businesses, and points of interest.
+
+        </p>
         <button class="close-button" data-close aria-label="Close modal" type="button">
           <span aria-hidden="true">&times;</span>
         </button>
