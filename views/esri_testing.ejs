@@ -106,6 +106,7 @@
         var allLocations;
         var rawDataPointsGraphics = [];
         var filterParametersCollector = ["",[""],""];
+        
 
         var authdata = {client_id: '9gdUoBaoDjP5INej', client_secret: 'd2368d00106f46ec9e6d5bd9b069704a', grant_type: 'client_credentials', expiration: '1440'}
 
@@ -136,7 +137,7 @@
           basemap: "topo",
           center: [-118.49132, 34.01455],
           zoom: 14,
-          minZoom: 10,
+          minZoom: 12,
           smartNavigation: false //by adding this, the scroll mouse goes in and out, rather than up and down. perhaps the other way is better though, idk.
         });
 
@@ -254,6 +255,7 @@
 
           $("#mapFormatButton").change( function() {
             if($("#mapFormatButton option:selected").text() == "Crime Grid"){
+            	clearRawData();
               $("#dataSetButton option:selected").prop('selected', false);
               $("#timeFrameButton option:selected").prop('selected', false);
               $("#dataSetButton").css("display","none");
@@ -317,7 +319,7 @@
           $("#solveRoute").click( function(){
             if($('#solveRoute').text()==="Go!"){
               $('#solveRoute').css("display","none");
-              $('#solveRoute').text("Solve!");
+              $('#solveRoute').text("Click to Solve Route!");
               if(routes.length > 1){
                 map.graphics.remove(routes.shift());
               }
@@ -409,7 +411,9 @@
             $("#NormalRoute").addClass("NormalRouteUnselected");
             console.log(routes.length);
             if ($("#directions-button").hasClass("directions-button-active") == true) {
-              activateDirections();
+            	if(!$('#directionsDisplay').is(':empty')){
+            		activateDirections();
+            	}
             }
           });
 
@@ -420,7 +424,9 @@
             $("#BypassRoute").addClass("BypassRouteUnselected");
             $("#BypassRoute").removeClass("BypassRouteSelected");
             if ($("#directions-button").hasClass("directions-button-active") == true) {
-              activateDirections();
+            	if(!$('#directionsDisplay').is(':empty')){
+            		activateDirections();
+            	}
             }
           });
 
@@ -449,6 +455,7 @@
           }
 
 function resetDirections() {
+
   $('#directionsDisplay').empty();
   var border_style = "";
   var individual_direction = "";
@@ -465,7 +472,9 @@ function resetDirections() {
         individual_direction = individual_direction.charAt(0).toUpperCase() + individual_direction.slice(1);
       }
 
+      
       $("#directionsDisplay").append("<div class='row'" + border_style + "><div class='large-12 columns dynamicDirectionsRow'>" + individual_direction + "</div></div>");
+
     };
   }
   else {
@@ -598,7 +607,7 @@ routeParams.outSpatialReference = {"wkid":102100};
         function inputAddress(){
           clearRoutes();
           $('#solveRoute').css("display","none");
-          $('#solveRoute').text("Solve!");
+          $('#solveRoute').text("Click to Solve Route!");
           navigator.geolocation.getCurrentPosition(function(position){
             long = position.coords.longitude;
             lat = position.coords.latitude;
@@ -647,7 +656,7 @@ routeParams.outSpatialReference = {"wkid":102100};
           $("#myLocation").on('click', inputAddress);
           mapOnClick_addStops_connect = map.on("click", function(evt){
           $('#solveRoute').css("display","none");
-          $('#solveRoute').text("Solve!");
+          $('#solveRoute').text("Click to Solve Route!");
           $("#BypassRoute").css('display',"none");
           $("#NormalRoute").css('display',"none");
             clearRoutes();
@@ -689,7 +698,7 @@ routeParams.outSpatialReference = {"wkid":102100};
             $("#BypassRoute").css('display',"none");
           $("#NormalRoute").css('display',"none");
           $('#solveRoute').css("display","none");
-          $('#solveRoute').text("Solve!");
+          $('#solveRoute').text("Click to Solve Route!");
             clearRoutes();
             map.graphics.remove(routeStops.pop());
             routeStops.push(map.graphics.add(new esri.Graphic(evt.mapPoint,stopSymbol)));
@@ -1702,7 +1711,7 @@ function filterParameterFormatter(){
 
 <div class="row">
   <div id="solveRoute" class="directions-nav-bar large-12 columns" style='display:none;'>
-    Solve!
+    Click to Solve Route!
   </div>
 </div>
 
