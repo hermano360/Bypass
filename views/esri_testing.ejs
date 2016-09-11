@@ -4,8 +4,10 @@
   <meta charset="utf-8">
   <meta http-equiv="x-ua-compatible" content="ie=edge">
   <meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="apple-touch-icon" href="/images/BypassIcon.png">
   <title>Bypass</title>
-  <link rel="shortcut icon" type="image/png" href="/images/favicon.png"/>
+  <link rel="shortcut icon" type="image/png" href="/images/BypassIcon.png"/>
   <link rel="stylesheet" href="stylesheets/foundation.min.css" />
   <link rel="stylesheet" href="stylesheets/app.css" />
   <link rel="stylesheet" href="https://js.arcgis.com/3.17/dijit/themes/claro/claro.css">
@@ -290,10 +292,7 @@
             
             if($("#dataSetButton option:selected").text() != "Data Sets"){
               filterParametersCollector[1][0] = $("#dataSetButton option:selected").text();
-              if($("#mapFormatButton option:selected").text()== "Crime Grid"){
-                $("#mapFormatButton option:selected").prop('selected', false);
-                filterParametersCollector[0]="";
-              }
+              $("#mapFormatButton select").val('rawData');
             }
             if(filterParametersCollector[0] && filterParametersCollector[1][0] && filterParametersCollector[2]){
               plotFilteredData(filterParameterFormatter());
@@ -400,6 +399,7 @@
             deactivateFilters();
             barrierVisibility = false;
             mapAllIndices(normalizedArray);
+            clearRawData();
           });
 
 
@@ -1725,38 +1725,38 @@ function filterParameterFormatter(){
         <select>
           <option value="default">Map Format</option>
           <option value="crimeGrid">Crime Grid</option>
-          <option>Raw Data</option>
+          <option value="rawData">Raw Data</option>
           <!-- <option>Heat Map</option> -->
         </select>
       </div>
       <div id='dataSetButton' class="small-4 large-4 columns">
         <select>
           <option value="default">Data Sets</option>
-          <option>----Crimes----</option>
-          <option>Abduction</option>
-          <option>Arson</option>
-          <option>Assault</option>
-          <option>Burglary</option>
-          <option>GTA</option>
-          <option>Homicide</option>
-          <option>Larceny</option>
-          <option>Narcotics</option>
-          <option>Robbery</option>
-          <option>Sex Offense</option>
-          <option>Street Nuissance</option>
-          <option>Weapon</option>
-          <option>----Business----</option>
-          <option>Beauty/Wellness</option>
-          <option>Entertainment</option>
-          <option>Grocery</option>
-          <option>Medical</option>
-          <option>Repair</option>
-          <option>Residence</option>
-          <option>Restaurant/Bar</option>
-          <option>Retail</option>
-          <option>School</option>
-          <option>Services</option>
-          <option>Transportation</option>
+          <option class="allCrime">----Crimes----</option>
+          <option class="crime">Abduction</option>
+          <option class="crime">Arson</option>
+          <option class="crime">Assault</option>
+          <option class="crime">Burglary</option>
+          <option class="crime">GTA</option>
+          <option class="crime">Homicide</option>
+          <option class="crime">Larceny</option>
+          <option class="crime">Narcotics</option>
+          <option class="crime">Robbery</option>
+          <option class="crime">Sex Offense</option>
+          <option class="crime">Street Nuissance</option>
+          <option class="crime">Weapon</option>
+          <option class="allBusiness">----Business----</option>
+          <option class="business">Beauty/Wellness</option>
+          <option class="business">Entertainment</option>
+          <option class="business">Grocery</option>
+          <option class="business">Medical</option>
+          <option class="business">Repair</option>
+          <option class="business">Residence</option>
+          <option class="business">Restaurant/Bar</option>
+          <option class="business">Retail</option>
+          <option class="business">School</option>
+          <option class="business">Services</option>
+          <option class="business">Transportation</option>
           <option>----Pts of Interest----</option>
           <option>Sex Offender</option>
           <option>Wifi Location</option>
