@@ -1,17 +1,35 @@
 /* zurb foundation overrides - BEGIN */
+
+/*View Sizing*/
 .row {
   max-width: 100%;
 }
 
+
+/*Fonts*/
+body{
+  font-family: 'Raleway', sans-serif;
+  font-weight: lighter;
+}
 h1 {
   font-size:30px;
   font-weight:bold;
+  font-family:
 }
 
-.reveal {
-  padding-top:20px;
+.app-info, .call-police {
+  font-size: 40px;
+  color: gray;
+  border: #000;
+  border-radius: 50%;
 }
-
+a{
+  color: #fff;
+}
+.call-police a{
+  color: #d37984;
+}
+/*Buttons*/
 .button {
   background-color: #FFFFFF;
   color: #000000;
@@ -25,6 +43,10 @@ h1 {
   color: #FFFFFF;
 }
 
+
+.reveal {
+  padding-top:20px;
+}
 [type=color], [type=date], [type=datetime-local], [type=datetime], [type=email], [type=month], [type=number], [type=password], [type=search], [type=tel], [type=text], [type=time], [type=url], [type=week], textarea, [type='text']:focus, [type='password']:focus, [type='date']:focus, [type='datetime']:focus, [type='datetime-local']:focus, [type='month']:focus, [type='week']:focus, [type='email']:focus, [type='number']:focus, [type='search']:focus, [type='tel']:focus, [type='time']:focus, [type='url']:focus, [type='color']:focus, textarea:focus {
   border: none;
   background-color: #8CD4CC;
@@ -35,198 +57,11 @@ h1 {
   transition: none;
 }
 
-select {
-  margin:0;
-  border:none;
-  height: 30px;
-  padding-top: 0px;
-  padding-bottom: 0px;
-  line-height: 30px;
-  border-radius:0 !important;
-  font-size:14px;
-}
-
-option {
-  min-height:20px;
-}
-/* remove the iphone bug where the input boxes are rounded */
-input {
-  -webkit-border-radius: 0px;
-  -webkit-appearance: none;
-  border-radius: 0px;
-}
-/* zurb foundation overrides - END */
-
-/* only affects input tag placeholder color - BEGIN */
-::-webkit-input-placeholder { /* WebKit, Blink, Edge */
-  color: #FEFDFA !important;
-}
-:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
-  color: #FEFDFA !important;
-  opacity: 1;
-}
-::-moz-placeholder { /* Mozilla Firefox 19+ */
-  color: #FEFDFA !important;
-  opacity: 1;
-}
-:-ms-input-placeholder { /* Internet Explorer 10-11 */
-  color: #FEFDFA !important;
-}
-/* only affects input tag placeholder color - END */
-
-input:focus,
-select:focus,
-textarea:focus,
-button:focus {
-  outline: none;
-}
-
-#logo {
-  margin: 5px 0;
-  height:55px;
-}
-
-#resetBtn {
-  position:absolute;
-  left: 20px;
-  bottom: 4px;
-}
-
-.BypassRouteSelected {
-  background-color: #26A69A;
-  color: #FFFFFF;
-}
-
-#BypassRoute:hover > span,
-.BypassRouteSelected > span {
-  background:url('../images/curved_arrow_white.png') left center no-repeat;
-  padding-left:21px;
-}
-
-.BypassRouteUnselected {
-  background-color: #FFFFFF;
-  color: #000000;
-}
-
-.BypassRouteUnselected > span {
-  background:url('../images/curved_arrow_black.png') left center no-repeat;
-  padding-left:21px;
-}
-
-.NormalRouteSelected {
-  background-color: #26A69A;
-  color: #FFFFFF;
-}
-
-#NormalRoute:hover > span,
-.NormalRouteSelected > span {
-  background:url('../images/curved_arrow_white.png') left center no-repeat;
-  padding-left:21px;
-}
-
-.NormalRouteUnselected {
-  background-color: #FFFFFF;
-  color: #000000;
-}
-
-.NormalRouteUnselected > span {
-  background:url('../images/curved_arrow_black.png') left center no-repeat;
-  padding-left:21px;
-}
-
-#myLocation {
-  margin-left:58px;
-  padding:0;
-  background:url('../images/crosshair_unselected.png') left center no-repeat;
-  width:44px;
-  height:44px;
-}
-
-#myLocation:hover {
-  background:url('../images/crosshair_selected.png') left center no-repeat;
-}
-
-.bottomRightNav {
-  right: 20px;
-  bottom: 2px;
-  position: absolute;
-  width:102px;
-}
-
-.bottomRightNav > button {
-  margin-bottom: 18px;
-}
-
-#startAddress {
-  border-bottom: 1px solid #BBBBBB;
-}
-#startAddress.directions-textbox {
-  background-image:url('../images/directions_arrow.png');
-}
-
-#destinationAddress {
-  border-bottom: 1px solid #BBBBBB;
-}
-#destinationAddress.directions-textbox {
-  background-image:url('../images/pin.png');
-}
-
-.dynamicDirectionsRow {
-  padding:5px 59px;
-}
-
-.directions-textbox {
-  text-indent:45px;
-  width:100%;
-  height:34px;
-  padding:7px 0;
-  margin:0;
-  color: white;
-  border:none;
-  font-weight:bold;
-  background-color: #8CD4CC !important;
-  background-position: left center;
-  background-repeat: no-repeat;
-  border-radius:0;
-}
-
-.directions-nav-bar {
-  padding-left:0;
-  padding-right:0;
-}
-.directions-nav-bar > form:first-child > .row,
-.directions-nav-bar > form > .row:last-child,  {
-  background: #8CD4CC;
-}
-
-.close-button {
-  top: 5px;
-  right: 5px;
-  position: absolute;
-}
-
-#callPolicePopup > a {
-  width: 100%;
-  margin-top:40px;
-  margin-bottom:40px;
-}
-
-#infoPopup {
-  background: #B5B5B5;
-  color: white;
-}
-
-.icon-wrapper {
-  line-height: 50px;
-  height: 50px;
-  width: 50px;
-  margin-top:6px;
-}
-
+/*Nav Bar*/
 .nav-bar {
-  height:65px;
+  height:80px;
   background: #F8F8F8;
-  border-bottom: 1px solid #BBBBBB;
+  /*border-bottom: 1px solid #BBBBBB;*/
 }
 
 .filter-directions-nav-bar {
@@ -357,4 +192,188 @@ button:focus {
   background-color: #26A69A;
   color: #FFFFFF;
   background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="32" height="24" viewBox="0 0 32 24"><polygon points="0,0 32,0 16,24" style="fill: #FFFFFF"></polygon></svg>')
+}
+
+/*Forms*/
+select {
+  margin:0;
+  border:none;
+  height: 30px;
+  padding-top: 0px;
+  padding-bottom: 0px;
+  line-height: 30px;
+  border-radius:0 !important;
+  font-size:14px;
+}
+
+option {
+  min-height:20px;
+}
+/* remove the iphone bug where the input boxes are rounded */
+input {
+  -webkit-border-radius: 0px;
+  -webkit-appearance: none;
+  border-radius: 50%;
+}
+/* zurb foundation overrides - END */
+
+/* only affects input tag placeholder color - BEGIN */
+::-webkit-input-placeholder { /* WebKit, Blink, Edge */
+  color: #FEFDFA !important;
+}
+:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+  color: #FEFDFA !important;
+  opacity: 1;
+}
+::-moz-placeholder { /* Mozilla Firefox 19+ */
+  color: #FEFDFA !important;
+  opacity: 1;
+}
+:-ms-input-placeholder { /* Internet Explorer 10-11 */
+  color: #FEFDFA !important;
+}
+/* only affects input tag placeholder color - END */
+
+input:focus,
+select:focus,
+textarea:focus,
+button:focus {
+  outline: none;
+}
+
+#logo {
+  margin: 5px 0;
+  height:5em;
+  width: 5em;
+  padding-bottom: 3px;
+}
+
+#resetBtn {
+  position:absolute;
+  left: 20px;
+  bottom: 4px;
+}
+
+.BypassRouteSelected {
+  background-color: #26A69A;
+  color: #FFFFFF;
+}
+
+#BypassRoute:hover > span,
+.BypassRouteSelected > span {
+  background:url('../images/curved_arrow_white.png') left center no-repeat;
+  padding-left:21px;
+}
+
+.BypassRouteUnselected {
+  background-color: #FFFFFF;
+  color: #000000;
+}
+
+.BypassRouteUnselected > span {
+  background:url('../images/curved_arrow_black.png') left center no-repeat;
+  padding-left:21px;
+}
+
+.NormalRouteSelected {
+  background-color: #26A69A;
+  color: #FFFFFF;
+}
+
+#NormalRoute:hover > span,
+.NormalRouteSelected > span {
+  background:url('../images/curved_arrow_white.png') left center no-repeat;
+  padding-left:21px;
+}
+
+.NormalRouteUnselected {
+  background-color: #FFFFFF;
+  color: #000000;
+}
+
+.NormalRouteUnselected > span {
+  background:url('../images/curved_arrow_black.png') left center no-repeat;
+  padding-left:21px;
+}
+
+#myLocation {
+  margin-left:58px;
+  padding:0;
+  background:url('../images/crosshair_unselected.png') left center no-repeat;
+  width:44px;
+  height:44px;
+}
+
+#myLocation:hover {
+  background:url('../images/crosshair_selected.png') left center no-repeat;
+}
+
+.bottomRightNav {
+  right: 20px;
+  bottom: 2px;
+  position: absolute;
+  width:102px;
+}
+
+.bottomRightNav > button {
+  margin-bottom: 18px;
+}
+
+#startAddress {
+  border-bottom: 1px solid #BBBBBB;
+}
+#startAddress.directions-textbox {
+  background-image:url('../images/directions_arrow.png');
+}
+
+#destinationAddress {
+  border-bottom: 1px solid #BBBBBB;
+}
+#destinationAddress.directions-textbox {
+  background-image:url('../images/pin.png');
+}
+
+.dynamicDirectionsRow {
+  padding:5px 59px;
+}
+
+.directions-textbox {
+  text-indent:45px;
+  width:100%;
+  height:34px;
+  padding:7px 0;
+  margin:0;
+  color:#000;
+  border:none;
+  font-weight:bold;
+  background-color: #fff !important;
+  background-position: left center;
+  background-repeat: no-repeat;
+  border-radius:0;
+}
+
+.directions-nav-bar {
+  padding-left:0;
+  padding-right:0;
+}
+.directions-nav-bar > form:first-child > .row,
+.directions-nav-bar > form > .row:last-child,  {
+  background: #fff;
+}
+
+.close-button {
+  top: 5px;
+  right: 5px;
+  position: absolute;
+}
+
+#callPolicePopup > a {
+  width: 100%;
+  margin-top:40px;
+  margin-bottom:40px;
+}
+
+#infoPopup {
+  background: #B5B5B5;
+  color: white;
 }
