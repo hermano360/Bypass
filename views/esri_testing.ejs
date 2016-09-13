@@ -108,9 +108,10 @@
         var allLocations;
         var rawDataPointsGraphics = [];
         var filterParametersCollector = ["",[""],""];
+        var geocodedxy = [];
         
 
-        var authdata = {client_id: '9gdUoBaoDjP5INej', client_secret: 'd2368d00106f46ec9e6d5bd9b069704a', grant_type: 'client_credentials', expiration: '1440'}
+        var authdata = {client_id: '2FiTpg1kQIhDPS1H', client_secret: '926550d14c5e4fe9b39fc25229654ce7', grant_type: 'client_credentials', expiration: '1440'}
 
         var walkModeUrl = "";
         walkModeUrl = "travelMode={\"attributeParameterValues\":[{\"parameterName\":\"Restriction Usage\",\"attributeName\":\"Walking\",\"value\":\"PROHIBITED\"},{\"parameterName\":\"Restriction Usage\",\"attributeName\":\"Preferred for Pedestrians\",\"value\":\"PREFER_LOW\"},{\"parameterName\":\"Walking Speed (mph)\",\"attributeName\":\"TravelTime\",\"value\":5}],\"description\":\"Follows paths and roads that allow pedestrian traffic and finds solutions that optimize travel time. The walking speed is set to 5 miles per hour.\",\"impedanceAttributeName\":\"Miles\",\"simplificationToleranceUnits\":\"esriMeters\",\"uturnAtJunctions\":\"esriNFSBAllowBacktrack\",\"restrictionAttributeNames\":[\"Preferred for Pedestrians\",\"Walking\"],\"useHierarchy\":false,\"simplificationTolerance\":2,\"timeAttributeName\":\"TravelTime\",\"distanceAttributeName\":\"Miles\",\"type\":\"WALK\",\"id\":\"caFAgoThrvUpkFBW\",\"name\":\"Walking Time\"}&";
@@ -168,6 +169,24 @@
             mapAllIndices(normalizedArray);
             map.on("extent-change", resetBarriers);
           });
+
+          });
+
+          xhr.get("cached_danger_influences.csv", { //uploading csv data
+            handleAs: "text",
+          }).then(function(data) {
+            globalvariable = data.replace(/\n/g, "," ).split(",");
+            formatedData = formatGlobal(globalvariable);
+            densityArray = dangerAlgorithm(formatedData);
+            //mapAllIndices(densityArray);
+
+          //   xhr.get("2015-PART_I_AND_II_CRIMES.csv", {
+          //     handleAs: "text",
+          //   }).then(function(data) {
+
+          //     var crime2015 = data.replace(/\n/g,"?" ).replace(/\"/g,'').split("?");
+          //     geocodexy(crime2015);
+          // });
 
           });
 
@@ -254,6 +273,7 @@
              activateFilters();
              deactivateDirections();
            }
+           console.log(geocodedxy);
          });
 
           $("#mapFormatButton").change( function() {
@@ -293,6 +313,8 @@
             if($("#dataSetButton option:selected").text() != "Data Sets"){
               filterParametersCollector[1][0] = $("#dataSetButton option:selected").text();
               $("#mapFormatButton select").val('rawData');
+              filterParametersCollector[0] = $("#mapFormatButton option:selected").text();
+              
             }
             if(filterParametersCollector[0] && filterParametersCollector[1][0] && filterParametersCollector[2]){
               plotFilteredData(filterParameterFormatter());
@@ -305,11 +327,10 @@
             
             if($("#timeFrameButton option:selected").text() != "Time Frame"){
               filterParametersCollector[2] = $("#timeFrameButton option:selected").text();
-              if($("#mapFormatButton option:selected").text()== "Crime Grid"){
-                $("#mapFormatButton option:selected").prop('selected', false);
-                filterParametersCollector[0]="";
-              }
+                            $("#mapFormatButton select").val('rawData');
+              filterParametersCollector[0] = $("#mapFormatButton option:selected").text();
             }
+            
             if(filterParametersCollector[0] && filterParametersCollector[1][0] && filterParametersCollector[2]){
               plotFilteredData(filterParameterFormatter());
             }
@@ -1461,6 +1482,7 @@ routeParams.outSpatialReference = {"wkid":102100};
 
 //////////////////////// 8/28/2016
 function plotFilteredData([mapFormat, dataSet, timeFrame]) {
+  console.log([mapFormat, dataSet, timeFrame]);
 
           //console.log(allLocations[4][5]);
 
@@ -1663,6 +1685,42 @@ function filterParameterFormatter(){
 
   return outputArray;
   }
+
+  ////9/12
+  function geocodexy(dataset) {
+    for(var i=1; i<dataset.length; i++){
+      console.log(i);
+      
+
+       
+           var finalGeocodingURL = "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/geocodeAddresses?addresses={%22records%22:[{%22attributes%22:{%22OBJECTID%22:1,%22SingleLine%22:%22" + dataset[i].replace(" ","%20") + "%22}}]}&sourceCountry=USA&token=" + globalToken + "&f=pjson";
+
+      var finalResults;
+
+      $.ajax({
+        type: 'POST',
+        url: finalGeocodingURL,
+        success: function (results, textStatus, xhr) {
+          finalResults = JSON.parse(results);
+
+          //console.log([finalResults.locations[0].address,finalResults.locations[0].location.x,finalResults.locations[0].location.y]);
+
+          geocodedxy.push([finalResults.locations[0].address,finalResults.locations[0].location.x,finalResults.locations[0].location.y]);
+        },
+        error: function (xhr, textStatus, errorThrown) {
+          console.log("test failed");
+          console.log("ERROR:" + xhr.responseText + xhr.status + errorThrown);
+          return false;
+        }
+      });
+      
+    }
+
+    
+  }
+
+
+
 });
 </script>
 </head>
