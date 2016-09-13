@@ -44,6 +44,14 @@
           <i class="fa fa-phone" aria-hidden="true"></i>
         </a>
       </div>
+      <!-- Call Police Window -->
+      <div class="reveal" id="callPolicePopup" data-reveal>
+        <a class='button alert radius' href="tel:911">Call Police<a></a>
+        <button class="close-button" data-close aria-label="Close modal" type="button">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
       <!-- Logo -->
       <div class="logo">
         <img id='logo' src='/images/logo.png'></img>
@@ -57,19 +65,15 @@
     </div>
   </div>
 <!-- Routing Pop Down -->
-  <div class="row">
+  <!-- <div class="row">
     <div class="filter-directions-nav-bar large-12 columns">
       <div class="row">
       <div id='directions-button' class="small-6 large-6 columns directions-button-inactive">
         <span>Directions</span>
       </div>
-    <!-- Filter Crime and interest points -->
-       <div id='filter-button' class="small-6 large-6 columns filter-button-inactive">
-        <span>Filter</span>
-      </div>
     </div>
   </div>
-</div>
+</div> -->
   <!-- Location/ Destination Input -->
 <div class="row">
   <div class="directions-nav-bar large-12 columns">
@@ -90,6 +94,11 @@
     </form>
   </div>
 </div>
+
+<!-- Filter Crime and interest points -->
+   <div id='filter-button' class="small-6 large-6 columns filter-button-inactive">
+    <span>Filter</span>
+  </div>
 
 <div class="row">
   <div id="solveRoute" class="directions-nav-bar large-12 columns" style='display:none;'>
@@ -189,12 +198,7 @@
         <div id="GPSdiv" style="display:none;"></div>
       </div>
 
-      <div class="reveal" id="callPolicePopup" data-reveal>
-        <a class='button alert radius' href="tel:911">Call Police<a></a>
-        <button class="close-button" data-close aria-label="Close modal" type="button">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
+
 
       <div class="reveal" id="infoPopup" data-reveal>
         <h4>About Bypass</h4>
