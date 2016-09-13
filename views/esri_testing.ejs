@@ -9,7 +9,7 @@
   <title>Bypass</title>
   <link rel="shortcut icon" type="image/png" href="/images/BypassIcon.png"/>
   <link rel="stylesheet" href="stylesheets/foundation.min.css" />
-  <link rel="stylesheet" href="stylesheets/app.css" />
+  <link rel="stylesheet" href="stylesheets/style.css" />
   <link rel="stylesheet" href="https://js.arcgis.com/3.17/dijit/themes/claro/claro.css">
   <link rel="stylesheet" href="https://js.arcgis.com/3.17/esri/css/esri.css">
 
@@ -109,7 +109,7 @@
         var rawDataPointsGraphics = [];
         var filterParametersCollector = ["",[""],""];
         var geocodedxy = [];
-        
+
 
         var authdata = {client_id: '2FiTpg1kQIhDPS1H', client_secret: '926550d14c5e4fe9b39fc25229654ce7', grant_type: 'client_credentials', expiration: '1440'}
 
@@ -309,12 +309,12 @@
 
 
           $("#dataSetButton").change( function() {
-            
+
             if($("#dataSetButton option:selected").text() != "Data Sets"){
               filterParametersCollector[1][0] = $("#dataSetButton option:selected").text();
               $("#mapFormatButton select").val('rawData');
               filterParametersCollector[0] = $("#mapFormatButton option:selected").text();
-              
+
             }
             if(filterParametersCollector[0] && filterParametersCollector[1][0] && filterParametersCollector[2]){
               plotFilteredData(filterParameterFormatter());
@@ -324,13 +324,13 @@
 
 
           $("#timeFrameButton").change( function() {
-            
+
             if($("#timeFrameButton option:selected").text() != "Time Frame"){
               filterParametersCollector[2] = $("#timeFrameButton option:selected").text();
                             $("#mapFormatButton select").val('rawData');
               filterParametersCollector[0] = $("#mapFormatButton option:selected").text();
             }
-            
+
             if(filterParametersCollector[0] && filterParametersCollector[1][0] && filterParametersCollector[2]){
               plotFilteredData(filterParameterFormatter());
             }
@@ -494,7 +494,7 @@ function resetDirections() {
         individual_direction = individual_direction.charAt(0).toUpperCase() + individual_direction.slice(1);
       }
 
-      
+
       $("#directionsDisplay").append("<div class='row'" + border_style + "><div class='large-12 columns dynamicDirectionsRow'>" + individual_direction + "</div></div>");
 
     };
@@ -1690,9 +1690,9 @@ function filterParameterFormatter(){
   function geocodexy(dataset) {
     for(var i=1; i<dataset.length; i++){
       console.log(i);
-      
 
-       
+
+
            var finalGeocodingURL = "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/geocodeAddresses?addresses={%22records%22:[{%22attributes%22:{%22OBJECTID%22:1,%22SingleLine%22:%22" + dataset[i].replace(" ","%20") + "%22}}]}&sourceCountry=USA&token=" + globalToken + "&f=pjson";
 
       var finalResults;
@@ -1713,10 +1713,10 @@ function filterParameterFormatter(){
           return false;
         }
       });
-      
+
     }
 
-    
+
   }
 
 
@@ -1880,9 +1880,9 @@ function filterParameterFormatter(){
         Enter your destination in the 'End Location' and'Start Location' space by typing in your address, clicking on the map, or clicking on the My Location Button. Once the routes are generated, you can toggle between the Bypass and Normal route.  Pushing Go allows you to choose your route.
         <br><br>
 
-        Pressing the directions button after route chosen will give you written directions to your desired locations. 
+        Pressing the directions button after route chosen will give you written directions to your desired locations.
         <br><br>
-        You can use the filter button to show the map layers available in your area. 
+        You can use the filter button to show the map layers available in your area.
         <br><br>
         Crime grid overlays the aggregated anaylsis. Raw data allows see crimes, businesses, and points of interest. Please allow for loading. Not all browsers may be supported.
 
