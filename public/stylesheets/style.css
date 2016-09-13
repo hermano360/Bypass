@@ -10,6 +10,7 @@
 body{
   font-family: 'Raleway', sans-serif;
   font-weight: lighter;
+  font-size: 16px;
 }
 h1 {
   font-size:30px;
@@ -28,6 +29,9 @@ a{
 }
 .call-police a{
   color: #d37984;
+}
+.app-info a{
+  color: #5d5d5d;
 }
 /*Buttons*/
 .button {
@@ -59,7 +63,7 @@ a{
 
 /*Nav Bar*/
 .nav-bar {
-  height:80px;
+  height:10%;
   background: #F8F8F8;
   /*border-bottom: 1px solid #BBBBBB;*/
 }
@@ -108,22 +112,22 @@ a{
 }
 #directions-button:hover > span,
 .directions-button-active > span {
-  background:url('../images/directions_btn_active.png') left center no-repeat;
-  padding-left:30px;
+  /*background:url('../images/directions_btn_active.png') left center no-repeat;*/
+  /*padding-left:30px;*/
 }
 .directions-button-inactive > span {
-  background:url('../images/directions_btn_inactive.png') left center no-repeat;
-  padding-left:30px;
+  /*background:url('../images/directions_btn_inactive.png') left center no-repeat;*/
+  /*padding-left:30px;*/
 }
 
 #filter-button:hover > span,
 .filter-button-active > span {
-  background:url('../images/filter_button_active.png') left center no-repeat;
-  padding-left:30px;
+  /*background:url('../images/filter_button_active.png') left center no-repeat;*/
+  /*padding-left:30px;*/
 }
 .filter-button-inactive > span {
-  background:url('../images/filter_button_inactive.png') left center no-repeat;
-  padding-left:30px;
+  /*background:url('../images/filter_button_inactive.png') left center no-repeat;*/
+  /*padding-left:30px;*/
 }
 
 .nav-bar div {
@@ -296,16 +300,15 @@ button:focus {
   padding-left:21px;
 }
 
-#myLocation {
-  margin-left:58px;
-  padding:0;
+#currentLocation {
   background:url('../images/crosshair_unselected.png') left center no-repeat;
   width:44px;
   height:44px;
 }
 
-#myLocation:hover {
-  background:url('../images/crosshair_selected.png') left center no-repeat;
+#currentLocation, a{
+  font-size: 40px;
+  color: #5d5d5d;
 }
 
 .bottomRightNav {
@@ -319,19 +322,19 @@ button:focus {
   margin-bottom: 18px;
 }
 
-#startAddress {
-  border-bottom: 1px solid #BBBBBB;
+#startAddress, #destinationAddress{
+  border: 1px solid #8cd4cc;
+  margin-bottom: 3px;
+  border-radius: 5px;
 }
-#startAddress.directions-textbox {
+/*#startAddress.directions-textbox {
   background-image:url('../images/directions_arrow.png');
-}
+}*/
 
-#destinationAddress {
-  border-bottom: 1px solid #BBBBBB;
-}
+/*}
 #destinationAddress.directions-textbox {
   background-image:url('../images/pin.png');
-}
+}*/
 
 .dynamicDirectionsRow {
   padding:5px 59px;
@@ -362,6 +365,7 @@ button:focus {
 }
 
 .close-button {
+
   top: 5px;
   right: 5px;
   position: absolute;
