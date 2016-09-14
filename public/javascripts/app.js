@@ -236,8 +236,8 @@ $(document).foundation()
           if ($("#filter-button").hasClass("filter-button-inactive") == true) {
             console.log("filter button was inactive");
            $(".filter-options-nav-bar").css("display","block");
-           $('#startAddress').css('display',"none");
-          $('#destinationAddress').css('display',"none");
+          //  $('#startAddress').css('display',"none");
+          // $('#destinationAddress').css('display',"none");
           $('#solveRoute').css("display","none");
           if(!chosenRouteDirections){
             $('#startAddress').val("");

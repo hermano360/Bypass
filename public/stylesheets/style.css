@@ -33,12 +33,18 @@ a{
 .app-info a{
   color: #5d5d5d;
 }
+
+.input-wrapper i{
+  position: absolute;
+  margin: 5px;
+  font-size: 20px;;
+}
+
 /*Buttons*/
 .button {
   background-color: #FFFFFF;
   color: #000000;
   border: 1px solid #BBBBBB;
-  font-weight:bold;
   transition:none;
 }
 
@@ -221,6 +227,7 @@ input {
 }
 /* zurb foundation overrides - END */
 
+
 /* only affects input tag placeholder color - BEGIN */
 ::-webkit-input-placeholder { /* WebKit, Blink, Edge */
   color: #FEFDFA !important;
@@ -341,10 +348,10 @@ button:focus {
 }
 
 .directions-textbox {
-  text-indent:45px;
+  text-indent:15px;
   width:100%;
   height:34px;
-  padding:7px 0;
+  /*padding:7px 0;*/
   margin:0;
   color:#000;
   border:none;
@@ -354,6 +361,12 @@ button:focus {
   background-repeat: no-repeat;
   border-radius:0;
 }
+
+/*.input-wrapper{
+  position: relative;
+}*/
+
+
 
 .directions-nav-bar {
   padding-left:0;
