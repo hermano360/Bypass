@@ -338,7 +338,7 @@ $(document).foundation()
             mapAllIndices(normalizedArray);
             $("#BypassRoute").addClass("BypassRouteSelected");
             $("#BypassRoute").removeClass("BypassRouteUnselected");
-            $('#myLocation').css("display","none");
+            // $('#myLocation').css("display","none");
           }
         })
 
