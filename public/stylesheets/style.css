@@ -216,14 +216,15 @@ select {
   font-size:14px;
 }
 
-option {
+/*option {
   min-height:20px;
-}
+}*/
 /* remove the iphone bug where the input boxes are rounded */
 input {
   -webkit-border-radius: 0px;
   -webkit-appearance: none;
   border-radius: 50%;
+  margin: 3px;
 }
 /* zurb foundation overrides - END */
 
@@ -235,6 +236,7 @@ input {
 :-moz-placeholder { /* Mozilla Firefox 4 to 18 */
   color: #FEFDFA !important;
   opacity: 1;
+
 }
 ::-moz-placeholder { /* Mozilla Firefox 19+ */
   color: #FEFDFA !important;

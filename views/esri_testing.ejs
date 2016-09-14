@@ -43,10 +43,6 @@
         <a id="myLocation">
           <i class="fa fa-crosshairs" aria-hidden="true"></i>
         </a>
-          <!-- <button class='button radius BypassRouteUnselected' id="BypassRoute" style="display:none;"><span>Bypass</span></button> -->
-
-          <!-- <button class='button radius BypassRouteUnselected' id="NormalRoute" style="display:none;"><span>Normal</span></button> -->
-          <div id="GPSdiv" style="display:none;"></div>
         </div>
 
       <!-- Logo -->
@@ -79,60 +75,75 @@
       </div> -->
     </div>
   </div>
-  <div id='dataSetButton' class="small-6 large-6 columns filter-button-inactive">
-   <select>
-     <option value="default"><span>What crimes would you like to avoid?</span></option>
-     <option class="allCrime">All Crime</option>
-     <option class="crime">Abduction</option>
-     <option class="crime">Arson</option>
-     <option class="crime">Assault</option>
-     <option class="crime">Burglary</option>
-     <option class="crime">GTA</option>
-     <option class="crime">Homicide</option>
-     <option class="crime">Larceny</option>
-     <option class="crime">Narcotics</option>
-     <option class="crime">Robbery</option>
-     <option class="crime">Sex Offense</option>
-     <option class="crime">Street Nuissance</option>
-     <option class="crime">Weapon</option>
-     <!-- Businesses -->
-      <!-- <option class="allBusiness">-</option>
-     <option class="business">Beauty/Wellness</option>
-     <option class="business">Entertainment</option>
-     <option class="business">Grocery</option>
-     <option class="business">Medical</option>
-     <option class="business">Repair</option>
+
+  <div id='dataSetButton' class="small-12 large-12 columns filter-button-inactive">
+     <select>
+       <option value="default"><span>What crimes would you like to avoid?</span></option>
+       <option class="allCrime">All Crime</option>
+       <option class="crime">Abduction</option>
+       <option class="crime">Arson</option>
+       <option class="crime">Assault</option>
+       <option class="crime">Burglary</option>
+       <option class="crime">GTA</option>
+       <option class="crime">Homicide</option>
+       <option class="crime">Larceny</option>
+       <option class="crime">Narcotics</option>
+       <option class="crime">Robbery</option>
+       <option class="crime">Sex Offense</option>
+       <option class="crime">Street Nuissance</option>
+       <option class="crime">Weapon</option>
+       <option>Sex Offender</option>
+     </select>
+   </div>
+
+   <!-- <div id='dataSetButton' class="small-6 large-6 columns filter-button-inactive">
+    <select> -->
+<!-- Businesses -->
+     <!-- <option value="default"><span>What safe places would you like to see?</span></option>
+     <option class="allBusiness">All Spaces</option>
+     <option class="business">Transportation</option>
+     <option>Wifi Location</option>
+     <option class="business">School</option>
      <option class="business">Residence</option>
      <option class="business">Restaurant/Bar</option>
-     <option class="business">Retail</option>
-     <option class="business">School</option>
-     <option class="business">Services</option>
-     <option class="business">Transportation</option>
-     <option>----Pts of Interest----</option>
-     <option>Sex Offender</option>
-     <option>Wifi Location</option> -->
+     <!-- <option class="business">Beauty/Wellness</option>
+     <option class="business">Entertainment</option> -->
+     <!-- <option class="business">Grocery</option>
+     <option class="business">Medical</option> -->
+     <!-- <option class="business">Repair</option> -->
+     <!-- <option class="business">Retail</option>
    </select>
-  </div>
+  </div> -->
+<!-- Crime Views -->
+  <div id='mapFormatButton' class="small-12 large-12 columns filter-button-inactive">
+    <select>
+      <option value="default">How would you like to avoid them</option>
+      <option value="crimeGrid">By Block</option>
+      <option value="rawData">By Incident</option>
+      <!-- <option>Heat Map</option> -->
+    </select>
   </div>
 
+    <div id='timeFrameButton' class="small-12 large-12 columns filter-button-inactive">
+      <select>
+        <option value="default">How long ago did the crimes take place</option>
+        <option>Within the last day</option>
+        <option>Within the last week</option>
+        <option>Within the last month</option>
+        <option>Within the last year</option>
+      </select>
+    </div>
   </div>
-
-  </div>
-
-
 
   <!-- Data Format Options -->
   <div class="row">
   <div class="filter-options-nav-bar large-12 columns" style="display:none;">
   <div class="row">
-  <div id='mapFormatButton' class="small-4 large-4 columns ">
-    <select>
-      <option value="default">Crime Views</option>
-      <option value="crimeGrid">By Block</option>
-      <option value="rawData">By Crime</option>
-      <!-- <option>Heat Map</option> -->
-    </select>
-  </div>
+
+  <!-- <button class='button radius BypassRouteUnselected' id="BypassRoute" style="display:none;"><span>Bypass</span></button> -->
+
+  <!-- <button class='button radius BypassRouteUnselected' id="NormalRoute" style="display:none;"><span>Normal</span></button> -->
+
   <!-- Data point types -->
   <!-- <div id='dataSetButton' class="small-4 large-4 columns">
     <select>
@@ -170,15 +181,7 @@
   </div> --> -->
 
   <!-- Time Frame Range -->
-  <div id='timeFrameButton' class="small-4 large-4 columns">
-    <select>
-      <option value="default">Time Frame</option>
-      <option>Last Day</option>
-      <option>Last Week</option>
-      <option>Last Month</option>
-      <option>Last Year</option>
-    </select>
-  </div>
+
   </div>
   </div>
   </div>
@@ -203,8 +206,17 @@
 
         </div>
       </div>
+      <div>
+        <button class='button radius BypassRouteUnselected' id="BypassRoute" style="display:none;"><span>Bypass</span></button>
+        <button class='button radius BypassRouteUnselected' id="NormalRoute" style="display:none;"><span>Normal</span></button>
+         <div id="GPSdiv" style="display:none;"></div>
+      </div>
     </form>
-  </div>
+
+</div>
+<!-- Turn-by-turn -->
+<div id='directions-button' class="small-6 large-6 columns directions-button-inactive">
+  <span>Turn-by-Turn</span>
 </div>
 <!-- Route to Safety -->
 <div class="row">
@@ -246,15 +258,6 @@
 
     <button id="resetBtn" class='button'>New Route</button>
 
-    <!-- Current Location -->
-    <!-- <div class='bottomRightNav'>
-      <button class='button radius' id="myLocation"></a>
-        <button class='button radius BypassRouteUnselected' id="BypassRoute" style="display:none;"><span>Bypass</span></button>
-
-        <!button class='button radius BypassRouteUnselected' id="NormalRoute" style="display:none;"><span>Normal</span></button> -->
-        <!-- <div id="GPSdiv" style="display:none;"></div>
-      </div> -->
- -->
 
 
       <div class="reveal" id="infoPopup" data-reveal>
