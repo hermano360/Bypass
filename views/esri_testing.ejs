@@ -42,6 +42,7 @@
       "esri/symbols/SimpleFillSymbol",
       "esri/geometry/Polyline",
       "esri/geometry/Extent",
+      "esri/layers/FeatureLayer",
       "esri/Color",
       "dojo/_base/array",
       "dojo/on",
@@ -63,7 +64,7 @@
       "dijit/form/HorizontalRuleLabels"
       ], function (
         urlUtils, esriConfig, Map, Graphic, Search, esriId, RouteTask, RouteParameters, RouteResult,
-        FeatureSet, SimpleMarkerSymbol, SimpleLineSymbol, SimpleFillSymbol, Polyline, Extent,
+        FeatureSet, SimpleMarkerSymbol, SimpleLineSymbol, SimpleFillSymbol, Polyline, Extent, FeatureLayer,
         Color, array, on, dom, registry, djQuery, webMercatorUtils, Circle, Point, request, xhr,ready,HeatmapRenderer
         )
       {
@@ -180,13 +181,13 @@
             densityArray = dangerAlgorithm(formatedData);
             //mapAllIndices(densityArray);
 
-          //   xhr.get("2015-PART_I_AND_II_CRIMES.csv", {
-          //     handleAs: "text",
-          //   }).then(function(data) {
+            xhr.get("SantaMonicaCrimeLatLong.csv", {
+              handleAs: "text",
+            }).then(function(data) {
 
-          //     var crime2015 = data.replace(/\n/g,"?" ).replace(/\"/g,'').split("?");
-          //     geocodexy(crime2015);
-          // });
+              var crime2015 = data.replace(/\n/g,"?" ).replace(/,/g,'?').split("?");
+              heatmap(crime2015);
+          });
 
           });
 
@@ -273,7 +274,7 @@
              activateFilters();
              deactivateDirections();
            }
-           console.log(geocodedxy);
+           
          });
 
           $("#mapFormatButton").change( function() {
@@ -1687,36 +1688,33 @@ function filterParameterFormatter(){
   }
 
   ////9/12
-  function geocodexy(dataset) {
-    for(var i=1; i<dataset.length; i++){
-      console.log(i);
-      
+  function heatmap(dataset) {
+    var dataCollection =[];
+    var instancePoint;
+    var heatmapFeatureLayer;
+    for(var i = 2; i<100; i=i+2){
+      console.log([dataset[i],dataset[i+1]]);
+      instancePoint = new Point(dataset[i+1],dataset[i]);
+      dataCollection.push(instancePoint);
 
-       
-           var finalGeocodingURL = "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/geocodeAddresses?addresses={%22records%22:[{%22attributes%22:{%22OBJECTID%22:1,%22SingleLine%22:%22" + dataset[i].replace(" ","%20") + "%22}}]}&sourceCountry=USA&token=" + globalToken + "&f=pjson";
-
-      var finalResults;
-
-      $.ajax({
-        type: 'POST',
-        url: finalGeocodingURL,
-        success: function (results, textStatus, xhr) {
-          finalResults = JSON.parse(results);
-
-          //console.log([finalResults.locations[0].address,finalResults.locations[0].location.x,finalResults.locations[0].location.y]);
-
-          geocodedxy.push([finalResults.locations[0].address,finalResults.locations[0].location.x,finalResults.locations[0].location.y]);
-        },
-        error: function (xhr, textStatus, errorThrown) {
-          console.log("test failed");
-          console.log("ERROR:" + xhr.responseText + xhr.status + errorThrown);
-          return false;
-        }
-      });
-      
     }
 
-    
+                      var heatmapRenderer = new HeatmapRenderer({
+                    colors: ["rgba(0, 0, 255, 0)","rgb(0, 0, 255)","rgb(255, 0, 255)", "rgb(255, 0, 0)"],
+                    blurRadius: 12,
+                    maxPixelIntensity: 250,
+                    minPixelIntensity: 10
+                  });
+                      heatmapFeatureLayer = new FeatureLayer(dataCollection);
+                      //console.log(heatmapFeatureLayer);
+
+                      var heatmapRenderer = new HeatmapRenderer();
+        //heatmapFeatureLayer.setRenderer(heatmapRenderer);
+        //map.addLayer(heatmapFeatureLayer);
+
+    console.log(dataCollection);
+
+    //console.log(dataset);
   }
 
 
