@@ -70,7 +70,7 @@ a{
 /*Nav Bar*/
 .nav-bar {
   height:10%;
-  background: #F8F8F8;
+  /*background: #F8F8F8;*/
   /*border-bottom: 1px solid #BBBBBB;*/
 }
 
@@ -171,8 +171,9 @@ a{
 
 #map {
   position: absolute;
-  height: 100%;
+  height: 75%;
   width:100%;
+  z-index: -1;
 }
 
 #map_row {
@@ -270,6 +271,9 @@ button:focus {
 .BypassRouteSelected {
   background-color: #26A69A;
   color: #FFFFFF;
+  margin-right:5px;
+  min-width: 90px;
+  max-width:80px;
 }
 
 #BypassRoute:hover > span,
@@ -281,6 +285,9 @@ button:focus {
 .BypassRouteUnselected {
   background-color: #FFFFFF;
   color: #000000;
+  margin-right:5px;
+  min-width: 90px;
+  max-width:80px;
 }
 
 .BypassRouteUnselected > span {
@@ -291,6 +298,8 @@ button:focus {
 .NormalRouteSelected {
   background-color: #26A69A;
   color: #FFFFFF;
+    min-width: 90px;
+  max-width:80px;
 }
 
 #NormalRoute:hover > span,
@@ -302,6 +311,8 @@ button:focus {
 .NormalRouteUnselected {
   background-color: #FFFFFF;
   color: #000000;
+    min-width: 90px;
+  max-width:80px;
 }
 
 .NormalRouteUnselected > span {
@@ -358,7 +369,7 @@ button:focus {
   color:#000;
   border:none;
   font-weight:bold;
-  background-color: #fff !important;
+  background-color: #fff ;
   background-position: left center;
   background-repeat: no-repeat;
   border-radius:0;
@@ -395,4 +406,38 @@ button:focus {
 #infoPopup {
   background: #B5B5B5;
   color: white;
+}
+
+#directions-button {
+  text-align: center;
+}
+
+#missionStatement {
+    text-align: center;
+}
+
+.bypassNormal {
+position:relative;
+
+}
+
+#crimesButton {
+  width:65px;
+  align:block;
+}
+#featuresButton {
+  width:75px;
+  align:block;
+}
+
+.rightAlign {
+  float:right;
+
+  width:150px;
+}
+
+.leftAlign {
+    float:left;
+  width:200px;
+
 }

@@ -76,7 +76,17 @@
     </div>
   </div>
 
-  <div id='dataSetButton' class="small-12 large-12 columns filter-button-inactive">
+
+  <div id="missionStatement" class="small-12 large-12 columns">
+  <span  >Personal Safety, Community Advocacy</span>
+</div>
+
+  <!-- Turn-by-turn -->
+<div id='directions-button' class="small-12 large-12 columns directions-button-active" style="display:none;">
+  <span>Turn-by-Turn Directions</span>
+</div>
+
+<!--   <div id='dataSetButton' class="small-12 large-12 columns filter-button-inactive">
      <select>
        <option value="default"><span>What crimes would you like to avoid?</span></option>
        <option class="allCrime">All Crime</option>
@@ -94,7 +104,7 @@
        <option class="crime">Weapon</option>
        <option>Sex Offender</option>
      </select>
-   </div>
+   </div> -->
 
    <!-- <div id='dataSetButton' class="small-6 large-6 columns filter-button-inactive">
     <select> -->
@@ -115,12 +125,11 @@
    </select>
   </div> -->
 <!-- Crime Views -->
-  <div id='mapFormatButton' class="small-12 large-12 columns filter-button-inactive">
+<!--   <div id='mapFormatButton' class="small-12 large-12 columns filter-button-inactive">
     <select>
       <option value="default">How would you like to avoid them</option>
       <option value="crimeGrid">By Block</option>
       <option value="rawData">By Incident</option>
-      <!-- <option>Heat Map</option> -->
     </select>
   </div>
 
@@ -132,8 +141,8 @@
         <option>Within the last month</option>
         <option>Within the last year</option>
       </select>
-    </div>
-  </div>
+    </div> -->
+
 
   <!-- Data Format Options -->
   <div class="row">
@@ -192,7 +201,7 @@
       <div class="row">
         <div class="large-12 columns input-wrapper">
           <i class="fa fa-location-arrow" aria-hidden="true"></i>
-          <input class='directions-textbox' type="text" name="startAddress" id="startAddress" placeholder='Choose your starting point'>
+          <input class='directions-textbox' type="text" name="startAddress" id="startAddress" placeholder='Start Address and City'>
 
         </div>
       </div>
@@ -202,28 +211,23 @@
       <div class="row">
         <div class="large-12 columns input-wrapper">
           <i class="fa fa-map-marker" aria-hidden="true"></i>
-          <input class='directions-textbox' type="text" name="destinationAddress" id="destinationAddress" placeholder='Choose your destination'>
+          <input class='directions-textbox' type="text" name="destinationAddress" id="destinationAddress" placeholder='End Address and City'>
 
         </div>
       </div>
-      <div>
-        <button class='button radius BypassRouteUnselected' id="BypassRoute" style="display:none;"><span>Bypass</span></button>
-        <button class='button radius BypassRouteUnselected' id="NormalRoute" style="display:none;"><span>Normal</span></button>
-         <div id="GPSdiv" style="display:none;"></div>
-      </div>
+
     </form>
 
 </div>
-<!-- Turn-by-turn -->
-<div id='directions-button' class="small-6 large-6 columns directions-button-inactive">
-  <span>Turn-by-Turn</span>
-</div>
+
 <!-- Route to Safety -->
 <div class="row">
   <div id="solveRoute" class="directions-nav-bar large-12 columns" style='display:none;'>
     Get Home Safe!
   </div>
 </div>
+
+
 <!-- Directions in Text -->
   <!-- <div class="row">
     <div class="filter-directions-nav-bar large-12 columns">
@@ -255,6 +259,49 @@
         <div id="map"></div>
       </div>
     </div>
+
+
+    <div id="icon_row" class="leftAlign">
+
+
+
+
+          <button class='button radius BypassRouteUnselected bypassNormal' id="BypassRoute" style="display:none;"><span>Bypass</span></button>
+
+
+
+    <button class='button radius BypassRouteUnselected bypassNormal' id="NormalRoute" style="display:none;"><span>Normal</span></button>
+
+</div>
+
+
+   <div class="rightAlign">
+
+
+
+        <button id="crimesButton" class='button radius  iconTools'><span>Crimes</span></button>
+
+
+          <button id="featuresButton" class='button radius iconTools'><span>Features</span></button>
+
+
+  </div>
+
+
+
+
+
+
+
+
+
+
+
+          <div>
+<!--         <button class='button radius BypassRouteUnselected' id="BypassRoute" style="display:none;"><span>Bypass</span></button> -->
+        <!-- <button class='button radius BypassRouteUnselected' id="NormalRoute" style="display:none;"><span>Normal</span></button> -->
+
+      </div>
 
     <button id="resetBtn" class='button'>New Route</button>
 

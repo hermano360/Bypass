@@ -81,9 +81,12 @@ $(document).foundation()
       var normalizedArrayGraphics = [];
       var allLocations;
       var rawDataPointsGraphics = [];
-      var filterParametersCollector = ["",[""],""];
-      var geocodedxy = [];
 
+      var filterParametersCollector = ["",[""],""];
+      var crimesBinary = false;
+      var featuresBinary = false;
+      var rawCrimesGraphics = [];
+      var rawFeaturesGraphics = [];
 
       var authdata = {client_id: '2FiTpg1kQIhDPS1H', client_secret: '926550d14c5e4fe9b39fc25229654ce7', grant_type: 'client_credentials', expiration: '1440'}
 
@@ -114,7 +117,6 @@ $(document).foundation()
         basemap: "topo",
         center: [-118.49132, 34.01455],
         zoom: 14,
-        //minZoom: 12,
         smartNavigation: false //by adding this, the scroll mouse goes in and out, rather than up and down. perhaps the other way is better though, idk.
       });
 
@@ -171,6 +173,7 @@ $(document).foundation()
         }).then(function(data) {
 
           allLocations = formatCompleteDataset(data.replace(/\n/g, "," ).split(","));
+          //console.log(allLocations);
           //plotFilteredData(["RawData",{crime: ["Assault","Burglary"],pointsOfInterest: ["Wifi Location","Sex Offender"],business: ["School"]},"Last Year"]);
         });
 
@@ -380,6 +383,8 @@ $(document).foundation()
           clearStops();
           clearBarriers();
           clearRoutes();
+          clearCrimesData();
+          clearFeaturesData();
           $('#startAddress').val("");
           $('#destinationAddress').val("");
           $('#directionsDisplay').empty();
@@ -478,6 +483,37 @@ else {
 }
 
 }
+
+//9/14
+$("#crimesButton").click(function(){
+  console.log(crimesBinary);
+  if(!crimesBinary){
+    clearFeaturesData();
+    crimesToggle();
+    crimesBinary = !crimesBinary;
+    } else{
+      clearCrimesData();
+      crimesBinary = !crimesBinary;
+    }
+
+});
+
+$("#featuresButton").click(function(){
+  console.log(featuresBinary);
+  if(!featuresBinary){
+    clearCrimesData();
+    featuresToggle();
+    featuresBinary = !featuresBinary;
+    } else{
+      clearFeaturesData();
+      featuresBinary = !featuresBinary;
+    }
+
+});
+
+
+
+
 
 function requestAddress(givenAddress,stopOption){
 var xCoord = 0;
@@ -752,6 +788,19 @@ routeParams.outSpatialReference = {"wkid":102100};
         }
       }
 
+            function clearCrimesData() {
+        removeEventHandlers();
+        for (var i=rawCrimesGraphics.length-1; i>=0; i--) {
+          map.graphics.remove(rawCrimesGraphics.splice(i, 1)[0]);
+        }
+      }
+            function clearFeaturesData() {
+        removeEventHandlers();
+        for (var i=rawFeaturesGraphics.length-1; i>=0; i--) {
+          map.graphics.remove(rawFeaturesGraphics.splice(i, 1)[0]);
+        }
+      }
+
 
       function addMyLocationDot() {
         clearMyLocation();
@@ -939,6 +988,7 @@ routeParams.outSpatialReference = {"wkid":102100};
 
 
           success: function (results, textStatus, xhr) {
+            $('#directions-button').css('display',"inline");
             sRouteWB = JSON.parse(results);
             bypassRouteDirections = JSON.parse(results).directions;
             bypassRoute = new esri.geometry.Polyline(sRouteWB.routes.features[0].geometry.paths[0]);
@@ -1012,6 +1062,7 @@ routeParams.outSpatialReference = {"wkid":102100};
 
       function chooseBypass(){
         clearRoutes();
+        $("#directions-button").css('display',"block");
 
         routes.push(map.graphics.add(new esri.Graphic(normalRoute,routeSymbols["unselectedRoute"])));
         routes.push(map.graphics.add(new esri.Graphic(bypassRoute,routeSymbols["selectedRoute"])));
@@ -1020,6 +1071,7 @@ routeParams.outSpatialReference = {"wkid":102100};
 
       function chooseNormal(){
         clearRoutes();
+        $("#directions-button").css('display',"block");
 
         routes.push(map.graphics.add(new esri.Graphic(bypassRoute,routeSymbols["unselectedRoute"])));
         routes.push(map.graphics.add(new esri.Graphic(normalRoute,routeSymbols["selectedRoute"])));
@@ -1038,6 +1090,8 @@ routeParams.outSpatialReference = {"wkid":102100};
       }
       //Clears all routes
       function clearRoutes() {
+
+        $("#directions-button").css("display","none");
 
         for (var i=routes.length-1; i>=0; i--) {
           map.graphics.remove(routes.splice(i, 1)[0]);
@@ -1660,37 +1714,66 @@ for(var i = 0; i < filterParametersCollector[1].length; i++){
 return outputArray;
 }
 
-////9/12
-function geocodexy(dataset) {
-  for(var i=1; i<dataset.length; i++){
-    console.log(i);
+//9/14
+function crimesToggle(){
+  var dataOutline = new SimpleLineSymbol();
+  var dataPointMarker = new SimpleMarkerSymbol();
+  var nowDate = new Date(2016, 7,23);//Change this once you get data dynamically
+
+
+          var dataColors = {
+          
+
+          "Street Nuissance":[255,255,0, 1],
+          "Sex Offense":[255,255,0, 1],          
+          "Narcotics":[255,255,0, 1],
+          "Larceny":[255,165,0, 1],
+          "Robbery":[255,165,0, 1],
+          "Burglary":[255,165,0, 1],
+          "Weapon":[255,0,0, 1],
+          "Assault":[255,0,0, 1],
+          "GTA":[255,0,0, 1],
+          "Homicide":[255,0,0, 1],
+          "Sex Offender":[160,32,240, 1],
+        };
+
+        for(var i = 0; i<allLocations.length; i++){
+          if(dataColors[allLocations[i][4]] && (nowDate-allLocations[i][0])<=86400){
+            console.log(allLocations[i][0]); 
+            dataOutline.setColor(new Color(dataColors[allLocations[i][4]]));
+            dataPointMarker.setColor(new Color(dataColors[allLocations[i][4]]));
+            dataPointMarker.setOutline(dataOutline);
+            dataPointMarker.setSize(4);
+            rawCrimesGraphics.push(map.graphics.add(new esri.Graphic(new Point(allLocations[i][3],allLocations[i][2]),dataPointMarker)));
+          }
+
+        }
+
+}
+
+function featuresToggle(){
+
+
+  var dataOutline = new SimpleLineSymbol();
+  var dataPointMarker = new SimpleMarkerSymbol();
 
 
 
-         var finalGeocodingURL = "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/geocodeAddresses?addresses={%22records%22:[{%22attributes%22:{%22OBJECTID%22:1,%22SingleLine%22:%22" + dataset[i].replace(" ","%20") + "%22}}]}&sourceCountry=USA&token=" + globalToken + "&f=pjson";
+          var dataColors = {
+            "Entertainment":[0,255,0, 1],
+          "Restaurant/Bar":[0,255,0, 1],
+          "Wifi Location":[0,0,255, 1]
+        };
 
-    var finalResults;
-
-    $.ajax({
-      type: 'POST',
-      url: finalGeocodingURL,
-      success: function (results, textStatus, xhr) {
-        finalResults = JSON.parse(results);
-
-        //console.log([finalResults.locations[0].address,finalResults.locations[0].location.x,finalResults.locations[0].location.y]);
-
-        geocodedxy.push([finalResults.locations[0].address,finalResults.locations[0].location.x,finalResults.locations[0].location.y]);
-      },
-      error: function (xhr, textStatus, errorThrown) {
-        console.log("test failed");
-        console.log("ERROR:" + xhr.responseText + xhr.status + errorThrown);
-        return false;
-      }
-    });
-
-  }
-
-
+        for(var i = 0; i<allLocations.length; i++){
+          if(dataColors[allLocations[i][4]]){
+            dataOutline.setColor(new Color(dataColors[allLocations[i][4]]));
+            dataPointMarker.setColor(new Color(dataColors[allLocations[i][4]]));
+            dataPointMarker.setOutline(dataOutline);
+            dataPointMarker.setSize(4);
+            rawFeaturesGraphics.push(map.graphics.add(new esri.Graphic(new Point(allLocations[i][3],allLocations[i][2]),dataPointMarker)));
+          }
+        }
 }
 
 
