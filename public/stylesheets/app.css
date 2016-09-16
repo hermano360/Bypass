@@ -224,10 +224,10 @@ button:focus {
 }
 
 .nav-bar {
-  height:75px;
+  height:78px;
   background: #F8F8F8;
   border-bottom: 1px solid #BBBBBB;
-  padding-top:10px;
+  padding-top:12px;
 }
 
 .filter-directions-nav-bar {
