@@ -237,19 +237,19 @@ input {
 
 /* only affects input tag placeholder color - BEGIN */
 ::-webkit-input-placeholder { /* WebKit, Blink, Edge */
-  color: #FEFDFA !important;
+  color: #0a0a0a !important;
 }
 :-moz-placeholder { /* Mozilla Firefox 4 to 18 */
-  color: #FEFDFA !important;
+  color: #0a0a0a !important;
   opacity: 1;
 
 }
 ::-moz-placeholder { /* Mozilla Firefox 19+ */
-  color: #FEFDFA !important;
+  color: #0a0a0a !important;
   opacity: 1;
 }
 :-ms-input-placeholder { /* Internet Explorer 10-11 */
-  color: #FEFDFA !important;
+  color: #0a0a0a !important;
 }
 /* only affects input tag placeholder color - END */
 
