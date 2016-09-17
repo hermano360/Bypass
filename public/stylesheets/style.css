@@ -177,6 +177,11 @@ a{
 }
 
 #map_row {
+  margin-left:0;
+  margin-right:0;
+}
+
+#map_row > .columns {
   padding-left:0;
 }
 
@@ -413,31 +418,29 @@ button:focus {
 }
 
 #missionStatement {
-    text-align: center;
+  text-align: center;
 }
 
 .bypassNormal {
-position:relative;
-
+  position:relative;
 }
 
 #crimesButton {
-  width:65px;
+  width:80px;
   align:block;
 }
 #featuresButton {
-  width:75px;
+  width:88px;
   align:block;
 }
 
 .rightAlign {
   float:right;
-
-  width:150px;
+  width:190px;
+  margin-top:15px;
 }
 
 .leftAlign {
-    float:left;
+  float:left;
   width:200px;
-
 }
