@@ -329,6 +329,8 @@ $(document).foundation()
             $('#myLocation').css("display","block");
           } else{
             $('#solveRoute').text("Generating Routes...");
+            disableNewRouteBtn();
+            disableStartEndTextboxes();
             clearStops();
             clearRoutes();
             routeStops = [{},{}];
@@ -337,14 +339,12 @@ $(document).foundation()
             requestAddress($('#destinationAddress').val(),"end");
             barrierVisibility = true;
             clearBarriers();
-
             mapAllIndices(normalizedArray);
             $("#BypassRoute").addClass("BypassRouteSelected");
             $("#BypassRoute").removeClass("BypassRouteUnselected");
             // $('#myLocation').css("display","none");
           }
         })
-
 
         $('#startAddress').click(function() {
           whichStopAddressInput = "start";
@@ -356,8 +356,6 @@ $(document).foundation()
             $('#solveRoute').css('display',"inline");
           }
         });
-
-
 
         $('#destinationAddress').click(function() {
           whichStopAddressInput = "end";
@@ -377,6 +375,9 @@ $(document).foundation()
         });
 
         $("#resetBtn").click( function () {
+          if ($("#resetBtn").hasClass("disabled") == true) {
+            return false
+          }
 
           console.log($('#myLocation').css('display'));
           chosenRouteDirections = "";
@@ -401,8 +402,6 @@ $(document).foundation()
           mapAllIndices(normalizedArray);
           clearRawData();
         });
-
-
 
         $("#BypassRoute").click(function () {
           chooseBypass();
@@ -436,53 +435,68 @@ $(document).foundation()
         });
       });
 
-        function activateFilters() {
-          $("#filter-button").removeClass("filter-button-inactive");
-          $("#filter-button").addClass("filter-button-active");
+      function activateFilters() {
+        $("#filter-button").removeClass("filter-button-inactive");
+        $("#filter-button").addClass("filter-button-active");
+      }
+      function deactivateFilters() {
+        $("#filter-button").removeClass("filter-button-active");
+        $("#filter-button").addClass("filter-button-inactive");
+      }
+      function activateDirections() {
+        $("#directions-button").removeClass("directions-button-inactive");
+        $("#directions-button").addClass("directions-button-active");
+        resetDirections()
+      }
+      function deactivateDirections() {
+        $("#directions-button").removeClass("directions-button-active");
+        $("#directions-button").addClass("directions-button-inactive");
+        $('#directionsDisplay').empty();
+      }
+
+      function resetDirections() {
+        $('#directionsDisplay').empty();
+        var border_style = "";
+        var individual_direction = "";
+
+        if(chosenRouteDirections){
+          for(var i = 1 ; i < chosenRouteDirections[0].features.length; i++)
+          {
+            individual_direction = chosenRouteDirections[0].features[i].attributes.text
+            border_style = " style='border-bottom: 1px solid #BBBBBB' ";
+            if (i == chosenRouteDirections[0].features.length-1)
+            {
+              individual_direction = individual_direction.replace("Finish at Location 2, ", "");
+              // uppercase the first word in sentence
+              individual_direction = individual_direction.charAt(0).toUpperCase() + individual_direction.slice(1);
+            }
+
+            $("#directionsDisplay").append("<div class='row'" + border_style + "><div class='large-12 columns dynamicDirectionsRow'>" + individual_direction + "</div></div>");
+
+          };
         }
-        function deactivateFilters() {
-          $("#filter-button").removeClass("filter-button-active");
-          $("#filter-button").addClass("filter-button-inactive");
+        else {
+          deactivateDirections()
         }
-        function activateDirections() {
-          $("#directions-button").removeClass("directions-button-inactive");
-          $("#directions-button").addClass("directions-button-active");
-          resetDirections()
-        }
-        function deactivateDirections() {
-          $("#directions-button").removeClass("directions-button-active");
-          $("#directions-button").addClass("directions-button-inactive");
-          $('#directionsDisplay').empty();
-        }
+      }
 
-function resetDirections() {
+      function disableNewRouteBtn() {
+        $("#resetBtn").addClass("disabled");
+      }
 
-$('#directionsDisplay').empty();
-var border_style = "";
-var individual_direction = "";
+      function enableNewRouteBtn() {
+        $("#resetBtn").removeClass("disabled");
+      }
 
-if(chosenRouteDirections){
-  for(var i = 1 ; i < chosenRouteDirections[0].features.length; i++)
-  {
-    individual_direction = chosenRouteDirections[0].features[i].attributes.text
-    border_style = " style='border-bottom: 1px solid #BBBBBB' ";
-    if (i == chosenRouteDirections[0].features.length-1)
-    {
-      individual_direction = individual_direction.replace("Finish at Location 2, ", "");
-      // uppercase the first word in sentence
-      individual_direction = individual_direction.charAt(0).toUpperCase() + individual_direction.slice(1);
-    }
+      function disableStartEndTextboxes() {
+        $("#startAddress").attr("disabled", true);
+        $("#destinationAddress").attr("disabled", true);
+      }
 
-
-    $("#directionsDisplay").append("<div class='row'" + border_style + "><div class='large-12 columns dynamicDirectionsRow'>" + individual_direction + "</div></div>");
-
-  };
-}
-else {
-  deactivateDirections()
-}
-
-}
+      function enableStartEndTextboxes() {
+        $("#startAddress").removeAttr("disabled");
+        $("#destinationAddress").removeAttr("disabled");
+      }
 
 //9/14
 $("#crimesButton").click(function(){
@@ -530,8 +544,6 @@ $.ajax({
     finalResults = JSON.parse(results);
     xCoord = finalResults.locations[0].location.x;
     yCoord = finalResults.locations[0].location.y;
-
-
 
     var instancePoint = new Point(xCoord,yCoord);
 
@@ -780,7 +792,6 @@ routeParams.outSpatialReference = {"wkid":102100};
         }
       }
 
-
       function clearRawData() {
         removeEventHandlers();
         for (var i=rawDataPointsGraphics.length-1; i>=0; i--) {
@@ -788,19 +799,19 @@ routeParams.outSpatialReference = {"wkid":102100};
         }
       }
 
-            function clearCrimesData() {
+      function clearCrimesData() {
         removeEventHandlers();
         for (var i=rawCrimesGraphics.length-1; i>=0; i--) {
           map.graphics.remove(rawCrimesGraphics.splice(i, 1)[0]);
         }
       }
-            function clearFeaturesData() {
+
+      function clearFeaturesData() {
         removeEventHandlers();
         for (var i=rawFeaturesGraphics.length-1; i>=0; i--) {
           map.graphics.remove(rawFeaturesGraphics.splice(i, 1)[0]);
         }
       }
-
 
       function addMyLocationDot() {
         clearMyLocation();
@@ -955,6 +966,7 @@ routeParams.outSpatialReference = {"wkid":102100};
       }
 
       function syncRouteWB(routeStops) { //With Barriers
+        console.log("HAI")
 
         var minRoutePathLength;
 
@@ -1008,7 +1020,6 @@ routeParams.outSpatialReference = {"wkid":102100};
               }
             }
 
-
             chosenRouteDirections = sRouteWB.directions;
             $("#solveRoute").text('Go!');
 
@@ -1018,6 +1029,8 @@ routeParams.outSpatialReference = {"wkid":102100};
             }
 
             console.log("The Bypass route is " + sRouteWB.directions[0].summary.totalLength.toFixed(2) + " miles, adding " + (sRouteWB.directions[0].summary.totalLength - sRoute.directions[0].summary.totalLength).toFixed(2) + " miles or " + ((sRouteWB.directions[0].summary.totalLength - sRoute.directions[0].summary.totalLength)*60/3.1).toFixed(0) + " "+ pluralityMinutes + " to your trip.");
+            enableNewRouteBtn();
+            enableStartEndTextboxes();
           },
           error: function (xhr, textStatus, errorThrown) {
             console.log("test failed");
@@ -1078,19 +1091,15 @@ routeParams.outSpatialReference = {"wkid":102100};
         chosenRouteDirections = normalRouteDirections;
       }
 
-
-
-
       //Solves the routes. Any errors will trigger the errorHandler function.
       function solveRoute() {
         removeEventHandlers();
         syncRouteWOB(routeStops);
         syncRouteWB(routeStops);
-
       }
+
       //Clears all routes
       function clearRoutes() {
-
         $("#directions-button").css("display","none");
 
         for (var i=routes.length-1; i>=0; i--) {
@@ -1722,10 +1731,10 @@ function crimesToggle(){
 
 
           var dataColors = {
-          
+
 
           "Street Nuissance":[255,255,0, 1],
-          "Sex Offense":[255,255,0, 1],          
+          "Sex Offense":[255,255,0, 1],
           "Narcotics":[255,255,0, 1],
           "Larceny":[255,165,0, 1],
           "Robbery":[255,165,0, 1],
@@ -1739,7 +1748,7 @@ function crimesToggle(){
 
         for(var i = 0; i<allLocations.length; i++){
           if(dataColors[allLocations[i][4]] && (nowDate-allLocations[i][0])<=86400){
-            console.log(allLocations[i][0]); 
+            console.log(allLocations[i][0]);
             dataOutline.setColor(new Color(dataColors[allLocations[i][4]]));
             dataPointMarker.setColor(new Color(dataColors[allLocations[i][4]]));
             dataPointMarker.setOutline(dataOutline);

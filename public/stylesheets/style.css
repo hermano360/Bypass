@@ -1,5 +1,3 @@
-/* zurb foundation overrides - BEGIN */
-
 /*View Sizing*/
 .row {
   max-width: 100%;
@@ -232,8 +230,6 @@ input {
   border-radius: 50%;
   margin: 3px;
 }
-/* zurb foundation overrides - END */
-
 
 /* only affects input tag placeholder color - BEGIN */
 ::-webkit-input-placeholder { /* WebKit, Blink, Edge */
@@ -258,6 +254,10 @@ select:focus,
 textarea:focus,
 button:focus {
   outline: none;
+}
+
+input:disabled, input[readonly], textarea:disabled, textarea[readonly] {
+  opacity:.6;
 }
 
 #logo {
