@@ -276,9 +276,15 @@ input:disabled, input[readonly], textarea:disabled, textarea[readonly] {
 .BypassRouteSelected {
   background-color: #26A69A;
   color: #FFFFFF;
-  margin-right:5px;
   min-width: 90px;
   max-width:80px;
+}
+
+#BypassRoute {
+  right: 20px;
+  position: absolute;
+  bottom: 56px;
+  min-width: 105px;
 }
 
 #BypassRoute:hover > span,
@@ -290,7 +296,6 @@ input:disabled, input[readonly], textarea:disabled, textarea[readonly] {
 .BypassRouteUnselected {
   background-color: #FFFFFF;
   color: #000000;
-  margin-right:5px;
   min-width: 90px;
   max-width:80px;
 }
@@ -298,6 +303,13 @@ input:disabled, input[readonly], textarea:disabled, textarea[readonly] {
 .BypassRouteUnselected > span {
   background:url('../images/curved_arrow_black.png') left center no-repeat;
   padding-left:21px;
+}
+
+#NormalRoute {
+  right: 20px;
+  position: absolute;
+  bottom: 4px;
+  min-width: 105px;
 }
 
 .NormalRouteSelected {
@@ -316,7 +328,7 @@ input:disabled, input[readonly], textarea:disabled, textarea[readonly] {
 .NormalRouteUnselected {
   background-color: #FFFFFF;
   color: #000000;
-    min-width: 90px;
+  min-width: 90px;
   max-width:80px;
 }
 
@@ -421,10 +433,6 @@ input:disabled, input[readonly], textarea:disabled, textarea[readonly] {
   text-align: center;
 }
 
-.bypassNormal {
-  position:relative;
-}
-
 #crimesButton {
   width:80px;
   align:block;
@@ -440,7 +448,4 @@ input:disabled, input[readonly], textarea:disabled, textarea[readonly] {
   margin-top:15px;
 }
 
-.leftAlign {
-  float:left;
-  width:200px;
-}
+
