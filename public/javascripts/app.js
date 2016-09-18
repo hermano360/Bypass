@@ -671,7 +671,7 @@ routeParams.outSpatialReference = {"wkid":102100};
             success: function (results, textStatus, xhr) {
               var parsedResults = JSON.parse(results);
               if(whichStopAddressInput == "start"){
-                $("#startAddress").val(parsedResults.address.Match_addr);
+                $("#startAddress").val(parsedResults.address.Match_addr.replace("California","CA"));
               } else if(whichStopAddressInput == "end"){
                 $("#destinationAddress").val(parsedResults.address.Match_addr);
               }
@@ -714,7 +714,7 @@ routeParams.outSpatialReference = {"wkid":102100};
             url: "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/reverseGeocode?location="+longlat[0]+"%2C+"+longlat[1]+"&distance=200&outSR=&f=pjson",
             success: function (results, textStatus, xhr) {
               var parsedResults = JSON.parse(results);
-              $("#startAddress").val(parsedResults.address.Match_addr);
+              $("#startAddress").val(parsedResults.address.Match_addr.replace("California", "CA"));
 
               if($('#startAddress').val() && $('#destinationAddress').val()){
                 $('#solveRoute').css('display',"inline");
@@ -756,7 +756,7 @@ routeParams.outSpatialReference = {"wkid":102100};
             url: "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/reverseGeocode?location="+longlat[0]+"%2C+"+longlat[1]+"&distance=200&outSR=&f=pjson",
             success: function (results, textStatus, xhr) {
               var parsedResults = JSON.parse(results);
-              $("#destinationAddress").val(parsedResults.address.Match_addr);
+              $("#destinationAddress").val(parsedResults.address.Match_addr.replace("California", "CA"));
               if($('#startAddress').val() && $('#destinationAddress').val()){
                 $('#solveRoute').css('display',"inline");
               }
@@ -966,8 +966,6 @@ routeParams.outSpatialReference = {"wkid":102100};
       }
 
       function syncRouteWB(routeStops) { //With Barriers
-        console.log("HAI")
-
         var minRoutePathLength;
 
         var stops = [[routeStops[0].geometry.x,routeStops[0].geometry.y],[routeStops[1].geometry.x,routeStops[1].geometry.y]];
