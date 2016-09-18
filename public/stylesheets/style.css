@@ -359,11 +359,15 @@ input:disabled, input[readonly], textarea:disabled, textarea[readonly] {
   margin-bottom: 18px;
 }
 
-#startAddress, #destinationAddress{
-  border: 1px solid #8cd4cc;
-  margin-bottom: 3px;
-  border-radius: 5px;
+#startAddress{
+  border-top: 1px solid #8cd4cc;
+  border-bottom: 1px solid #8cd4cc;
 }
+
+#destinationAddress {
+  border-bottom: 1px solid #8cd4cc;
+}
+
 /*#startAddress.directions-textbox {
   background-image:url('../images/directions_arrow.png');
 }*/
