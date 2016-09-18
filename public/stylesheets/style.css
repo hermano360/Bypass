@@ -1,5 +1,3 @@
-/* zurb foundation overrides - BEGIN */
-
 /*View Sizing*/
 .row {
   max-width: 100%;
@@ -232,8 +230,6 @@ input {
   border-radius: 50%;
   margin: 3px;
 }
-/* zurb foundation overrides - END */
-
 
 /* only affects input tag placeholder color - BEGIN */
 ::-webkit-input-placeholder { /* WebKit, Blink, Edge */
@@ -260,6 +256,10 @@ button:focus {
   outline: none;
 }
 
+input:disabled, input[readonly], textarea:disabled, textarea[readonly] {
+  opacity:.6;
+}
+
 #logo {
   margin: 5px 0;
   height:5em;
@@ -276,9 +276,15 @@ button:focus {
 .BypassRouteSelected {
   background-color: #26A69A;
   color: #FFFFFF;
-  margin-right:5px;
   min-width: 90px;
   max-width:80px;
+}
+
+#BypassRoute {
+  right: 20px;
+  position: absolute;
+  bottom: 56px;
+  min-width: 105px;
 }
 
 #BypassRoute:hover > span,
@@ -290,7 +296,6 @@ button:focus {
 .BypassRouteUnselected {
   background-color: #FFFFFF;
   color: #000000;
-  margin-right:5px;
   min-width: 90px;
   max-width:80px;
 }
@@ -298,6 +303,13 @@ button:focus {
 .BypassRouteUnselected > span {
   background:url('../images/curved_arrow_black.png') left center no-repeat;
   padding-left:21px;
+}
+
+#NormalRoute {
+  right: 20px;
+  position: absolute;
+  bottom: 4px;
+  min-width: 105px;
 }
 
 .NormalRouteSelected {
@@ -316,7 +328,7 @@ button:focus {
 .NormalRouteUnselected {
   background-color: #FFFFFF;
   color: #000000;
-    min-width: 90px;
+  min-width: 90px;
   max-width:80px;
 }
 
@@ -347,11 +359,15 @@ button:focus {
   margin-bottom: 18px;
 }
 
-#startAddress, #destinationAddress{
-  border: 1px solid #8cd4cc;
-  margin-bottom: 3px;
-  border-radius: 5px;
+#startAddress{
+  border-top: 1px solid #8cd4cc;
+  border-bottom: 1px solid #8cd4cc;
 }
+
+#destinationAddress {
+  border-bottom: 1px solid #8cd4cc;
+}
+
 /*#startAddress.directions-textbox {
   background-image:url('../images/directions_arrow.png');
 }*/
@@ -421,10 +437,6 @@ button:focus {
   text-align: center;
 }
 
-.bypassNormal {
-  position:relative;
-}
-
 #crimesButton {
   width:80px;
   align:block;
@@ -440,7 +452,4 @@ button:focus {
   margin-top:15px;
 }
 
-.leftAlign {
-  float:left;
-  width:200px;
-}
+
