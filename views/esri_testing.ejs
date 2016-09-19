@@ -28,8 +28,9 @@
   <script src="https://js.arcgis.com/3.17/"></script>
   <script src="javascripts/foundation.js"></script>
   <script src="javascripts/what-input.js"></script>
-
 </head>
+
+
 
 <body>
 
@@ -46,7 +47,6 @@
       <div class="logo">
         <img id='logo' src='/images/logo.png'></img>
       </div>
-
 
       <!-- Call Police Button -->
       <div class="call-police">
@@ -199,7 +199,10 @@
       <div class="row">
         <div class="large-12 columns input-wrapper">
           <i class="fa fa-location-arrow" aria-hidden="true"></i>
-          <input class='directions-textbox' type="text" name="startAddress" id="startAddress" placeholder='Start Address and City'>
+
+          <input class='directions-textbox' type="text" name="startAddress" id="startAddress" placeholder='Start Location' readonly="true" data-input-state="mapTap">
+
+
 
         </div>
       </div>
@@ -209,7 +212,7 @@
       <div class="row">
         <div class="large-12 columns input-wrapper">
           <i class="fa fa-map-marker" aria-hidden="true"></i>
-          <input class='directions-textbox' type="text" name="destinationAddress" id="destinationAddress" placeholder='End Address and City'>
+          <input class='directions-textbox' type="text" name="destinationAddress" id="destinationAddress" placeholder='End Location' readonly="true" data-input-state="mapTap">
 
         </div>
       </div>
