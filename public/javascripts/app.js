@@ -87,6 +87,8 @@ $(document).foundation()
       var featuresBinary = false;
       var rawCrimesGraphics = [];
       var rawFeaturesGraphics = [];
+      var crimePointsArray = [];
+      var filteredCrimeLocations = [];
 
 
       var authdata = {client_id: '2FiTpg1kQIhDPS1H', client_secret: '926550d14c5e4fe9b39fc25229654ce7', grant_type: 'client_credentials', expiration: '1440'}
@@ -144,7 +146,7 @@ $(document).foundation()
           //adjustableMapIndices(footTrafficArray); //gridded out array of foottraffic estimate
           normalizedArray = crimeNormalizer(densityArray, footTrafficArray);
           mapAllIndices(normalizedArray);
-          map.on("extent-change", resetBarriers);
+          map.on("extent-change", resetBarriersPoints);
         });
 
         });
@@ -266,12 +268,14 @@ $(document).foundation()
           densityGridOn = true;
           barrierVisibility = true;
           resetBarriers();
+          $("#crimesButton").data("crimeDisplay","crimeGrid");
           }else if($("#mapFormatButton option:selected").text() != "Map Format"){
             $("#dataSetButton").css("display","block");
             $("#timeFrameButton").css("display","block");
             densityGridOn = false;
             barrierVisibility = false;
             resetBarriers();
+            $("#crimesButton").data("crimeDisplay","none");
             filterParametersCollector[0] = $("#mapFormatButton option:selected").text();
           }
 
@@ -527,15 +531,34 @@ $(document).foundation()
 
 //9/14
 $("#crimesButton").click(function(){
-  console.log(crimesBinary);
-  if(!crimesBinary){
-    clearFeaturesData();
-    crimesToggle();
-    crimesBinary = !crimesBinary;
-    } else{
-      clearCrimesData();
-      crimesBinary = !crimesBinary;
-    }
+
+console.log($("#crimesButton").data("crimeDisplay"));
+
+if($("#crimesButton").data("crimeDisplay")=="none"){
+  clearFeaturesData();
+  crimesPlot();
+  $("#crimesButton").data("crimeDisplay","crimePoints");
+} else if($("#crimesButton").data("crimeDisplay")=="crimePoints"){
+  clearFeaturesData();
+  clearCrimesData();
+  barrierVisibility = true;
+  resetBarriers();
+$("#crimesButton").data("crimeDisplay","crimeGrid");
+} else if($("#crimesButton").data("crimeDisplay")=="crimeGrid"){
+  barrierVisibility = false;
+  resetBarriers();
+  $("#crimesButton").data("crimeDisplay","none");
+}
+
+  // console.log(crimesBinary);
+  // if(!crimesBinary){
+  //   clearFeaturesData();
+  //   crimesToggle();
+  //   crimesBinary = !crimesBinary;
+  //   } else{
+  //     clearCrimesData();
+  //     crimesBinary = !crimesBinary;
+  //   }
 
 });
 
@@ -1625,6 +1648,7 @@ console.log([mapFormat, dataSet, timeFrame]);
           densityGridOn = true;
           barrierVisibility = true;
           resetBarriers();
+          $("#crimesButton").data("crimeDisplay","crimeGrid");
           //If order to remove barriers on changing changing screen, add densityGridOn = false; resetBarriers(); to the "directions" on.click event.
         } else{
 
@@ -1712,6 +1736,7 @@ console.log([mapFormat, dataSet, timeFrame]);
                 densityGridOn = false;
                 barrierVisibility = false;
                 resetBarriers();
+                $("#crimesButton").data("crimeDisplay","none");
 
 
 
@@ -1772,40 +1797,49 @@ return outputArray;
 }
 
 //9/14
-function crimesToggle(){
-  var dataOutline = new SimpleLineSymbol();
-  var dataPointMarker = new SimpleMarkerSymbol();
-  var nowDate = new Date(2016, 7,23);//Change this once you get data dynamically
+function crimesPlot(){
 
 
-          var dataColors = {
 
+    var dataOutline = new SimpleLineSymbol();
+    var dataPointMarker = new SimpleMarkerSymbol();
+    var nowDate = new Date(2016, 7,23);//Change this once you get data dynamically
 
-          "Street Nuissance":[255,255,0, 1],
-          "Sex Offense":[255,255,0, 1],
-          "Narcotics":[255,255,0, 1],
-          "Larceny":[255,165,0, 1],
-          "Robbery":[255,165,0, 1],
-          "Burglary":[255,165,0, 1],
-          "Weapon":[255,0,0, 1],
-          "Assault":[255,0,0, 1],
-          "GTA":[255,0,0, 1],
-          "Homicide":[255,0,0, 1],
-          "Sex Offender":[160,32,240, 1],
-        };
+    var dataColors = {
+      "Street Nuissance":[255,255,0, 1],
+      "Sex Offense":[255,255,0, 1],
+      "Narcotics":[255,255,0, 1],
+      "Larceny":[255,165,0, 1],
+      "Robbery":[255,165,0, 1],
+      "Burglary":[255,165,0, 1],
+      "Weapon":[255,0,0, 1],
+      "Assault":[255,0,0, 1],
+      "GTA":[255,0,0, 1],
+      "Homicide":[255,0,0, 1],
+      "Sex Offender":[160,32,240, 1]
+    };
 
-        for(var i = 0; i<allLocations.length; i++){
-          if(dataColors[allLocations[i][4]] && (nowDate-allLocations[i][0])<=86400){
-            console.log(allLocations[i][0]);
-            dataOutline.setColor(new Color(dataColors[allLocations[i][4]]));
-            dataPointMarker.setColor(new Color(dataColors[allLocations[i][4]]));
-            dataPointMarker.setOutline(dataOutline);
-            dataPointMarker.setSize(4);
-            rawCrimesGraphics.push(map.graphics.add(new esri.Graphic(new Point(allLocations[i][3],allLocations[i][2]),dataPointMarker)));
-          }
+    if(filteredCrimeLocations[0]){
+      for(var i = 0; i<filteredCrimeLocations.length; i++){
+          dataOutline.setColor(new Color(dataColors[filteredCrimeLocations[i][4]]));
+          dataPointMarker.setColor(new Color(dataColors[filteredCrimeLocations[i][4]]));
+          dataPointMarker.setOutline(dataOutline);
+          dataPointMarker.setSize(4);
+          rawCrimesGraphics.push(map.graphics.add(new esri.Graphic(new Point(filteredCrimeLocations[i][3],filteredCrimeLocations[i][2]),dataPointMarker)));
+    }
 
-        }
-
+    } else{
+    for(var i = 0; i<allLocations.length; i++){
+      if(dataColors[allLocations[i][4]] && (nowDate-allLocations[i][0])<=86400){
+        filteredCrimeLocations.push(allLocations[i]);
+        dataOutline.setColor(new Color(dataColors[allLocations[i][4]]));
+        dataPointMarker.setColor(new Color(dataColors[allLocations[i][4]]));
+        dataPointMarker.setOutline(dataOutline);
+        dataPointMarker.setSize(4);
+        rawCrimesGraphics.push(map.graphics.add(new esri.Graphic(new Point(allLocations[i][3],allLocations[i][2]),dataPointMarker)));
+      }
+    }
+  }
 }
 
 function featuresToggle(){
@@ -1863,86 +1897,52 @@ function currentStartPosition() {
 
 function navigationExtents() {
   var newExtent;
-          var minx=map.extent.xmin;
-        var miny=map.extent.ymin;
-        var maxx=map.extent.xmax;
-        var maxy=map.extent.ymax;
+  var minx=map.extent.xmin;
+  var miny=map.extent.ymin;
+  var maxx=map.extent.xmax;
+  var maxy=map.extent.ymax;
 
-        var startStopXY = [webMercatorUtils.lngLatToXY(routeStops[0].geometry.x, routeStops[0].geometry.y),webMercatorUtils.lngLatToXY(routeStops[1].geometry.x, routeStops[1].geometry.y)];
-        console.log(startStopXY);
+  var startStopXY = [webMercatorUtils.lngLatToXY(routeStops[0].geometry.x, routeStops[0].geometry.y),webMercatorUtils.lngLatToXY(routeStops[1].geometry.x, routeStops[1].geometry.y)];
+  console.log(startStopXY);
 
   var startCoord = {x: startStopXY[0][0], y: startStopXY[0][1]};
   var endCoord = {x: startStopXY[1][0], y: startStopXY[1][1]};
+  maxx = Math.max(startCoord.x,endCoord.x) + .25* Math.abs(endCoord.x-startCoord.x);
+  minx = Math.min(startCoord.x,endCoord.x) - .25* Math.abs(endCoord.x-startCoord.x);
 
+  newExtent = new Extent({xmin:minx,ymin:miny,xmax:maxx,ymax:maxy,spatialReference:{wkid:102100}});
+  map.setExtent(newExtent);
+  var originalYDiff = .5*((maxy-miny)-(Math.max(startCoord.y,endCoord.y)-Math.min(startCoord.y,endCoord.y)));
+  console.log(originalYDiff);
 
-  
+  if((maxy-miny)>(Math.max(startCoord.y,endCoord.y)-Math.min(startCoord.y,endCoord.y))){
+    console.log("tall enough");
+    maxy = Math.max(startCoord.y,endCoord.y) + originalYDiff;
+    miny = Math.min(startCoord.y,endCoord.y) - originalYDiff;
+  } else {
+    console.log("not tall enough");
+    maxy = Math.max(startCoord.y,endCoord.y) + .2* Math.abs(endCoord.y-startCoord.y);
+    miny = Math.min(startCoord.y,endCoord.y) - .2* Math.abs(endCoord.y-startCoord.y);
+  }
 
-          maxx = Math.max(startCoord.x,endCoord.x) + .25* Math.abs(endCoord.x-startCoord.x);
-          minx = Math.min(startCoord.x,endCoord.x) - .25* Math.abs(endCoord.x-startCoord.x);
-          //console.log((maxy-Math.max(startCoord.y,endCoord.y)),(Math.min(startCoord.y,endCoord.y)-miny));
+  newExtent = new Extent({xmin:minx,ymin:miny,xmax:maxx,ymax:maxy,spatialReference:{wkid:102100}});
+  map.setExtent(newExtent);
 
+}
 
+function resetBarriersPoints(){
+  resetBarriers();
+  resetPoints();
+}
 
+function resetPoints(){
 
+  console.log($("#crimesButton").data("crimeDisplay"));
+  if($("#crimesButton").data("crimeDisplay")=="crimePoints"){
+    clearCrimesData();
+    crimesPlot();
+  }
 
-          
-          //minx = Math.min[startCoord.x,endCoord.x] - .2* Math.abs(startCoord.x-endCoord.x);
-
-
-          // if(endCoord.y>maxy){
-          //   maxy = endCoord.y + .20 * (endCoord.y-maxy);
-          // } else if(endCoord.y<miny){
-          //   miny = endCoord.y - .20 * (miny-endCoord.y);   
-          // }
-
-          newExtent = new Extent({xmin:minx,ymin:miny,xmax:maxx,ymax:maxy,spatialReference:{wkid:102100}});
-          map.setExtent(newExtent);
-          var originalYDiff = .5*((maxy-miny)-(Math.max(startCoord.y,endCoord.y)-Math.min(startCoord.y,endCoord.y)));
-          console.log(originalYDiff);
-
-          if((maxy-miny)>(Math.max(startCoord.y,endCoord.y)-Math.min(startCoord.y,endCoord.y))){
-            console.log("tall enough");
-            maxy = Math.max(startCoord.y,endCoord.y) + originalYDiff;
-            miny = Math.min(startCoord.y,endCoord.y) - originalYDiff;
-          } else {
-            console.log("not tall enough");
-            maxy = Math.max(startCoord.y,endCoord.y) + .2* Math.abs(endCoord.y-startCoord.y);
-            miny = Math.min(startCoord.y,endCoord.y) - .2* Math.abs(endCoord.y-startCoord.y);
-          }
-
-          newExtent = new Extent({xmin:minx,ymin:miny,xmax:maxx,ymax:maxy,spatialReference:{wkid:102100}});
-          map.setExtent(newExtent);
-            //console.log(maxy-miny);
-            //console.log(Math.max(startCoord.y,endCoord.y)-Math.min(startCoord.y,endCoord.y));
-
-        //minx=map.extent.xmin;
-        //miny=map.extent.ymin;
-        //maxx=map.extent.xmax;
-        //maxy=map.extent.ymax;
-
-
-          // if(startCoord.x>maxx){
-          //   maxx = endCoord.x + .20 * (startCoord.x-maxx);
-          // } else if(startCoord.x<minx){
-          //   minx = startCoord.x - .20 * (minx-startCoord.x);   
-          // }
-
-
-
-          //   if(startCoord.y>endCoord.y){
-          //   miny = endCoord.y - .10 * (startCoord.y-endCoord.y);
-          //   maxy = startCoord.y + .10 * (startCoord.y-endCoord.y);
-
-          // } else {
-          //   miny = startCoord.y - .10 * (endCoord.y-startCoord.y);
-          //   maxy = endCoord.x + .10 * (endCoord.y-startCoord.y)
-          // }
-
-
-            //newExtent = new Extent({xmin:minx,ymin:miny,xmax:maxx,ymax:maxy,spatialReference:{wkid:102100}});
-            
-
-            //map.setExtent(newExtent);
 }
 
 
