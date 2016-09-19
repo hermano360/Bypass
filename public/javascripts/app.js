@@ -756,10 +756,16 @@ routeParams.outSpatialReference = {"wkid":102100};
             url: "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/reverseGeocode?location="+longlat[0]+"%2C+"+longlat[1]+"&distance=200&outSR=&f=pjson",
             success: function (results, textStatus, xhr) {
               var parsedResults = JSON.parse(results);
-              $("#destinationAddress").val(parsedResults.address.Match_addr.replace("California", "CA"));
-              if($('#startAddress').val() && $('#destinationAddress').val()){
-                $('#solveRoute').css('display',"inline");
-              }
+
+              if(parsedResults.address){
+                $("#destinationAddress").val(parsedResults.address.Match_addr.replace("California", "CA"));
+                if($('#startAddress').val() && $('#destinationAddress').val()){
+                  $('#solveRoute').css('display',"inline");
+                }
+              } else {
+                $("#destinationAddress").val("Please Try Again");
+                $('#solveRoute').css('display',"none");
+
 
             },
             error: function (xhr, textStatus, errorThrown) {
