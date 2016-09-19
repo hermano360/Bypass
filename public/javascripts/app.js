@@ -765,7 +765,7 @@ routeParams.outSpatialReference = {"wkid":102100};
               } else {
                 $("#destinationAddress").val("Please Try Again");
                 $('#solveRoute').css('display',"none");
-
+              }
 
             },
             error: function (xhr, textStatus, errorThrown) {
