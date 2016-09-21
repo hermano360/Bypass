@@ -16,6 +16,7 @@ $(document).foundation()
     "esri/symbols/SimpleFillSymbol",
     "esri/geometry/Polyline",
     "esri/geometry/Extent",
+    "esri/dijit/Geocoder",
     "esri/Color",
     "dojo/_base/array",
     "dojo/on",
@@ -37,7 +38,7 @@ $(document).foundation()
     "dijit/form/HorizontalRuleLabels"
     ], function (
       urlUtils, esriConfig, Map, Graphic, Search, esriId, RouteTask, RouteParameters, RouteResult,
-      FeatureSet, SimpleMarkerSymbol, SimpleLineSymbol, SimpleFillSymbol, Polyline, Extent,
+      FeatureSet, SimpleMarkerSymbol, SimpleLineSymbol, SimpleFillSymbol, Polyline, Extent, Geocoder,
       Color, array, on, dom, registry, djQuery, webMercatorUtils, Circle, Point, request, xhr,ready,HeatmapRenderer
       )
     {
@@ -125,7 +126,42 @@ $(document).foundation()
 
 
 
+
+
       ready(function() {
+
+              var geocoder = new Geocoder({
+        autoComplete:true,
+        map: map,
+      }, dom.byId("startAddress"));
+      geocoder.startup();
+      geocoder.autoNavigate = false;
+      geocoder.on("select", function(results){
+        console.log(results)
+      });
+
+      $("#startAddress_input").attr("placeholder","Start Location");
+      console.log($("#startAddress_input").val());
+
+      //geocoder.on("select", showLocation);
+
+      function showLocation(evt) {
+  map.graphics.clear();
+  var point = evt.result.feature.geometry;
+  var symbol = new SimpleMarkerSymbol()
+    .setStyle("square")
+    .setColor(new Color([255,0,0,0.5]));
+  var graphic = new Graphic(point, symbol);
+  map.graphics.add(graphic);
+
+  map.infoWindow.setTitle("Search Result");
+  map.infoWindow.setContent(evt.result.name);
+  map.infoWindow.show(evt.result.feature.geometry);
+};
+
+
+
+
 
         xhr.get("cached_danger_influences.csv", { //uploading csv data
           handleAs: "text",
@@ -330,7 +366,13 @@ $(document).foundation()
             $("#BypassRoute").css('display',"none");
             $("#NormalRoute").css('display',"none");
             barrierVisibility = false;
+<<<<<<< 729f58374e382026ce1519ceb6ac9d933e284baf
             clearBarriers();
+=======
+            resetBarriers();
+            $("#crimesButton").data("crimeDisplay","none");
+            $('#myLocation').css("display","block");
+>>>>>>> wip, autocomplete address boxes
           } else{
             $('#solveRoute').text("Generating Routes...");
             disableNewRouteBtn();
@@ -342,8 +384,8 @@ $(document).foundation()
             requestAddress($('#startAddress').val(),"start");
             requestAddress($('#destinationAddress').val(),"end");
             barrierVisibility = true;
-            clearBarriers();
-            mapAllIndices(normalizedArray);
+            resetBarriers();
+            $("#crimesButton").data("crimeDisplay","crimeGrid");
             $("#BypassRoute").addClass("BypassRouteSelected");
             $("#BypassRoute").removeClass("BypassRouteUnselected");
           }
@@ -534,19 +576,24 @@ console.log($("#crimesButton").data("crimeDisplay"));
 
 if($("#crimesButton").data("crimeDisplay")=="none"){
   clearFeaturesData();
-  crimesPlot();
-  $("#crimesButton").data("crimeDisplay","crimePoints");
-} else if($("#crimesButton").data("crimeDisplay")=="crimePoints"){
-  clearFeaturesData();
-  clearCrimesData();
   barrierVisibility = true;
   resetBarriers();
-$("#crimesButton").data("crimeDisplay","crimeGrid");
+  
+  $("#crimesButton").data("crimeDisplay","crimeGrid");
+  $("#crimesButton").html("Grid");
 } else if($("#crimesButton").data("crimeDisplay")=="crimeGrid"){
+  clearFeaturesData();
   barrierVisibility = false;
   resetBarriers();
-  $("#crimesButton").data("crimeDisplay","none");
-}
+  crimesPlot();
+  $("#crimesButton").data("crimeDisplay","crimePoints");
+  $("#crimesButton").html("Recent");
+}else if($("#crimesButton").data("crimeDisplay")=="crimePoints"){
+  clearFeaturesData();
+  clearCrimesData();
+  $("#crimesButton").html("Crimes");
+$("#crimesButton").data("crimeDisplay","none");
+} 
 
   // console.log(crimesBinary);
   // if(!crimesBinary){
@@ -561,15 +608,15 @@ $("#crimesButton").data("crimeDisplay","crimeGrid");
 });
 
 $("#featuresButton").click(function(){
-  console.log(featuresBinary);
-  if(!featuresBinary){
-    clearCrimesData();
-    featuresToggle();
-    featuresBinary = !featuresBinary;
-    } else{
-      clearFeaturesData();
-      featuresBinary = !featuresBinary;
-    }
+  console.log($("#featuresButton").data("featuresDisplay"));
+  // if(!featuresBinary){
+  //   clearCrimesData();
+  //   featuresToggle();
+  //   featuresBinary = !featuresBinary;
+  //   } else{
+  //     clearFeaturesData();
+  //     featuresBinary = !featuresBinary;
+  //   }
 
 });
 
@@ -580,6 +627,8 @@ $("#featuresButton").click(function(){
 function requestAddress(givenAddress,stopOption){
 var xCoord = 0;
 var yCoord = 0;
+var region;
+routeCheckerStop=[false,false];
 
 var finalGeocodingURL = "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/geocodeAddresses?addresses={%22records%22:[{%22attributes%22:{%22OBJECTID%22:1,%22SingleLine%22:%22" + givenAddress.replace(" ","%20") + "%22}}]}&sourceCountry=USA&token=" + globalToken + "&f=pjson";
 
@@ -590,17 +639,20 @@ $.ajax({
   success: function (results, textStatus, xhr) {
 
     finalResults = JSON.parse(results);
+    region= finalResults.locations[0].attributes.Subregion;
+    console.log(region);
+
     xCoord = finalResults.locations[0].location.x;
     yCoord = finalResults.locations[0].location.y;
 
     var instancePoint = new Point(xCoord,yCoord);
 
-    if(stopOption == "end") {
+    if(stopOption == "end" && region == "Los Angeles") {
       map.graphics.remove(routeStops.pop());
       routeStops.push(map.graphics.add(new esri.Graphic(instancePoint,stopSymbol)));
       routeCheckerStop[1]=1;
 
-    } else if(stopOption == "start"){
+    } else if(stopOption == "start" && region == "Los Angeles"){
       map.graphics.remove(routeStops.shift());
       routeStops.unshift(map.graphics.add(new esri.Graphic(instancePoint,startSymbol)));
       routeCheckerStop[0]=1
@@ -762,18 +814,23 @@ routeParams.outSpatialReference = {"wkid":102100};
 
 
           var longlat = webMercatorUtils.xyToLngLat(evt.mapPoint["x"], evt.mapPoint["y"], true);
-          console.log("working on start address");
 
           $.ajax({
             type: 'POST',
             url: "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/reverseGeocode?location="+longlat[0]+"%2C+"+longlat[1]+"&distance=200&outSR=&f=pjson",
             success: function (results, textStatus, xhr) {
               var parsedResults = JSON.parse(results);
-              $("#startAddress").val(parsedResults.address.Match_addr.replace("California", "CA"));
 
 
-              if($('#startAddress').val() && $('#destinationAddress').val()){
-                $('#solveRoute').css('display',"inline");
+              if(parsedResults.address){
+                $("#startAddress").val(parsedResults.address.Match_addr.replace("California", "CA"));
+                if($('#startAddress').val() && $('#destinationAddress').val() && $('#startAddress').val()!="Please Try Again" && $('#destinationAddress').val()!="Please Try Again"){
+                  $('#solveRoute').css('display',"inline");
+                }
+              } else {
+                $("#startAddress").val("Please Try Again");
+                $('#solveRoute').css('display',"none");
+
               }
 
             },
@@ -816,7 +873,7 @@ routeParams.outSpatialReference = {"wkid":102100};
 
               if(parsedResults.address){
                 $("#destinationAddress").val(parsedResults.address.Match_addr.replace("California", "CA"));
-                if($('#startAddress').val() && $('#destinationAddress').val()){
+                if($('#startAddress').val() && $('#destinationAddress').val() && $('#startAddress').val()!="Please Try Again" && $('#destinationAddress').val()!="Please Try Again"){
                   $('#solveRoute').css('display',"inline");
                 }
               } else {
