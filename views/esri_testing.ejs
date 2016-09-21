@@ -189,10 +189,12 @@
   <div class="directions-nav-bar large-12 columns">
     <form action="addressLookup">
       <div class="row">
-        <div class="large-12 columns input-wrapper">
+        <div class="large-12 columns input-wrapper" id="startAddAbove">
           <i class="fa fa-location-arrow" aria-hidden="true"></i>
 
-          <input class='directions-textbox' type="text" name="startAddress" id="startAddress" placeholder='Start Location' readonly="true" data-input-state="mapTap">
+<!--           <input class='directions-textbox' type="text" name="startAddress" id="startAddress" placeholder='Start Location' readonly="true" data-input-state="mapTap"> -->
+
+          <div type="text" id="startAddress" class="directions-textbox" placeholder='Start Location'></div>
 
 
 
@@ -259,7 +261,7 @@
 
   <div class="rightAlign">
     <button id="crimesButton" class='button radius  iconTools' data-crime-display="none">Crimes</button>
-    <button id="featuresButton" class='button radius iconTools'><span>Features</span></button>
+    <button id="featuresButton" class='button radius iconTools' data-features-display="none">Features</button>
   </div>
 
   <a id="myLocation" class="button"><i class="fa fa-crosshairs" aria-hidden="true"></i></a>
