@@ -42,7 +42,7 @@ a{
 .button {
   background-color: #FFFFFF;
   color: #000000;
-  border: 1px solid #BBBBBB;
+  border: 1px solid #57585A;
   transition:none;
 }
 
@@ -163,8 +163,14 @@ a{
 }
 
 .esriSimpleSlider {
-  margin-top:30px;
+  margin-top:55px;
   z-index:inherit !important;
+}
+
+.esriSimpleSliderIncrementButton:hover,
+.esriSimpleSliderDecrementButton:hover {
+  color:#FFFFFF !important;
+  background-color: #26A69A !important;
 }
 
 #map {
@@ -336,17 +342,6 @@ input:disabled, input[readonly], textarea:disabled, textarea[readonly] {
   padding-left:21px;
 }
 
-#currentLocation {
-  background:url('../images/crosshair_unselected.png') left center no-repeat;
-  width:44px;
-  height:44px;
-}
-
-#currentLocation, a{
-  font-size: 40px;
-  color: #5d5d5d;
-}
-
 .bottomRightNav {
   right: 20px;
   bottom: 2px;
@@ -365,6 +360,17 @@ input:disabled, input[readonly], textarea:disabled, textarea[readonly] {
 
 #destinationAddress {
   border-bottom: 1px solid #8cd4cc;
+}
+
+#myLocation {
+  font-size: 30px;
+  color: #5d5d5d;
+  padding: 5px;
+  margin-top:15px;
+  margin-left:20px;
+}
+#myLocation:hover, #myLocation:active {
+  color: #FFFFFF;
 }
 
 /*#startAddress.directions-textbox {
