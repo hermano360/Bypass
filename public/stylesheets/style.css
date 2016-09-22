@@ -17,10 +17,13 @@ h1 {
 }
 
 .app-info, .call-police {
-  font-size: 40px;
+  font-size: 45px;
   color: gray;
   border: #000;
   border-radius: 50%;
+  right: 20px;
+  position: absolute;
+  top: 7px;
 }
 a{
   color: #fff;
@@ -34,7 +37,7 @@ a{
 
 .input-wrapper i{
   position: absolute;
-  margin: 5px;
+  margin: 5px 5px 5px 10px;
   font-size: 20px;;
 }
 
@@ -67,9 +70,31 @@ a{
 
 /*Nav Bar*/
 .nav-bar {
-  height:10%;
-  /*background: #F8F8F8;*/
-  /*border-bottom: 1px solid #BBBBBB;*/
+  padding-left:5px;
+}
+
+.nav-bar-top-left div {
+  float:left;
+  margin-bottom:10px;
+  margin-top:15px;
+}
+
+#logo {
+  height:50px;
+}
+
+#missionStatement {
+  text-align: center;
+  font-weight: bold;
+  color: #5d5d5d;
+  padding-top: 10px;
+  padding-left: 10px;
+}
+
+#callPolicePopup > a {
+  width: 100%;
+  margin-top:40px;
+  margin-bottom:40px;
 }
 
 .filter-directions-nav-bar {
@@ -132,12 +157,6 @@ a{
 .filter-button-inactive > span {
   /*background:url('../images/filter_button_inactive.png') left center no-repeat;*/
   /*padding-left:30px;*/
-}
-
-.nav-bar div {
-  float:left;
-  width:33%;
-  text-align:center;
 }
 
 #solveRoute {
@@ -267,11 +286,6 @@ input:disabled, input[readonly], textarea:disabled, textarea[readonly] {
   opacity:.6;
 }
 
-#logo {
-  margin-top:10px;
-  height:50px;
-}
-
 #resetBtn {
   position:absolute;
   left: 20px;
@@ -387,7 +401,7 @@ input:disabled, input[readonly], textarea:disabled, textarea[readonly] {
 }
 
 .directions-textbox {
-  text-indent:15px;
+  text-indent:23px;
   width:100%;
   height:34px;
   /*padding:7px 0;*/
@@ -400,12 +414,6 @@ input:disabled, input[readonly], textarea:disabled, textarea[readonly] {
   background-repeat: no-repeat;
   border-radius:0;
 }
-
-/*.input-wrapper{
-  position: relative;
-}*/
-
-
 
 .directions-nav-bar {
   padding-left:0;
@@ -423,22 +431,12 @@ input:disabled, input[readonly], textarea:disabled, textarea[readonly] {
   position: absolute;
 }
 
-#callPolicePopup > a {
-  width: 100%;
-  margin-top:40px;
-  margin-bottom:40px;
-}
-
 #infoPopup {
   background: #B5B5B5;
   color: white;
 }
 
 #directions-button {
-  text-align: center;
-}
-
-#missionStatement {
   text-align: center;
 }
 
