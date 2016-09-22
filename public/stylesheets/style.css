@@ -261,10 +261,8 @@ input:disabled, input[readonly], textarea:disabled, textarea[readonly] {
 }
 
 #logo {
-  margin: 5px 0;
-  height:5em;
-  width: 5em;
-  padding-bottom: 3px;
+  margin-top:10px;
+  height:50px;
 }
 
 #resetBtn {
