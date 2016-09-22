@@ -130,15 +130,34 @@ $(document).foundation()
 
       ready(function() {
 
-              var geocoder = new Geocoder({
-        autoComplete:true,
-        map: map,
-      }, dom.byId("startAddress"));
-      geocoder.startup();
-      geocoder.autoNavigate = false;
-      geocoder.on("select", function(results){
-        console.log(results)
-      });
+
+        var geocoder = new Geocoder({
+          autoComplete:true,
+          map: map,
+        }, dom.byId("startAddress"));
+        geocoder.startup();
+        geocoder.autoNavigate = false;
+        geocoder.on("select", function(results){
+          console.log(results);
+
+          $("#startAddress_input").val(results.result.name.replace("California", "CA"));
+
+          /*          
+          clearRoutes();
+          map.graphics.remove(routeStops.shift());
+          routeStops.unshift(map.graphics.add(new esri.Graphic(evt.mapPoint,startSymbol)));
+          */
+          //console.log(routeStops);
+          clearRoutes();
+
+          var points = webMercatorUtils.xyToLngLat(results.result.feature.geometry.x, results.result.feature.geometry.y, true);
+          var instancePoint = new Point(points[0],points[1]);
+          console.log(instancePoint);
+          map.graphics.remove(routeStops.shift());
+          routeStops.unshift(map.graphics.add(new esri.Graphic(instancePoint,startSymbol)));
+
+          console.log(webMercatorUtils.xyToLngLat(results.result.feature.geometry.x, results.result.feature.geometry.y, true));
+        });
 
       $("#startAddress_input").attr("placeholder","Start Location");
       console.log($("#startAddress_input").val());
@@ -381,7 +400,7 @@ $(document).foundation()
             clearRoutes();
             routeStops = [{},{}];
             routeCheckerStop = [0,0];
-            requestAddress($('#startAddress').val(),"start");
+            requestAddress($('#startAddress_input').val(),"start");
             requestAddress($('#destinationAddress').val(),"end");
             barrierVisibility = true;
             resetBarriers();
@@ -639,10 +658,12 @@ $.ajax({
   success: function (results, textStatus, xhr) {
 
     finalResults = JSON.parse(results);
+    console.log(finalResults);
     region= finalResults.locations[0].attributes.Subregion;
     console.log(region);
-
+    console.log(stopOption);
     xCoord = finalResults.locations[0].location.x;
+    console.log(xCoord);
     yCoord = finalResults.locations[0].location.y;
 
     var instancePoint = new Point(xCoord,yCoord);
@@ -795,13 +816,7 @@ routeParams.outSpatialReference = {"wkid":102100};
 
       function addStartStop(){
         removeEventHandlers();
-
-
-
-
-
         $("#myLocation").on('click', inputAddress);
-
         mapOnClick_addStops_connect = map.on("click", function(evt){
           console.log("first start address click");
         $('#solveRoute').css("display","none");
@@ -823,8 +838,10 @@ routeParams.outSpatialReference = {"wkid":102100};
 
 
               if(parsedResults.address){
-                $("#startAddress").val(parsedResults.address.Match_addr.replace("California", "CA"));
-                if($('#startAddress').val() && $('#destinationAddress').val() && $('#startAddress').val()!="Please Try Again" && $('#destinationAddress').val()!="Please Try Again"){
+                $("#startAddress_input").val(parsedResults.address.Match_addr.replace("California", "CA"));
+
+                console.log($('#startAddress_input').val() && $('#destinationAddress').val() && $('#startAddress_input').val()!="Please Try Again" && $('#destinationAddress').val()!="Please Try Again");
+                if($('#startAddress_input').val() && $('#destinationAddress').val() && $('#startAddress_input').val()!="Please Try Again" && $('#destinationAddress').val()!="Please Try Again"){
                   $('#solveRoute').css('display',"inline");
                 }
               } else {
@@ -852,6 +869,7 @@ routeParams.outSpatialReference = {"wkid":102100};
         removeEventHandlers();
         $("#myLocation").on('click', inputAddress);
         mapOnClick_addStops_connect = map.on("click", function(evt){
+          console.log(evt.mapPoint);
           $("#BypassRoute").css('display',"none");
         $("#NormalRoute").css('display',"none");
         $('#solveRoute').css("display","none");
@@ -873,7 +891,8 @@ routeParams.outSpatialReference = {"wkid":102100};
 
               if(parsedResults.address){
                 $("#destinationAddress").val(parsedResults.address.Match_addr.replace("California", "CA"));
-                if($('#startAddress').val() && $('#destinationAddress').val() && $('#startAddress').val()!="Please Try Again" && $('#destinationAddress').val()!="Please Try Again"){
+             console.log($('#startAddress_input').val() && $('#destinationAddress').val() && $('#startAddress_input').val()!="Please Try Again" && $('#destinationAddress').val()!="Please Try Again");
+                if($('#startAddress_input').val() && $('#destinationAddress').val() && $('#startAddress_input').val()!="Please Try Again" && $('#destinationAddress').val()!="Please Try Again"){
                   $('#solveRoute').css('display',"inline");
                 }
               } else {
@@ -1880,6 +1899,7 @@ function crimesPlot(){
           dataPointMarker.setColor(new Color(dataColors[filteredCrimeLocations[i][4]]));
           dataPointMarker.setOutline(dataOutline);
           dataPointMarker.setSize(4);
+          //console.log(filteredCrimeLocations[i][3],filteredCrimeLocations[i][2]);
           rawCrimesGraphics.push(map.graphics.add(new esri.Graphic(new Point(filteredCrimeLocations[i][3],filteredCrimeLocations[i][2]),dataPointMarker)));
     }
 
