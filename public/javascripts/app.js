@@ -745,7 +745,7 @@ routeParams.outSpatialReference = {"wkid":102100};
 
       function addStartStop(){
         removeEventHandlers();
-        
+
 
 
 
@@ -1881,7 +1881,7 @@ function currentStartPosition() {
       type: 'POST',
       url: "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/reverseGeocode?location="+long+"%2C+"+lat+"&distance=200&outSR=&f=pjson",
       success: function (results, textStatus, xhr) {
-        
+
         startAddress = JSON.parse(results).address.Match_addr;
       },
       error: function (xhr, textStatus, errorThrown) {
