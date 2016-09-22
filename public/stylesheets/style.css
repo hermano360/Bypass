@@ -96,7 +96,8 @@ a{
 }
 @media screen and (max-width: 34em) {
   #missionStatement {
-    padding-top:0;
+    padding-top:3px;
+    font-size:11px;
   }
 }
 
