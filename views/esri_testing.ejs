@@ -32,33 +32,23 @@
 
 <body>
 
-  <div class="row nav">
+  <div class="row">
     <div class="nav-bar large-12 columns">
-      <!-- Logo -->
-      <div class="nav-bar-top-left">
-        <div class="logo">
-          <img id='logo' src='/images/logo.png'></img>
+      <div class="row">
+      <div class="small-10 medium-10 large-10 columns">
+        <div class="logo"><img src='/images/logo.png'></img></div>
+
+        <div id="missionStatement">Personal Safety, Community Advocacy</div>
+      </div>
+
+      <div class="small-2 medium-2 large-2 columns">
+        <div class="call-police">
+          <a data-open="callPolicePopup">
+            <i class="fa fa-phone" aria-hidden="true"></i>
+          </a>
         </div>
-        <div id="missionStatement">
-          <span>Personal Safety, Community Advocacy</span>
-        </div>
       </div>
-
-      <!-- Call Police Button -->
-      <div class="call-police">
-        <a data-open="callPolicePopup">
-          <i class="fa fa-phone" aria-hidden="true"></i>
-        </a>
       </div>
-
-      <!-- Call Police Window -->
-      <div class="reveal" id="callPolicePopup" data-reveal>
-        <a class='button alert radius' href="tel:911">Call Police<a></a>
-        <button class="close-button" data-close aria-label="Close modal" type="button">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-
 
         <!-- About App -->
       <!-- <div class="app-info">
@@ -69,7 +59,12 @@
     </div>
   </div>
 
-
+  <div class="reveal" id="callPolicePopup" data-reveal>
+    <a class='button alert radius' href="tel:911">Call Police<a></a>
+    <button class="close-button" data-close aria-label="Close modal" type="button">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
 
   <!-- Turn-by-turn -->
 <div id='directions-button' class="small-12 large-12 columns directions-button-active" style="display:none;">
