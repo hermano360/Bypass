@@ -131,23 +131,19 @@ $(document).foundation()
       ready(function() {
 
 
-        var geocoder = new Geocoder({
+        var startGeocoder = new Geocoder({
           autoComplete:true,
           map: map,
         }, dom.byId("startAddress"));
-        geocoder.startup();
-        geocoder.autoNavigate = false;
-        geocoder.on("select", function(results){
+
+        startGeocoder.startup();
+        startGeocoder.autoNavigate = false;
+        startGeocoder.on("select", function(results){
           console.log(results);
 
           $("#startAddress_input").val(results.result.name.replace("California", "CA"));
 
-          /*          
-          clearRoutes();
-          map.graphics.remove(routeStops.shift());
-          routeStops.unshift(map.graphics.add(new esri.Graphic(evt.mapPoint,startSymbol)));
-          */
-          //console.log(routeStops);
+
           clearRoutes();
 
           var points = webMercatorUtils.xyToLngLat(results.result.feature.geometry.x, results.result.feature.geometry.y, true);
@@ -156,8 +152,43 @@ $(document).foundation()
           map.graphics.remove(routeStops.shift());
           routeStops.unshift(map.graphics.add(new esri.Graphic(instancePoint,startSymbol)));
 
-          console.log(webMercatorUtils.xyToLngLat(results.result.feature.geometry.x, results.result.feature.geometry.y, true));
+          if($('#startAddress_input').val() && $('#destinationAddress').val() && $('#startAddress_input').val()!="Please Try Again" && $('#destinationAddress').val()!="Please Try Again"){
+            $('#solveRoute').css('display',"inline");
+          }
         });
+
+
+
+
+        
+                var endGeocoder = new Geocoder({
+          autoComplete:true,
+          map: map,
+        }, dom.byId("destinationAddress"));
+
+        endGeocoder.startup();
+        endGeocoder.autoNavigate = false;
+        endGeocoder.on("select", function(results){
+          console.log(results);
+
+          $("#destinationAddress_input").val(results.result.name.replace("California", "CA"));
+
+
+          clearRoutes();
+
+          var points = webMercatorUtils.xyToLngLat(results.result.feature.geometry.x, results.result.feature.geometry.y, true);
+          var instancePoint = new Point(points[0],points[1]);
+          console.log(instancePoint);
+          map.graphics.remove(routeStops.pop());
+          routeStops.push(map.graphics.add(new esri.Graphic(instancePoint,stopSymbol)));
+          console.log($('#startAddress_input').val() && $('#destinationAddress_input').val() && $('#startAddress_input').val()!="Please Try Again" && $('#destinationAddress_input').val()!="Please Try Again");
+
+          if($('#startAddress_input').val() && $('#destinationAddress_input').val() && $('#startAddress_input').val()!="Please Try Again" && $('#destinationAddress_input').val()!="Please Try Again"){
+            $('#solveRoute').css('display',"inline");
+          }
+        });
+
+        
 
       $("#startAddress_input").attr("placeholder","Start Location");
       console.log($("#startAddress_input").val());
@@ -411,8 +442,8 @@ $(document).foundation()
         })
 
         $('#startAddress').click(function() {
-          console.log($('#startAddress').data("inputState"));
-          console.log($('#startAddress').prop("readonly"));
+          //console.log($('#startAddress').data("inputState"));
+          //console.log($('#startAddress').prop("readonly"));
           whichStopAddressInput = "start";
           addStartStop();
 
@@ -845,7 +876,7 @@ routeParams.outSpatialReference = {"wkid":102100};
                   $('#solveRoute').css('display',"inline");
                 }
               } else {
-                $("#startAddress").val("Please Try Again");
+                $("#startAddress_input").val("Please Try Again");
                 $('#solveRoute').css('display',"none");
 
               }

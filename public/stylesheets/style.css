@@ -496,7 +496,17 @@ input:disabled, input[readonly], textarea:disabled, textarea[readonly] {
   font-size: 1rem !important;
 }
 
+#destinationAddress {
+  width: 100%;
+}
 
+#destinationAddress_input {
+  width: 100% !important;
+  height: 18px !important;
+  text-indent: 15px;
+  border: none;
+  font-size: 1rem !important;
+}
 
 
 
