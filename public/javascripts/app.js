@@ -331,7 +331,6 @@ $(document).foundation()
             $("#NormalRoute").css('display',"none");
             barrierVisibility = false;
             clearBarriers();
-            $('#myLocation').css("display","block");
           } else{
             $('#solveRoute').text("Generating Routes...");
             disableNewRouteBtn();
@@ -347,7 +346,6 @@ $(document).foundation()
             mapAllIndices(normalizedArray);
             $("#BypassRoute").addClass("BypassRouteSelected");
             $("#BypassRoute").removeClass("BypassRouteUnselected");
-            // $('#myLocation').css("display","none");
           }
         })
 
