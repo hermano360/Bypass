@@ -189,7 +189,7 @@
 
 <!--           <input class='directions-textbox' type="text" name="startAddress" id="startAddress" placeholder='Start Location' readonly="true" data-input-state="mapTap"> -->
 
-          <div type="text" id="startAddress" class="directions-textbox" placeholder='Start Location'></div>
+          <div type="text" id="startAddress" class="directions-textbox" placeholder='Start Location' data-ready-status="notReady"></div>
 
 
 
@@ -203,7 +203,7 @@
           <i class="fa fa-map-marker" aria-hidden="true"></i>
 <!--           <input class='directions-textbox' type="text" name="destinationAddress" id="destinationAddress" placeholder='End Location' readonly="true" data-input-state="mapTap"> -->
 
-<div type="text" id="destinationAddress" class="directions-textbox" placeholder='End Location'></div>
+<div type="text" id="destinationAddress" class="directions-textbox" placeholder='End Location' data-ready-status="notReady"></div>
 
 
         </div>
@@ -216,7 +216,7 @@
 
 <!-- Route to Safety -->
 <div class="row">
-  <div id="solveRoute" class="directions-nav-bar large-12 columns" style='display:none;'>
+  <div id="solveRoute" class="directions-nav-bar large-12 columns" style='display:none;' data-solve-phase="generate">
     Get Home Safe!
   </div>
 </div>

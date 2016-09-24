@@ -206,7 +206,7 @@ a{
   position: absolute;
   height: 75%;
   width:100%;
-  height:100%;
+  height:85%;
   z-index: -1;
 }
 
@@ -387,16 +387,7 @@ input:disabled, input[readonly], textarea:disabled, textarea[readonly] {
   border-bottom: 1px solid #8cd4cc;
 }
 
-#myLocation {
-  font-size: 30px;
-  color: #5d5d5d;
-  padding: 5px;
-  margin-top:15px;
-  margin-left:20px;
-}
-#myLocation:hover, #myLocation:active {
-  color: #FFFFFF;
-}
+
 
 /*#startAddress.directions-textbox {
   background-image:url('../images/directions_arrow.png');
@@ -468,18 +459,22 @@ input:disabled, input[readonly], textarea:disabled, textarea[readonly] {
 
 .esriGeocoder {
   border-radius: 0px !important;
-  height: 34px !important;
+  height: 25px !important;
+    border-top:1px solid #8cd4cc;
+  border-bottom:3px solid #8cd4cc;
+
 }
 
 
 #startAddAbove {
-  height: 34px;
+  height: 25px;
 }
 
 
 .esriGeocoderContainer {
   width: 100% !important;
-  height: 34px !important;
+  height: 25px !important;
+  margin: 0px 0px 0px 0px  !important;
 }
 #startAddress {
   width: 100%;
@@ -489,11 +484,15 @@ input:disabled, input[readonly], textarea:disabled, textarea[readonly] {
 }
 
 #startAddress_input {
-  width: 100% !important;
-  height: 18px !important;
-  text-indent: 23px;
+ width: 100% !important;
+  height: 25px !important;
+  text-indent: 30px;
+  padding: 0px !important;
+  margin: 0px  !important;
   border: none;
-  font-size: 1rem !important;
+  font-size: .85rem !important;
+  background-color: #f2f2f2;
+  color: #575757;
 }
 
 #destinationAddress {
@@ -502,11 +501,34 @@ input:disabled, input[readonly], textarea:disabled, textarea[readonly] {
 
 #destinationAddress_input {
   width: 100% !important;
-  height: 18px !important;
-  text-indent: 23px;
+  height: 25px !important;
+  text-indent: 30px;
+  padding: 0 !important;
+  margin: 0 !important;
   border: none;
-  font-size: 1rem !important;
+  font-size: .85rem !important;
+  background-color: #f2f2f2;
+  color: #575757;
 }
+
+#myLocation {
+  width: 40px;
+  border-radius:20px;
+  height: 40px;
+}
+
+#myLocation {
+  font-size: 30px;
+  color: #5d5d5d;
+  padding: 5px;
+  margin-top:15px;
+  margin-left:20px;
+}
+#myLocation:hover, #myLocation:active {
+  color: #FFFFFF;
+}
+
+
 
 
 
