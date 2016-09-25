@@ -2035,6 +2035,8 @@ function navigationExtents() {
 function resetBarriersPoints(){
   resetBarriers();
   resetPoints();
+  $("#startAddress").blur();
+  $("#destinationAddress").blur();
 }
 
 function resetPoints(){
