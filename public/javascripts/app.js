@@ -140,11 +140,14 @@ $(document).foundation()
           $("#startAddress_input").val(results.result.name.replace("California", "CA"));
           $('#startAddress').data("ready-status","ready");
           clearRoutes();
+          console.log(results);
           var points = webMercatorUtils.xyToLngLat(results.result.feature.geometry.x, results.result.feature.geometry.y, true);
           var instancePoint = new Point(points[0],points[1]);
           console.log(instancePoint);
           map.graphics.remove(routeStops.shift());
           routeStops.unshift(map.graphics.add(new esri.Graphic(instancePoint,startSymbol)));
+          console.log("holy moly");
+          console.log(routeStops[0].geometry.x, routeStops[0].geometry.y);
           if($('#startAddress').data("ready-status") == "ready" && $('#destinationAddress').data("ready-status") == "ready"){
             $('#solveRoute').css('display',"inline");
           }
@@ -182,7 +185,7 @@ var endGeocoder = new Geocoder({
       $("#startAddress_input").attr("placeholder","Tap For Start Location");
       $("#destinationAddress_input").attr("placeholder","Tap For Destination Location");
 
-      console.log($("#startAddress_input").val());
+      
 
       //geocoder.on("select", showLocation);
 
@@ -403,6 +406,8 @@ var endGeocoder = new Geocoder({
             disableStartEndTextboxes();       
             clearRoutes();
             solveRoute();
+          } else {
+            console.log($('#solveRoute').data("solvePhase"));
           }
 
 
@@ -847,12 +852,9 @@ routeParams.outSpatialReference = {"wkid":102100};
         $("#BypassRoute").css('display',"none");
         $("#NormalRoute").css('display',"none");
           clearRoutes();
-          map.graphics.remove(routeStops.shift());
-          routeStops.unshift(map.graphics.add(new esri.Graphic(evt.mapPoint,startSymbol)));
-
-
           var longlat = webMercatorUtils.xyToLngLat(evt.mapPoint["x"], evt.mapPoint["y"], true);
-
+          map.graphics.remove(routeStops.shift());
+          routeStops.unshift(map.graphics.add(new esri.Graphic(new Point(longlat),startSymbol)));
           $.ajax({
             type: 'POST',
             url: "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/reverseGeocode?location="+longlat[0]+"%2C+"+longlat[1]+"&distance=200&outSR=&f=pjson",
@@ -860,6 +862,7 @@ routeParams.outSpatialReference = {"wkid":102100};
               var parsedResults = JSON.parse(results);
               console.log(parsedResults);
               if(parsedResults.address){
+
                 $("#startAddress_input").val(parsedResults.address.Match_addr.replace("California", "CA"));
                 $("#startAddress").data("ready-status","ready");
                 console.log($("#startAddress").data("ready-status","ready"));
@@ -868,12 +871,11 @@ routeParams.outSpatialReference = {"wkid":102100};
                   $('#solveRoute').data("solvePhase","generate");
                 }
               } else {
+                map.graphics.remove(routeStops.shift());
+                routeStops.unshift({});
                 $("#startAddress_input").val("Please Try Again");
-
                 $('#solveRoute').css('display',"none");
-
               }
-
             },
             error: function (xhr, textStatus, errorThrown) {
               console.log("test failed");
@@ -899,17 +901,17 @@ routeParams.outSpatialReference = {"wkid":102100};
         $('#solveRoute').css("display","none");
         $('#solveRoute').text("Click to Solve Route!");
           clearRoutes();
-          map.graphics.remove(routeStops.pop());
-          routeStops.push(map.graphics.add(new esri.Graphic(evt.mapPoint,stopSymbol)));
-
           var longlat = webMercatorUtils.xyToLngLat(evt.mapPoint["x"], evt.mapPoint["y"], true);
+          map.graphics.remove(routeStops.pop());
+          routeStops.push(map.graphics.add(new esri.Graphic(new Point(longlat),stopSymbol)));
+
+          
           $.ajax({
             type: 'POST',
             url: "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/reverseGeocode?location="+longlat[0]+"%2C+"+longlat[1]+"&distance=200&outSR=&f=pjson",
             success: function (results, textStatus, xhr) {
               var parsedResults = JSON.parse(results);
-
-
+              console.log(parsedResults);
               if(parsedResults.address){
                 $("#destinationAddress_input").val(parsedResults.address.Match_addr.replace("California", "CA"));
                 $("#destinationAddress").data("ready-status","ready");
@@ -918,7 +920,10 @@ routeParams.outSpatialReference = {"wkid":102100};
                   $('#solveRoute').data("solvePhase","generate");
                 }
               } else {
+                map.graphics.remove(routeStops.pop());
+                routeStops.push(map.graphics.add({}));
                 $("#destinationAddress_input").val("Please Try Again");
+                $('#solveRoute').css('display',"none");
               }
 
             },
@@ -1137,8 +1142,7 @@ routeParams.outSpatialReference = {"wkid":102100};
       function syncRouteWB(routeStops) { //With Barriers
         var minRoutePathLength;
 
-        var stops = [[routeStops[0].geometry.x,routeStops[0].geometry.y],[routeStops[1].geometry.x,routeStops[1].geometry.y]];
-
+        var stops = [webMercatorUtils.xyToLngLat(routeStops[0].geometry.x,routeStops[0].geometry.y),webMercatorUtils.xyToLngLat(routeStops[1].geometry.x,routeStops[1].geometry.y)];
         var polygonBarriersURL= "{\"features\":[";
 
         for(var i = 0; i< barriers.length; i++){
@@ -1168,6 +1172,7 @@ routeParams.outSpatialReference = {"wkid":102100};
 
           success: function (results, textStatus, xhr) {
             $('#directions-button').css('display',"inline");
+            console.log("with barriers success");
             sRouteWB = JSON.parse(results);
             bypassRouteDirections = JSON.parse(results).directions;
             bypassRoute = new esri.geometry.Polyline(sRouteWB.routes.features[0].geometry.paths[0]);
@@ -1212,14 +1217,19 @@ routeParams.outSpatialReference = {"wkid":102100};
       function syncRouteWOB(routeStops) {//Without Barriers
         //console.log("without Barriers called");
 
-        var stops = [[routeStops[0].geometry.x,routeStops[0].geometry.y],[routeStops[1].geometry.x,routeStops[1].geometry.y]];
+        
 
+        
+
+        var stops = [[routeStops[0].geometry.x,routeStops[0].geometry.y],[routeStops[1].geometry.x,routeStops[1].geometry.y]];
+        console.log(stops);
         $.ajax({
           type: 'POST',
           url: 'http://route.arcgis.com/arcgis/rest/services/World/Route/NAServer/Route_World/solve?'+walkModeUrl+'token='+globalToken+'&stops='+stops[0][0]+','+stops[0][1]+';'+stops[1][0]+','+stops[1][1]+'&f=json',
 
           success: function (results, textStatus, xhr) {
             sRoute = JSON.parse(results);
+            console.log(sRoute);
             normalRouteDirections = JSON.parse(results).directions;
 
             normalRoute = new esri.geometry.Polyline(sRoute.routes.features[0].geometry.paths[0]);
@@ -2002,7 +2012,7 @@ function navigationExtents() {
   var miny=map.extent.ymin;
   var maxx=map.extent.xmax;
   var maxy=map.extent.ymax;
-  console.log(routeStops)
+  console.log(routeStops);
 
   var startStopXY = [webMercatorUtils.lngLatToXY(routeStops[0].geometry.x, routeStops[0].geometry.y),webMercatorUtils.lngLatToXY(routeStops[1].geometry.x, routeStops[1].geometry.y)];
   console.log(startStopXY);
