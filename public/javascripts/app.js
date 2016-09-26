@@ -471,6 +471,13 @@ var endGeocoder = new Geocoder({
             $(this).attr("placeholder","Type or Choose on Map for Start");
           });
 
+          $(this).keyup(function(){
+            if($(this).val()==""){
+              map.graphics.remove(routeStops.shift());
+              routeStops.unshift({});
+            }
+          });
+
         });
 
 
@@ -507,6 +514,13 @@ var endGeocoder = new Geocoder({
 
           $(this).blur(function(){
             $(this).attr("placeholder","Type or Choose on Map for Destination");
+          });
+
+          $(this).keyup(function(){
+            if($(this).val()==""){
+              map.graphics.remove(routeStops.pop());
+              routeStops.push({});
+            }
           });
 
         });
