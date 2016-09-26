@@ -151,6 +151,37 @@ $(document).foundation()
           if($('#startAddress').data("ready-status") == "ready" && $('#destinationAddress').data("ready-status") == "ready"){
             $('#solveRoute').css('display',"inline");
           }
+
+        var minx=map.extent.xmin;
+        var miny=map.extent.ymin;
+        var maxx=map.extent.xmax;
+        var maxy=map.extent.ymax;
+
+
+          xyUnits = webMercatorUtils.lngLatToXY(routeStops[0].geometry.x, routeStops[0].geometry.y);
+
+
+          if(map.extent.xmin>xyUnits[0]){
+            minx = xyUnits[0] - .20 * (map.extent.xmax-xyUnits[0]);
+
+          } else if(map.extent.xmax<xyUnits[0]){
+            maxx = xyUnits[0] + .20 * (xyUnits[0]-map.extent.xmin);
+          }
+
+          if(map.extent.ymin>xyUnits[1]){
+            miny = xyUnits[1] - .20 * (map.extent.ymax-xyUnits[1]);
+
+          } else if(map.extent.ymax<xyUnits[1]){
+            maxy = xyUnits[1] + .20 * (xyUnits[1]-map.extent.ymin);
+          }
+
+          var newExtent = new Extent({xmin:minx,ymin:miny,xmax:maxx,ymax:maxy,spatialReference:{wkid:102100}});
+            map.setExtent(newExtent);
+
+
+
+
+
         });
 
 
@@ -181,9 +212,41 @@ var endGeocoder = new Geocoder({
           if($('#startAddress_input').val() && $('#destinationAddress_input').val() && $('#startAddress_input').val()!="Please Try Again" && $('#destinationAddress_input').val()!="Please Try Again"){
             $('#solveRoute').css('display',"inline");
           }
+
+
+
+
+        var minx=map.extent.xmin;
+        var miny=map.extent.ymin;
+        var maxx=map.extent.xmax;
+        var maxy=map.extent.ymax;
+
+
+          xyUnits = webMercatorUtils.lngLatToXY(routeStops[1].geometry.x, routeStops[1].geometry.y);
+
+
+          if(map.extent.xmin>xyUnits[0]){
+            minx = xyUnits[0] - .20 * (map.extent.xmax-xyUnits[0]);
+
+          } else if(map.extent.xmax<xyUnits[0]){
+            maxx = xyUnits[0] + .20 * (xyUnits[0]-map.extent.xmin);
+          }
+
+          if(map.extent.ymin>xyUnits[1]){
+            miny = xyUnits[1] - .20 * (map.extent.ymax-xyUnits[1]);
+
+          } else if(map.extent.ymax<xyUnits[1]){
+            maxy = xyUnits[1] + .20 * (xyUnits[1]-map.extent.ymin);
+          }
+
+          var newExtent = new Extent({xmin:minx,ymin:miny,xmax:maxx,ymax:maxy,spatialReference:{wkid:102100}});
+            map.setExtent(newExtent);
+
+
+
         });
-      $("#startAddress_input").attr("placeholder","Tap For Start Location");
-      $("#destinationAddress_input").attr("placeholder","Tap For Destination Location");
+      $("#startAddress_input").attr("placeholder","Start Location");
+      $("#destinationAddress_input").attr("placeholder","Destination Location");
 
       
 
@@ -400,14 +463,31 @@ var endGeocoder = new Geocoder({
 
 
         $("#solveRoute").click( function(){
-          console.log($('#solveRoute').data("solve-phase"));
-          if($('#solveRoute').data("solvePhase","generate")){
+          if($('#solveRoute').data("solve-phase")=="generate"){
             disableNewRouteBtn();
-            disableStartEndTextboxes();       
+            disableStartEndTextboxes();
             clearRoutes();
             solveRoute();
-          } else {
-            console.log($('#solveRoute').data("solvePhase"));
+            barrierVisibility = true;
+            resetBarriers();
+            $("#crimesButton").data("crimeDisplay","crimeGrid");
+            $("#BypassRoute").addClass("BypassRouteSelected");
+            $("#BypassRoute").removeClass("BypassRouteUnselected");
+            $('#solveRoute').data("solvePhase","finalize");
+          } else if($('#solveRoute').data("solvePhase","finalize")){
+            $('#solveRoute').css("display","none");
+            $('#solveRoute').text("Click to Solve Route!");
+            if(routes.length > 1){
+              map.graphics.remove(routes.shift());
+            }
+
+            $("#BypassRoute").css('display',"none");
+            $("#NormalRoute").css('display',"none");
+            barrierVisibility = false;
+            resetBarriers();
+            $("#crimesButton").data("crimeDisplay","none");
+            $('#myLocation').css("display","block");
+            $('#solveRoute').data("solvePhase","generate");
           }
 
 
@@ -457,20 +537,49 @@ var endGeocoder = new Geocoder({
             }
         });
 
+        $('#startAddress_input').each(function(){
+          $(this).focus(function(){
+            $(this).attr("placeholder","");
+            $(this).one('mouseup', function(event){
+              $(this).select();
+            });
+          });
+
+          $(this).blur(function(){
+            $(this).attr("placeholder","Start Address");
+          });
+
+        });
+
+
         $('#startAddress').keyup(function(){
           $('#startAddress').data("ready-status","notReady");
           $('#solveRoute').css('display',"none");
         });
 
         $('#destinationAddress').click(function() {
+          $("#destinationAddress_input").attr("placeholder","");
           whichStopAddressInput = "end";
           addDestinationStop();
-
           if($('#destinationAddress').data("inputState")=="mapTap"){
               $('#destinationAddress').data("input-state","typeTap");
             } else if($('#destinationAddress').data("inputState")=="typeTap"){
               $('#destinationAddress').prop("readonly",false);
             }
+        });
+
+        $('#destinationAddress_input').each(function(){
+          $(this).focus(function(){
+            $(this).attr("placeholder","");
+            $(this).one('mouseup', function(event){
+              $(this).select();
+            })
+          });
+
+          $(this).blur(function(){
+            $(this).attr("placeholder","Destination Address");
+          });
+
         });
 
         $('#destinationAddress').keyup(function(){
@@ -860,12 +969,10 @@ routeParams.outSpatialReference = {"wkid":102100};
             url: "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/reverseGeocode?location="+longlat[0]+"%2C+"+longlat[1]+"&distance=200&outSR=&f=pjson",
             success: function (results, textStatus, xhr) {
               var parsedResults = JSON.parse(results);
-              console.log(parsedResults);
               if(parsedResults.address){
 
                 $("#startAddress_input").val(parsedResults.address.Match_addr.replace("California", "CA"));
                 $("#startAddress").data("ready-status","ready");
-                console.log($("#startAddress").data("ready-status","ready"));
                 if($('#startAddress').data("ready-status") == "ready" && $('#destinationAddress').data("ready-status") == "ready"){
                   $('#solveRoute').css('display',"inline");
                   $('#solveRoute').data("solvePhase","generate");
@@ -911,7 +1018,6 @@ routeParams.outSpatialReference = {"wkid":102100};
             url: "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/reverseGeocode?location="+longlat[0]+"%2C+"+longlat[1]+"&distance=200&outSR=&f=pjson",
             success: function (results, textStatus, xhr) {
               var parsedResults = JSON.parse(results);
-              console.log(parsedResults);
               if(parsedResults.address){
                 $("#destinationAddress_input").val(parsedResults.address.Match_addr.replace("California", "CA"));
                 $("#destinationAddress").data("ready-status","ready");
@@ -1142,7 +1248,8 @@ routeParams.outSpatialReference = {"wkid":102100};
       function syncRouteWB(routeStops) { //With Barriers
         var minRoutePathLength;
 
-        var stops = [webMercatorUtils.xyToLngLat(routeStops[0].geometry.x,routeStops[0].geometry.y),webMercatorUtils.xyToLngLat(routeStops[1].geometry.x,routeStops[1].geometry.y)];
+        var stops = [[routeStops[0].geometry.x,routeStops[0].geometry.y],[routeStops[1].geometry.x,routeStops[1].geometry.y]];
+
         var polygonBarriersURL= "{\"features\":[";
 
         for(var i = 0; i< barriers.length; i++){
@@ -1216,20 +1323,13 @@ routeParams.outSpatialReference = {"wkid":102100};
 
       function syncRouteWOB(routeStops) {//Without Barriers
         //console.log("without Barriers called");
-
-        
-
-        
-
         var stops = [[routeStops[0].geometry.x,routeStops[0].geometry.y],[routeStops[1].geometry.x,routeStops[1].geometry.y]];
-        console.log(stops);
         $.ajax({
           type: 'POST',
           url: 'http://route.arcgis.com/arcgis/rest/services/World/Route/NAServer/Route_World/solve?'+walkModeUrl+'token='+globalToken+'&stops='+stops[0][0]+','+stops[0][1]+';'+stops[1][0]+','+stops[1][1]+'&f=json',
 
           success: function (results, textStatus, xhr) {
             sRoute = JSON.parse(results);
-            console.log(sRoute);
             normalRouteDirections = JSON.parse(results).directions;
 
             normalRoute = new esri.geometry.Polyline(sRoute.routes.features[0].geometry.paths[0]);
@@ -2012,11 +2112,8 @@ function navigationExtents() {
   var miny=map.extent.ymin;
   var maxx=map.extent.xmax;
   var maxy=map.extent.ymax;
-  console.log(routeStops);
 
   var startStopXY = [webMercatorUtils.lngLatToXY(routeStops[0].geometry.x, routeStops[0].geometry.y),webMercatorUtils.lngLatToXY(routeStops[1].geometry.x, routeStops[1].geometry.y)];
-  console.log(startStopXY);
-
   var startCoord = {x: startStopXY[0][0], y: startStopXY[0][1]};
   var endCoord = {x: startStopXY[1][0], y: startStopXY[1][1]};
   maxx = Math.max(startCoord.x,endCoord.x) + .25* Math.abs(endCoord.x-startCoord.x);
@@ -2025,14 +2122,11 @@ function navigationExtents() {
   newExtent = new Extent({xmin:minx,ymin:miny,xmax:maxx,ymax:maxy,spatialReference:{wkid:102100}});
   map.setExtent(newExtent);
   var originalYDiff = .5*((maxy-miny)-(Math.max(startCoord.y,endCoord.y)-Math.min(startCoord.y,endCoord.y)));
-  console.log(originalYDiff);
 
   if((maxy-miny)>(Math.max(startCoord.y,endCoord.y)-Math.min(startCoord.y,endCoord.y))){
-    console.log("tall enough");
     maxy = Math.max(startCoord.y,endCoord.y) + originalYDiff;
     miny = Math.min(startCoord.y,endCoord.y) - originalYDiff;
   } else {
-    console.log("not tall enough");
     maxy = Math.max(startCoord.y,endCoord.y) + .2* Math.abs(endCoord.y-startCoord.y);
     miny = Math.min(startCoord.y,endCoord.y) - .2* Math.abs(endCoord.y-startCoord.y);
   }
@@ -2050,8 +2144,6 @@ function resetBarriersPoints(){
 }
 
 function resetPoints(){
-
-  console.log($("#crimesButton").data("crimeDisplay"));
   if($("#crimesButton").data("crimeDisplay")=="crimePoints"){
     clearCrimesData();
     crimesPlot();
