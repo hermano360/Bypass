@@ -90,6 +90,9 @@ $(document).foundation()
       var rawFeaturesGraphics = [];
       var crimePointsArray = [];
       var filteredCrimeLocations = [];
+      var bypassTimeDistance;
+      var normalTimeDistance;
+      var newRouteAllowed = true;
 
 
       var authdata = {client_id: '2FiTpg1kQIhDPS1H', client_secret: '926550d14c5e4fe9b39fc25229654ce7', grant_type: 'client_credentials', expiration: '1440'}
@@ -146,7 +149,6 @@ $(document).foundation()
           console.log(instancePoint);
           map.graphics.remove(routeStops.shift());
           routeStops.unshift(map.graphics.add(new esri.Graphic(instancePoint,startSymbol)));
-          console.log("holy moly");
           console.log(routeStops[0].geometry.x, routeStops[0].geometry.y);
           if($('#startAddress').data("ready-status") == "ready" && $('#destinationAddress').data("ready-status") == "ready"){
             $('#solveRoute').css('display',"inline");
@@ -464,7 +466,8 @@ var endGeocoder = new Geocoder({
 
         $("#solveRoute").click( function(){
           if($('#solveRoute').data("solve-phase")=="generate"){
-            disableNewRouteBtn();
+            newRouteAllowed = false;
+            
             disableStartEndTextboxes();
             clearRoutes();
             solveRoute();
@@ -473,10 +476,11 @@ var endGeocoder = new Geocoder({
             $("#crimesButton").data("crimeDisplay","crimeGrid");
             $("#BypassRoute").addClass("BypassRouteSelected");
             $("#BypassRoute").removeClass("BypassRouteUnselected");
+            $('#solveRoute').text("Please Wait...");
             $('#solveRoute').data("solvePhase","finalize");
           } else if($('#solveRoute').data("solvePhase","finalize")){
             $('#solveRoute').css("display","none");
-            $('#solveRoute').text("Click to Solve Route!");
+            $('#solveRoute').text("Get Me There Safely!");
             if(routes.length > 1){
               map.graphics.remove(routes.shift());
             }
@@ -545,6 +549,7 @@ var endGeocoder = new Geocoder({
             });
           });
 
+
           $(this).blur(function(){
             $(this).attr("placeholder","Start Address");
           });
@@ -572,8 +577,9 @@ var endGeocoder = new Geocoder({
           $(this).focus(function(){
             $(this).attr("placeholder","");
             $(this).one('mouseup', function(event){
+              console.log("select all");
               $(this).select();
-            })
+            });
           });
 
           $(this).blur(function(){
@@ -582,7 +588,7 @@ var endGeocoder = new Geocoder({
 
         });
 
-        $('#destinationAddress').keyup(function(){
+        $('#destinationAddress_input').keyup(function(){
           $('#destinationAddress').data("ready-status","notReady");
           $('#solveRoute').css('display',"none");
         });
@@ -594,10 +600,19 @@ var endGeocoder = new Geocoder({
         });
 
         $("#resetBtn").click( function () {
+
+          $("#startAddress").data("ready-status","notReady");
+          $("#destinationAddress").data("ready-status","notReady");
+          if($("#startAddress").attr("disabled")){
+            enableStartEndTextboxes()
+          }
+          console.log($("#startAddress"));
+
+
+          newRouteAllowed = false;
           if ($("#resetBtn").hasClass("disabled") == true) {
             return false
           }
-
           console.log($('#myLocation').css('display'));
           chosenRouteDirections = "";
           clearStops();
@@ -606,11 +621,14 @@ var endGeocoder = new Geocoder({
           clearCrimesData();
           clearFeaturesData();
           clearMyLocation();
-          $('#startAddress').val("");
+
+          $('#startAddress_input').val("");
           $('#destinationAddress_input').val("");
           $('#directionsDisplay').empty();
           $('.filter-options-nav-bar').css("display","none");
           $('#solveRoute').css("display","none");
+          $('#solveRoute').text("Get Me There Safely!");
+          $('#solveRoute').data("solvePhase","generate");
           $('#BypassRoute').css('display',"none");
           $('#NormalRoute').css('display',"none");
           $('#myLocation').css('display',"block");
@@ -635,6 +653,7 @@ var endGeocoder = new Geocoder({
               activateDirections();
             }
           }
+          $('#solveRoute').text("Choose Bypass" + " " + bypassTimeDistance);
         });
 
 
@@ -650,6 +669,8 @@ var endGeocoder = new Geocoder({
               activateDirections();
             }
           }
+
+          $('#solveRoute').text("Choose Normal" + " " + normalTimeDistance);
         });
 
         $("#mapCrimeIndex").click( function () {
@@ -707,13 +728,13 @@ var endGeocoder = new Geocoder({
         }
       }
 
-      function disableNewRouteBtn() {
-        $("#resetBtn").addClass("disabled");
-      }
+      // function disableNewRouteBtn() {
+      //   $("#resetBtn").addClass("disabled");
+      // }
 
-      function enableNewRouteBtn() {
-        $("#resetBtn").removeClass("disabled");
-      }
+      // function enableNewRouteBtn() {
+      //   $("#resetBtn").removeClass("disabled");
+      // }
 
       function disableStartEndTextboxes() {
         $("#startAddress").attr("disabled", true);
@@ -736,7 +757,7 @@ if($("#crimesButton").data("crimeDisplay")=="none"){
   resetBarriers();
   
   $("#crimesButton").data("crimeDisplay","crimeGrid");
-  $("#crimesButton").html("Grid");
+  $("#crimesButton").html("Crime Grid");
 } else if($("#crimesButton").data("crimeDisplay")=="crimeGrid"){
   clearFeaturesData();
   barrierVisibility = false;
@@ -747,7 +768,7 @@ if($("#crimesButton").data("crimeDisplay")=="none"){
 }else if($("#crimesButton").data("crimeDisplay")=="crimePoints"){
   clearFeaturesData();
   clearCrimesData();
-  $("#crimesButton").html("Crimes");
+  $("#crimesButton").html("Dangers");
 $("#crimesButton").data("crimeDisplay","none");
 } 
 
@@ -909,7 +930,7 @@ routeParams.outSpatialReference = {"wkid":102100};
       function inputAddress(){
         clearRoutes();
         $('#solveRoute').css("display","none");
-        $('#solveRoute').text("Click to Solve Route!");
+        $('#solveRoute').text("Get Me There Safely!");
         navigator.geolocation.getCurrentPosition(function(position){
           long = position.coords.longitude;
           lat = position.coords.latitude;
@@ -962,6 +983,7 @@ routeParams.outSpatialReference = {"wkid":102100};
         $("#NormalRoute").css('display',"none");
           clearRoutes();
           var longlat = webMercatorUtils.xyToLngLat(evt.mapPoint["x"], evt.mapPoint["y"], true);
+          console.log("There are " + routeStops.length + " stops");
           map.graphics.remove(routeStops.shift());
           routeStops.unshift(map.graphics.add(new esri.Graphic(new Point(longlat),startSymbol)));
           $.ajax({
@@ -1006,9 +1028,10 @@ routeParams.outSpatialReference = {"wkid":102100};
           $("#BypassRoute").css('display',"none");
         $("#NormalRoute").css('display',"none");
         $('#solveRoute').css("display","none");
-        $('#solveRoute').text("Click to Solve Route!");
+        $('#solveRoute').text("Get Me There Safely!");
           clearRoutes();
           var longlat = webMercatorUtils.xyToLngLat(evt.mapPoint["x"], evt.mapPoint["y"], true);
+          console.log("There are " + routeStops.length + " stops");
           map.graphics.remove(routeStops.pop());
           routeStops.push(map.graphics.add(new esri.Graphic(new Point(longlat),stopSymbol)));
 
@@ -1048,9 +1071,11 @@ routeParams.outSpatialReference = {"wkid":102100};
       //Clears all stops
       function clearStops() {
         removeEventHandlers();
-        for (var i=routeStops.length-1; i>=0; i--) {
-          map.graphics.remove(routeStops.splice(i, 1)[0]);
-        }
+
+        map.graphics.remove(routeStops.shift());
+        routeStops.unshift({});
+        map.graphics.remove(routeStops.pop());
+        routeStops.push({});
       }
 
       function clearBarriers() {
@@ -1104,7 +1129,11 @@ routeParams.outSpatialReference = {"wkid":102100};
         locationPointMarker.setOutline(locationOutline);
         locationPointMarker.setSize(9);
 
-
+        if(whichStopAddressInput == "start"){
+          $('#startAddress_input').val("Please Wait...");
+        } else if(whichStopAddressInput == "end"){
+          $('#destinationAddress_input').val("Please Wait...");
+        }
 
 
         navigator.geolocation.getCurrentPosition(function(position){
@@ -1129,6 +1158,9 @@ routeParams.outSpatialReference = {"wkid":102100};
               } else if(whichStopAddressInput == "end"){
                 $('#destinationAddress_input').val(parsedResults.address.Match_addr);
               }
+
+              console.log(routeStops);
+
 
               },
               error: function (xhr, textStatus, errorThrown) {
@@ -1247,7 +1279,7 @@ routeParams.outSpatialReference = {"wkid":102100};
 
       function syncRouteWB(routeStops) { //With Barriers
         var minRoutePathLength;
-
+        var pluralityMinutes = "minutes";
         var stops = [[routeStops[0].geometry.x,routeStops[0].geometry.y],[routeStops[1].geometry.x,routeStops[1].geometry.y]];
 
         var polygonBarriersURL= "{\"features\":[";
@@ -1278,38 +1310,45 @@ routeParams.outSpatialReference = {"wkid":102100};
 
 
           success: function (results, textStatus, xhr) {
-            $('#directions-button').css('display',"inline");
-            console.log("with barriers success");
-            sRouteWB = JSON.parse(results);
-            bypassRouteDirections = JSON.parse(results).directions;
-            bypassRoute = new esri.geometry.Polyline(sRouteWB.routes.features[0].geometry.paths[0]);
-            routes.push(map.graphics.add(new esri.Graphic(bypassRoute,routeSymbols["selectedRoute"])));
 
-            if(sRouteWB.routes.features[0].geometry.paths[0].length>sRoute.routes.features[0].geometry.paths[0].length){
-              minRoutePathLength=sRoute.routes.features[0].geometry.paths[0].length;
-            } else {
-              minRoutePathLength=sRouteWB.routes.features[0].geometry.paths[0].length;
-            } //deciding minimum length in order to check if routes are the same
-
-            for(var i = 0; i < minRoutePathLength; i++){
-              //only if routes are the same do you give the option for bypass and normal routes.
-              if(sRouteWB.routes.features[0].geometry.paths[0][i][1] !=  sRoute.routes.features[0].geometry.paths[0][i][1]){
-                $("#BypassRoute").css('display',"inline");
-                $("#NormalRoute").css('display',"inline");
-              }
+            if(newRouteAllowed == true){
+                        $('#directions-button').css('display',"inline");
+                        console.log("with barriers success");
+                        sRouteWB = JSON.parse(results);
+                        bypassRouteDirections = JSON.parse(results).directions;
+                        bypassRoute = new esri.geometry.Polyline(sRouteWB.routes.features[0].geometry.paths[0]);
+                        routes.push(map.graphics.add(new esri.Graphic(bypassRoute,routeSymbols["selectedRoute"])));
+            
+            
+                        if(sRouteWB.routes.features[0].geometry.paths[0].length>sRoute.routes.features[0].geometry.paths[0].length){
+                          minRoutePathLength = sRoute.routes.features[0].geometry.paths[0].length;
+                        } else {
+                          minRoutePathLength=sRouteWB.routes.features[0].geometry.paths[0].length;
+                        }
+                          
+                        
+                        for(var i = 0; i < minRoutePathLength; i++){
+                          //only if routes are the same do you give the option for bypass and normal routes.
+                          if(sRouteWB.routes.features[0].geometry.paths[0][i][1] !=  sRoute.routes.features[0].geometry.paths[0][i][1]){
+            
+                            $("#BypassRoute").css('display',"inline");
+                            $("#NormalRoute").css('display',"inline");
+                          }
+                        }
+            
+                        chosenRouteDirections = sRouteWB.directions;
+                        $('#solveRoute').data("solvePhase","finalize");
+            
+                        if((sRouteWB.directions[0].summary.totalLength*60/3.1).toFixed(0)==1){
+                          pluralityMinutes = "minute";
+                        }
+            
+                        bypassTimeDistance = "(" + sRouteWB.directions[0].summary.totalLength.toFixed(2) +" miles "+ (sRouteWB.directions[0].summary.totalLength*60/3.1).toFixed(0) + " "+ pluralityMinutes + ")";
+                        $('#solveRoute').text("Choose Bypass" + " " + bypassTimeDistance);
+                        //enableNewRouteBtn();
+                        enableStartEndTextboxes();
+            
             }
-
-            chosenRouteDirections = sRouteWB.directions;
-            $('#solveRoute').data("solvePhase","finalize");
-            $('#solveRoute').text("Click to Finalize");
-            var pluralityMinutes = "minutes"
-            if(((sRouteWB.directions[0].summary.totalLength - sRoute.directions[0].summary.totalLength)*60/3.1).toFixed(0)==1){
-              pluralityMinutes = "minute"
-            }
-
-            console.log("The Bypass route is " + sRouteWB.directions[0].summary.totalLength.toFixed(2) + " miles, adding " + (sRouteWB.directions[0].summary.totalLength - sRoute.directions[0].summary.totalLength).toFixed(2) + " miles or " + ((sRouteWB.directions[0].summary.totalLength - sRoute.directions[0].summary.totalLength)*60/3.1).toFixed(0) + " "+ pluralityMinutes + " to your trip.");
-            enableNewRouteBtn();
-            enableStartEndTextboxes();
           },
           error: function (xhr, textStatus, errorThrown) {
             console.log("test failed");
@@ -1324,25 +1363,33 @@ routeParams.outSpatialReference = {"wkid":102100};
       function syncRouteWOB(routeStops) {//Without Barriers
         //console.log("without Barriers called");
         var stops = [[routeStops[0].geometry.x,routeStops[0].geometry.y],[routeStops[1].geometry.x,routeStops[1].geometry.y]];
+        var pluralityMinutes = "minutes";
         $.ajax({
           type: 'POST',
           url: 'http://route.arcgis.com/arcgis/rest/services/World/Route/NAServer/Route_World/solve?'+walkModeUrl+'token='+globalToken+'&stops='+stops[0][0]+','+stops[0][1]+';'+stops[1][0]+','+stops[1][1]+'&f=json',
 
           success: function (results, textStatus, xhr) {
-            sRoute = JSON.parse(results);
-            normalRouteDirections = JSON.parse(results).directions;
 
-            normalRoute = new esri.geometry.Polyline(sRoute.routes.features[0].geometry.paths[0]);
-            routes.push(map.graphics.add(new esri.Graphic(normalRoute,routeSymbols["unselectedRoute"])));
-
-            for(var i = 0 ; i < sRoute.directions[0].features.length; i++)
-            {
-              //console.log(sRoute.directions[0].features[i].attributes.text); shows written directions
-            };
-
-
-
-
+            if(newRouteAllowed == true){
+                        sRoute = JSON.parse(results);
+                        normalRouteDirections = JSON.parse(results).directions;
+                        pluralityMinutes = "minutes";
+                        normalRoute = new esri.geometry.Polyline(sRoute.routes.features[0].geometry.paths[0]);
+                        routes.push(map.graphics.add(new esri.Graphic(normalRoute,routeSymbols["unselectedRoute"])));
+            
+                        for(var i = 0 ; i < sRoute.directions[0].features.length; i++)
+                        {
+                          //console.log(sRoute.directions[0].features[i].attributes.text); shows written directions
+                        };
+            
+            
+                       if((sRoute.directions[0].summary.totalLength*60/3.1).toFixed(0)==1){
+                          pluralityMinutes = "minute";
+                       }
+                        
+            
+                        normalTimeDistance = "(" + sRoute.directions[0].summary.totalLength.toFixed(2) +" miles "+ (sRoute.directions[0].summary.totalLength*60/3.1).toFixed(0) + " "+ pluralityMinutes + ")";
+                        }
           },
           error: function (xhr, textStatus, errorThrown) {
             console.log("test failed");
@@ -1375,6 +1422,7 @@ routeParams.outSpatialReference = {"wkid":102100};
         removeEventHandlers();
 
         navigationExtents();
+        newRouteAllowed = true;
         syncRouteWOB(routeStops);
         syncRouteWB(routeStops);
       }
