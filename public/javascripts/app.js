@@ -90,6 +90,9 @@ $(document).foundation()
       var rawFeaturesGraphics = [];
       var crimePointsArray = [];
       var filteredCrimeLocations = [];
+      var filteredSexOffendersLocations = [];
+      var filteredWifiLocations = [];
+      var filteredBusinessLocations = [];      
       var bypassTimeDistance;
       var normalTimeDistance;
       var newRouteAllowed = true;
@@ -248,7 +251,7 @@ var endGeocoder = new Geocoder({
 
         });
       $("#startAddress_input").attr("placeholder","Start Location");
-      $("#destinationAddress_input").attr("placeholder","Destination Location");
+      $("#destinationAddress_input").attr("placeholder","Stop Location");
 
       
 
@@ -383,84 +386,23 @@ var endGeocoder = new Geocoder({
 
         });
 
-        $("#filter-button").click( function(){
-          if ($("#filter-button").hasClass("filter-button-inactive") == true) {
-            console.log("filter button was inactive");
-           $(".filter-options-nav-bar").css("display","block");
-          //  $('#startAddress').css('display',"none");
-          // $('#destinationAddress').css('display',"none");
-          $('#solveRoute').css("display","none");
-          if(!chosenRouteDirections){
-            $('#startAddress').val("");
-            $('#destinationAddress').val("");
-            clearStops();
-          }
-           activateFilters();
-           deactivateDirections();
-         }
-         console.log(geocodedxy);
-       });
-
-        $("#mapFormatButton").change( function() {
-          if($("#mapFormatButton option:selected").text() == "Crime Grid"){
-            clearRawData();
-            $("#dataSetButton option:selected").prop('selected', false);
-            $("#timeFrameButton option:selected").prop('selected', false);
-            $("#dataSetButton").css("display","none");
-            $("#timeFrameButton").css("display","none");
-            filterParametersCollector[1][0] = "";
-            filterParametersCollector[2] = "";
-          densityGridOn = true;
-          barrierVisibility = true;
+        $("#bypassLogo").click( function() {
+          barrierVisibility = false;
           resetBarriers();
-          $("#crimesButton").data("crimeDisplay","crimeGrid");
-          }else if($("#mapFormatButton option:selected").text() != "Map Format"){
-            $("#dataSetButton").css("display","block");
-            $("#timeFrameButton").css("display","block");
-            densityGridOn = false;
-            barrierVisibility = false;
-            resetBarriers();
+          clearCrimesData();
+          clearFeaturesData();
+          clearMyLocation();
+            $("#crimesButton").html("Dangers");
             $("#crimesButton").data("crimeDisplay","none");
-            filterParametersCollector[0] = $("#mapFormatButton option:selected").text();
-          }
-
-          if(filterParametersCollector[0] && filterParametersCollector[1][0] && filterParametersCollector[2]){
-
-            plotFilteredData(filterParameterFormatter());
-          }
+            $("#featuresButton").html("Safety Pts");
+            $("#featuresButton").data("featuresDisplay","none");
 
 
-
-        });
-
-
-
-        $("#dataSetButton").change( function() {
-
-          if($("#dataSetButton option:selected").text() != "Data Sets"){
-            filterParametersCollector[1][0] = $("#dataSetButton option:selected").text();
-            $("#mapFormatButton select").val('rawData');
-            filterParametersCollector[0] = $("#mapFormatButton option:selected").text();
-
-          }
-          if(filterParametersCollector[0] && filterParametersCollector[1][0] && filterParametersCollector[2]){
-            plotFilteredData(filterParameterFormatter());
-          }
-        });
-
-
-
-        $("#timeFrameButton").change( function() {
-
-          if($("#timeFrameButton option:selected").text() != "Time Frame"){
-            filterParametersCollector[2] = $("#timeFrameButton option:selected").text();
-            $("#mapFormatButton select").val('rawData');
-            filterParametersCollector[0] = $("#mapFormatButton option:selected").text();
-          }
-
-          if(filterParametersCollector[0] && filterParametersCollector[1][0] && filterParametersCollector[2]){
-            plotFilteredData(filterParameterFormatter());
-          }
+            if ($('#directionsDisplay').text().length != 0 ) {
+              console.log("direction list was populated");
+              $('#directionsDisplay').empty();
+            }
+          
         });
 
 
@@ -493,40 +435,6 @@ var endGeocoder = new Geocoder({
             $('#myLocation').css("display","block");
             $('#solveRoute').data("solvePhase","generate");
           }
-
-
-          // if($('#solveRoute').text()==="Go!"){
-          //   $('#solveRoute').css("display","none");
-          //   $('#solveRoute').text("Click to Solve Route!");
-          //   if(routes.length > 1){
-          //     map.graphics.remove(routes.shift());
-          //   }
-
-          //   $("#BypassRoute").css('display',"none");
-          //   $("#NormalRoute").css('display',"none");
-          //   barrierVisibility = false;
-          //   resetBarriers();
-          //   $("#crimesButton").data("crimeDisplay","none");
-          //   $('#myLocation').css("display","block");
-          // } else{
-          //   $('#solveRoute').text("Generating Routes...");
-          //   disableNewRouteBtn();
-          //   disableStartEndTextboxes();
-          //   //clearStops();
-          //   clearRoutes();
-          //   //routeStops = [{},{}];
-          //   //routeCheckerStop = [0,0];
-          //   console.log(routeStops);
-          //   solveRoute();
-          //   // requestAddress($('#startAddress_input').val(),"start");
-          //   // requestAddress($('#destinationAddress_input').val(),"end");
-          //   barrierVisibility = true;
-          //   resetBarriers();
-          //   $("#crimesButton").data("crimeDisplay","crimeGrid");
-          //   $("#BypassRoute").addClass("BypassRouteSelected");
-          //   $("#BypassRoute").removeClass("BypassRouteUnselected");
-          // }
-
 
 
         })
@@ -616,7 +524,11 @@ var endGeocoder = new Geocoder({
           console.log($('#myLocation').css('display'));
           chosenRouteDirections = "";
           clearStops();
-          clearBarriers();
+          routeStops= [{},{}];
+
+          barrierVisibility = false;
+          resetBarriers();
+
           clearRoutes();
           clearCrimesData();
           clearFeaturesData();
@@ -653,7 +565,7 @@ var endGeocoder = new Geocoder({
               activateDirections();
             }
           }
-          $('#solveRoute').text("Choose Bypass" + " " + bypassTimeDistance);
+          $('#solveRoute').text("Pick Safe Way " + bypassTimeDistance);
         });
 
 
@@ -670,7 +582,7 @@ var endGeocoder = new Geocoder({
             }
           }
 
-          $('#solveRoute').text("Choose Normal" + " " + normalTimeDistance);
+          $('#solveRoute').text("Pick Normal Way " + normalTimeDistance);
         });
 
         $("#mapCrimeIndex").click( function () {
@@ -748,54 +660,58 @@ var endGeocoder = new Geocoder({
 
 //9/14
 $("#crimesButton").click(function(){
-
-console.log($("#crimesButton").data("crimeDisplay"));
-
-if($("#crimesButton").data("crimeDisplay")=="none"){
   clearFeaturesData();
+  $("#featuresButton").html("Safety Pts");
+  $("#featuresButton").data("featuresDisplay","none");
+if($("#crimesButton").data("crimeDisplay")=="none"){
   barrierVisibility = true;
-  resetBarriers();
-  
+  resetBarriers(); 
   $("#crimesButton").data("crimeDisplay","crimeGrid");
   $("#crimesButton").html("Crime Grid");
 } else if($("#crimesButton").data("crimeDisplay")=="crimeGrid"){
-  clearFeaturesData();
   barrierVisibility = false;
   resetBarriers();
   crimesPlot();
   $("#crimesButton").data("crimeDisplay","crimePoints");
-  $("#crimesButton").html("Recent");
+  $("#crimesButton").html("Recent Crime");
 }else if($("#crimesButton").data("crimeDisplay")=="crimePoints"){
-  clearFeaturesData();
+  clearCrimesData();
+  sexOffendersPlot();
+  $("#crimesButton").html("Sex Offenders");
+$("#crimesButton").data("crimeDisplay","sexOffenders");
+} else if($("#crimesButton").data("crimeDisplay")=="sexOffenders"){
   clearCrimesData();
   $("#crimesButton").html("Dangers");
 $("#crimesButton").data("crimeDisplay","none");
-} 
-
-  // console.log(crimesBinary);
-  // if(!crimesBinary){
-  //   clearFeaturesData();
-  //   crimesToggle();
-  //   crimesBinary = !crimesBinary;
-  //   } else{
-  //     clearCrimesData();
-  //     crimesBinary = !crimesBinary;
-  //   }
+}  
 
 });
+
+
 
 $("#featuresButton").click(function(){
-  console.log($("#featuresButton").data("featuresDisplay"));
-  // if(!featuresBinary){
-  //   clearCrimesData();
-  //   featuresToggle();
-  //   featuresBinary = !featuresBinary;
-  //   } else{
-  //     clearFeaturesData();
-  //     featuresBinary = !featuresBinary;
-  //   }
+    barrierVisibility = false;
+    resetBarriers();
+    clearCrimesData();
+    $("#crimesButton").html("Dangers");
+    $("#crimesButton").data("crimeDisplay","none");
 
-});
+    if($("#featuresButton").data("featuresDisplay")=="none"){
+      clearFeaturesData();
+      openBusinessPlot();
+      $("#featuresButton").data("featuresDisplay","openBusiness");
+      $("#featuresButton").html("Open Business");
+    } else if($("#featuresButton").data("featuresDisplay")=="openBusiness"){
+      clearFeaturesData();
+      wifiLocationsPlot();
+      $("#featuresButton").data("featuresDisplay","wifiLocations");
+      $("#featuresButton").html("Wifi Spots");
+    } else if($("#featuresButton").data("featuresDisplay")=="wifiLocations"){
+      clearFeaturesData();
+      $("#featuresButton").data("featuresDisplay","none");
+      $("#featuresButton").html("Safety Pts");
+    }
+  });
 
 
 
@@ -976,6 +892,7 @@ routeParams.outSpatialReference = {"wkid":102100};
         removeEventHandlers();
         $("#myLocation").on('click', inputAddress);
         mapOnClick_addStops_connect = map.on("click", function(evt){
+          whichStopAddressInput = "";
         $("#startAddress").data("ready-status","notReady");
         $('#solveRoute').css("display","none");
         $('#solveRoute').data("solvePhase","hidden");
@@ -991,6 +908,7 @@ routeParams.outSpatialReference = {"wkid":102100};
             url: "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/reverseGeocode?location="+longlat[0]+"%2C+"+longlat[1]+"&distance=200&outSR=&f=pjson",
             success: function (results, textStatus, xhr) {
               var parsedResults = JSON.parse(results);
+              console.log(parsedResults);
               if(parsedResults.address){
 
                 $("#startAddress_input").val(parsedResults.address.Match_addr.replace("California", "CA"));
@@ -1000,6 +918,7 @@ routeParams.outSpatialReference = {"wkid":102100};
                   $('#solveRoute').data("solvePhase","generate");
                 }
               } else {
+                console.log(routeStops.length);
                 map.graphics.remove(routeStops.shift());
                 routeStops.unshift({});
                 $("#startAddress_input").val("Please Try Again");
@@ -1024,6 +943,7 @@ routeParams.outSpatialReference = {"wkid":102100};
         removeEventHandlers();
         $("#myLocation").on('click', inputAddress);
         mapOnClick_addStops_connect = map.on("click", function(evt){
+          whichStopAddressInput = "";
           $("#destinationAddress").data("ready-status","notReady");
           $("#BypassRoute").css('display',"none");
         $("#NormalRoute").css('display',"none");
@@ -1034,13 +954,12 @@ routeParams.outSpatialReference = {"wkid":102100};
           console.log("There are " + routeStops.length + " stops");
           map.graphics.remove(routeStops.pop());
           routeStops.push(map.graphics.add(new esri.Graphic(new Point(longlat),stopSymbol)));
-
-          
           $.ajax({
             type: 'POST',
             url: "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/reverseGeocode?location="+longlat[0]+"%2C+"+longlat[1]+"&distance=200&outSR=&f=pjson",
             success: function (results, textStatus, xhr) {
               var parsedResults = JSON.parse(results);
+              console.log(parsedResults);
               if(parsedResults.address){
                 $("#destinationAddress_input").val(parsedResults.address.Match_addr.replace("California", "CA"));
                 $("#destinationAddress").data("ready-status","ready");
@@ -1049,8 +968,9 @@ routeParams.outSpatialReference = {"wkid":102100};
                   $('#solveRoute').data("solvePhase","generate");
                 }
               } else {
+                console.log(routeStops.length);
                 map.graphics.remove(routeStops.pop());
-                routeStops.push(map.graphics.add({}));
+                routeStops.push({});
                 $("#destinationAddress_input").val("Please Try Again");
                 $('#solveRoute').css('display',"none");
               }
@@ -1152,17 +1072,39 @@ routeParams.outSpatialReference = {"wkid":102100};
             url: "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/reverseGeocode?location="+long+"%2C+"+lat+"&distance=200&outSR=&f=pjson",
             success: function (results, textStatus, xhr) {
               var parsedResults = JSON.parse(results);
-
               if(whichStopAddressInput == "start"){
-                $('#startAddress_input').val(parsedResults.address.Match_addr);
+                if(parsedResults.address){
+
+                  $("#startAddress_input").val(parsedResults.address.Match_addr.replace("California", "CA"));
+                  $("#startAddress").data("ready-status","ready");
+                  if($('#startAddress').data("ready-status") == "ready" && $('#destinationAddress').data("ready-status") == "ready"){
+                    $('#solveRoute').css('display',"inline");
+                    $('#solveRoute').data("solvePhase","generate");
+                  }
+                } else {
+                  map.graphics.remove(routeStops.shift());
+                  routeStops.unshift({});
+                  $("#startAddress_input").val("Please Try Again");
+                  $('#solveRoute').css('display',"none");
+                }
+
               } else if(whichStopAddressInput == "end"){
-                $('#destinationAddress_input').val(parsedResults.address.Match_addr);
+                if(parsedResults.address){
+                  $("#destinationAddress_input").val(parsedResults.address.Match_addr.replace("California", "CA"));
+                  $("#destinationAddress").data("ready-status","ready");
+                  if($('#startAddress').data("ready-status") == "ready" && $('#destinationAddress').data("ready-status") == "ready"){
+                    $('#solveRoute').css('display',"inline");
+                    $('#solveRoute').data("solvePhase","generate");
+                  }
+                } else {
+                  map.graphics.remove(routeStops.pop());
+                  routeStops.push(map.graphics.add({}));
+                  $("#destinationAddress_input").val("Please Try Again");
+                  $('#solveRoute').css('display',"none");
+                }
               }
 
-              console.log(routeStops);
-
-
-              },
+            },
               error: function (xhr, textStatus, errorThrown) {
                 console.log("test failed");
                 console.log("ERROR:" + xhr.responseText + xhr.status + errorThrown);
@@ -1344,7 +1286,7 @@ routeParams.outSpatialReference = {"wkid":102100};
                         }
             
                         bypassTimeDistance = "(" + sRouteWB.directions[0].summary.totalLength.toFixed(2) +" miles "+ (sRouteWB.directions[0].summary.totalLength*60/3.1).toFixed(0) + " "+ pluralityMinutes + ")";
-                        $('#solveRoute').text("Choose Bypass" + " " + bypassTimeDistance);
+                        $('#solveRoute').text("Pick Safe Way" + " " + bypassTimeDistance);
                         //enableNewRouteBtn();
                         enableStartEndTextboxes();
             
@@ -2073,17 +2015,17 @@ function crimesPlot(){
       "Weapon":[255,0,0, 1],
       "Assault":[255,0,0, 1],
       "GTA":[255,0,0, 1],
-      "Homicide":[255,0,0, 1],
-      "Sex Offender":[160,32,240, 1]
+      "Homicide":[255,0,0, 1]
     };
 
     if(filteredCrimeLocations[0]){
+
+      console.log("filteredCrimeLocations called in crimeplot");
       for(var i = 0; i<filteredCrimeLocations.length; i++){
           dataOutline.setColor(new Color(dataColors[filteredCrimeLocations[i][4]]));
           dataPointMarker.setColor(new Color(dataColors[filteredCrimeLocations[i][4]]));
           dataPointMarker.setOutline(dataOutline);
           dataPointMarker.setSize(4);
-          //console.log(filteredCrimeLocations[i][3],filteredCrimeLocations[i][2]);
           rawCrimesGraphics.push(map.graphics.add(new esri.Graphic(new Point(filteredCrimeLocations[i][3],filteredCrimeLocations[i][2]),dataPointMarker)));
     }
 
@@ -2101,29 +2043,108 @@ function crimesPlot(){
   }
 }
 
-function featuresToggle(){
 
+function sexOffendersPlot(){
+  console.log("sex offenders called");
 
+    var dataOutline = new SimpleLineSymbol();
+    var dataPointMarker = new SimpleMarkerSymbol();
+    var nowDate = new Date(2016, 7,23);//Change this once you get data dynamically
+
+    var dataColors = {"Sex Offender":[160,32,240, 1]};
+
+    if(filteredSexOffendersLocations[0]){
+      for(var i = 0; i<filteredSexOffendersLocations.length; i++){
+        console.log("filteredCrimeLocations called in sexoffenders");
+          dataOutline.setColor(new Color(dataColors[filteredSexOffendersLocations[i][4]]));
+          dataPointMarker.setColor(new Color(dataColors[filteredSexOffendersLocations[i][4]]));
+          dataPointMarker.setOutline(dataOutline);
+          dataPointMarker.setSize(4);
+          //console.log(filteredCrimeLocations[i][3],filteredCrimeLocations[i][2]);
+          rawCrimesGraphics.push(map.graphics.add(new esri.Graphic(new Point(filteredSexOffendersLocations[i][3],filteredSexOffendersLocations[i][2]),dataPointMarker)));
+    }
+
+    } else{
+    for(var i = 0; i<allLocations.length; i++){
+      if(dataColors[allLocations[i][4]] && (nowDate-allLocations[i][0])<=86400){
+        filteredSexOffendersLocations.push(allLocations[i]);
+        dataOutline.setColor(new Color(dataColors[allLocations[i][4]]));
+        dataPointMarker.setColor(new Color(dataColors[allLocations[i][4]]));
+        dataPointMarker.setOutline(dataOutline);
+        dataPointMarker.setSize(4);
+        rawCrimesGraphics.push(map.graphics.add(new esri.Graphic(new Point(allLocations[i][3],allLocations[i][2]),dataPointMarker)));
+      }
+    }
+  }
+}
+
+function openBusinessPlot(){
   var dataOutline = new SimpleLineSymbol();
   var dataPointMarker = new SimpleMarkerSymbol();
+  var dataColors = {
+    "Entertainment":[0,255,0, 1],
+    "Restaurant/Bar":[0,255,0, 1]
+  };
+
+   if(filteredBusinessLocations[0]){
+      for(var i = 0; i<filteredBusinessLocations.length; i++){
+          dataOutline.setColor(new Color([0,0,0,1]));
+          dataPointMarker.setColor(new Color(dataColors[filteredBusinessLocations[i][4]]));
+          dataPointMarker.setOutline(dataOutline);
+          dataPointMarker.setSize(4);
+          rawFeaturesGraphics.push(map.graphics.add(new esri.Graphic(new Point(filteredBusinessLocations[i][3],filteredBusinessLocations[i][2]),dataPointMarker)));
+    }
+  } else{
+    for(var i = 0; i<allLocations.length; i++){
+      if(dataColors[allLocations[i][4]]){
+        filteredBusinessLocations.push(allLocations[i]);
+        dataOutline.setColor(new Color([0,0,0,1]));
+        dataPointMarker.setColor(new Color(dataColors[allLocations[i][4]]));
+        dataPointMarker.setOutline(dataOutline);
+        dataPointMarker.setSize(4);
+        rawFeaturesGraphics.push(map.graphics.add(new esri.Graphic(new Point(allLocations[i][3],allLocations[i][2]),dataPointMarker)));
+      }
+    }
+  }
 
 
 
-          var dataColors = {
-            "Entertainment":[0,255,0, 1],
-          "Restaurant/Bar":[0,255,0, 1],
-          "Wifi Location":[0,0,255, 1]
-        };
 
-        for(var i = 0; i<allLocations.length; i++){
-          if(dataColors[allLocations[i][4]]){
-            dataOutline.setColor(new Color(dataColors[allLocations[i][4]]));
-            dataPointMarker.setColor(new Color(dataColors[allLocations[i][4]]));
-            dataPointMarker.setOutline(dataOutline);
-            dataPointMarker.setSize(4);
-            rawFeaturesGraphics.push(map.graphics.add(new esri.Graphic(new Point(allLocations[i][3],allLocations[i][2]),dataPointMarker)));
-          }
-        }
+
+
+}
+
+function wifiLocationsPlot(){
+  var dataOutline = new SimpleLineSymbol();
+  var dataPointMarker = new SimpleMarkerSymbol();
+  var dataColors = {
+    "Wifi Location":[0,0,255, 1]
+  };
+
+
+
+if(filteredWifiLocations[0]){
+      for(var i = 0; i<filteredWifiLocations.length; i++){
+          dataOutline.setColor(new Color(dataColors[filteredWifiLocations[i][4]]));
+          dataPointMarker.setColor(new Color(dataColors[filteredWifiLocations[i][4]]));
+          dataPointMarker.setOutline(dataOutline);
+          dataPointMarker.setSize(4);
+          rawFeaturesGraphics.push(map.graphics.add(new esri.Graphic(new Point(filteredWifiLocations[i][3],filteredWifiLocations[i][2]),dataPointMarker)));
+    }
+  } else{
+    for(var i = 0; i<allLocations.length; i++){
+      if(dataColors[allLocations[i][4]]){
+        filteredWifiLocations.push(allLocations[i]);
+        dataOutline.setColor(new Color(dataColors[allLocations[i][4]]));
+        dataPointMarker.setColor(new Color(dataColors[allLocations[i][4]]));
+        dataPointMarker.setOutline(dataOutline);
+        dataPointMarker.setSize(4);
+        rawFeaturesGraphics.push(map.graphics.add(new esri.Graphic(new Point(allLocations[i][3],allLocations[i][2]),dataPointMarker)));
+      }
+    }
+  }
+
+
 }
 
 function currentStartPosition() {
