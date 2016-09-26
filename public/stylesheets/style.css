@@ -65,7 +65,9 @@ a{
 
 .reveal {
   padding-top:20px;
+  height:80px;
 }
+
 [type=color], [type=date], [type=datetime-local], [type=datetime], [type=email], [type=month], [type=number], [type=password], [type=search], [type=tel], [type=text], [type=time], [type=url], [type=week], textarea, [type='text']:focus, [type='password']:focus, [type='date']:focus, [type='datetime']:focus, [type='datetime-local']:focus, [type='month']:focus, [type='week']:focus, [type='email']:focus, [type='number']:focus, [type='search']:focus, [type='tel']:focus, [type='time']:focus, [type='url']:focus, [type='color']:focus, textarea:focus {
   border: none;
   background-color: #8CD4CC;
@@ -110,6 +112,7 @@ a{
   margin-top:40px;
   margin-bottom:40px;
 }
+
 
 .filter-directions-nav-bar {
   font-weight:bold;
@@ -303,6 +306,7 @@ input:disabled, input[readonly], textarea:disabled, textarea[readonly] {
   position:absolute;
   left: 20px;
   bottom: 4px;
+  padding: 5px 5px 5px 5px;
 }
 
 .BypassRouteSelected {
@@ -434,6 +438,9 @@ input:disabled, input[readonly], textarea:disabled, textarea[readonly] {
   top: 5px;
   right: 5px;
   position: absolute;
+  height:20px;
+  width:20px;
+  font-size:40px;
 }
 
 #infoPopup {

@@ -141,20 +141,20 @@ $(document).foundation()
         startGeocoder.autoNavigate = false;
         startGeocoder.on("select", function(results){
 
-          console.log(results);
+          clearRoutes();
+        $('#solveRoute').css("display","none");
+        $('#solveRoute').text("Get Me There Safely!");
 
           $("#startAddress_input").val(results.result.name.replace("California", "CA"));
           $('#startAddress').data("ready-status","ready");
-          clearRoutes();
-          console.log(results);
           var points = webMercatorUtils.xyToLngLat(results.result.feature.geometry.x, results.result.feature.geometry.y, true);
           var instancePoint = new Point(points[0],points[1]);
-          console.log(instancePoint);
           map.graphics.remove(routeStops.shift());
           routeStops.unshift(map.graphics.add(new esri.Graphic(instancePoint,startSymbol)));
-          console.log(routeStops[0].geometry.x, routeStops[0].geometry.y);
           if($('#startAddress').data("ready-status") == "ready" && $('#destinationAddress').data("ready-status") == "ready"){
             $('#solveRoute').css('display',"inline");
+            $('#solveRoute').text("Get Me There Safely!");
+            $('#solveRoute').data("solvePhase","generate");
           }
 
         var minx=map.extent.xmin;
@@ -200,22 +200,25 @@ var endGeocoder = new Geocoder({
         endGeocoder.startup();
         endGeocoder.autoNavigate = false;
         endGeocoder.on("select", function(results){
-          console.log(results);
+
+          clearRoutes();
+        $('#solveRoute').css("display","none");
+        $('#solveRoute').text("Get Me There Safely!");
 
           $("#destinationAddress_input").val(results.result.name.replace("California", "CA"));
           $("#destinationAddress").data("ready-status","ready");
-          clearRoutes();
+
 
           var points = webMercatorUtils.xyToLngLat(results.result.feature.geometry.x, results.result.feature.geometry.y, true);
           var instancePoint = new Point(points[0],points[1]);
-          console.log(instancePoint);
           map.graphics.remove(routeStops.pop());
           routeStops.push(map.graphics.add(new esri.Graphic(instancePoint,stopSymbol)));
-          console.log(routeStops[1]);
 
 
-          if($('#startAddress_input').val() && $('#destinationAddress_input').val() && $('#startAddress_input').val()!="Please Try Again" && $('#destinationAddress_input').val()!="Please Try Again"){
+          if($('#startAddress').data("ready-status") == "ready" && $('#destinationAddress').data("ready-status") == "ready"){
             $('#solveRoute').css('display',"inline");
+            $('#solveRoute').text("Get Me There Safely!");
+            $('#solveRoute').data("solvePhase","generate");
           }
 
 
@@ -250,8 +253,8 @@ var endGeocoder = new Geocoder({
 
 
         });
-      $("#startAddress_input").attr("placeholder","Start Location");
-      $("#destinationAddress_input").attr("placeholder","Stop Location");
+      $("#startAddress_input").attr("placeholder","Type or Choose on Map for Start");
+      $("#destinationAddress_input").attr("placeholder","Type or Choose on Map for Destination");
 
       
 
@@ -408,8 +411,8 @@ var endGeocoder = new Geocoder({
 
         $("#solveRoute").click( function(){
           if($('#solveRoute').data("solve-phase")=="generate"){
+
             newRouteAllowed = false;
-            
             disableStartEndTextboxes();
             clearRoutes();
             solveRoute();
@@ -447,19 +450,25 @@ var endGeocoder = new Geocoder({
             } else if($('#startAddress').data("inputState")=="typeTap"){
               $('#startAddress').prop("readonly",false);
             }
+
         });
+
+        $('.fa-location-arrow').click(function(){
+          whichStopAddressInput = "start";
+          addStartStop();
+          $('#startAddress_input').select();
+        })
+
+
 
         $('#startAddress_input').each(function(){
           $(this).focus(function(){
             $(this).attr("placeholder","");
-            $(this).one('mouseup', function(event){
-              $(this).select();
-            });
           });
 
 
           $(this).blur(function(){
-            $(this).attr("placeholder","Start Address");
+            $(this).attr("placeholder","Type or Choose on Map for Start");
           });
 
         });
@@ -481,17 +490,23 @@ var endGeocoder = new Geocoder({
             }
         });
 
+        $('.fa-map-marker').click(function(){
+          whichStopAddressInput = "end";
+          addDestinationStop();
+          $('#destinationAddress_input').select();
+        })
+
         $('#destinationAddress_input').each(function(){
           $(this).focus(function(){
             $(this).attr("placeholder","");
+
             $(this).one('mouseup', function(event){
-              console.log("select all");
               $(this).select();
             });
           });
 
           $(this).blur(function(){
-            $(this).attr("placeholder","Destination Address");
+            $(this).attr("placeholder","Type or Choose on Map for Destination");
           });
 
         });
@@ -565,7 +580,7 @@ var endGeocoder = new Geocoder({
               activateDirections();
             }
           }
-          $('#solveRoute').text("Pick Safe Way " + bypassTimeDistance);
+          $('#solveRoute').text("Pick Safer Way " + bypassTimeDistance);
         });
 
 
@@ -891,6 +906,7 @@ routeParams.outSpatialReference = {"wkid":102100};
       function addStartStop(){
         removeEventHandlers();
         $("#myLocation").on('click', inputAddress);
+
         mapOnClick_addStops_connect = map.on("click", function(evt){
           whichStopAddressInput = "";
         $("#startAddress").data("ready-status","notReady");
@@ -1246,6 +1262,7 @@ routeParams.outSpatialReference = {"wkid":102100};
 
         var finalSynchronousBarriersURL = 'http://route.arcgis.com/arcgis/rest/services/World/Route/NAServer/Route_World/solve?'+walkModeUrl+'token='+globalToken+'&stops='+stops[0][0]+','+stops[0][1]+';'+stops[1][0]+','+stops[1][1]+"&"+ polygonBarriersURL+'&f=json&returnPolygonBarriers=true';
 
+        console.log(stops);
         $.ajax({
           type: 'POST',
           url: finalSynchronousBarriersURL,
@@ -1286,7 +1303,7 @@ routeParams.outSpatialReference = {"wkid":102100};
                         }
             
                         bypassTimeDistance = "(" + sRouteWB.directions[0].summary.totalLength.toFixed(2) +" miles "+ (sRouteWB.directions[0].summary.totalLength*60/3.1).toFixed(0) + " "+ pluralityMinutes + ")";
-                        $('#solveRoute').text("Pick Safe Way" + " " + bypassTimeDistance);
+                        $('#solveRoute').text("Pick Safer Way" + " " + bypassTimeDistance);
                         //enableNewRouteBtn();
                         enableStartEndTextboxes();
             
