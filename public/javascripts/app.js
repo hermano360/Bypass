@@ -92,6 +92,7 @@ $(document).foundation()
       var filteredCrimeLocations = [];
       var filteredSexOffendersLocations = [];
       var filteredWifiLocations = [];
+      var filteredslLocations = [];
       var filteredBusinessLocations = [];      
       var bypassTimeDistance;
       var normalTimeDistance;
@@ -736,6 +737,11 @@ $("#featuresButton").click(function(){
       $("#featuresButton").data("featuresDisplay","wifiLocations");
       $("#featuresButton").html("Wifi Spots");
     } else if($("#featuresButton").data("featuresDisplay")=="wifiLocations"){
+      clearFeaturesData();
+      streetLightsPlot();
+      $("#featuresButton").data("featuresDisplay","streetLights");
+      $("#featuresButton").html("Street Lights");
+    } else if($("#featuresButton").data("featuresDisplay")=="streetLights"){
       clearFeaturesData();
       $("#featuresButton").data("featuresDisplay","none");
       $("#featuresButton").html("Safety Pts");
@@ -2174,9 +2180,45 @@ if(filteredWifiLocations[0]){
       }
     }
   }
+}
+
+function streetLightsPlot(){
+  var dataOutline = new SimpleLineSymbol();
+  var dataPointMarker = new SimpleMarkerSymbol();
+  var dataColors = {
+    "Street Light":[255,255,0, 1]
+  };
+
+
+
+if(filteredslLocations[0]){
+      for(var i = 0; i<filteredslLocations.length; i++){
+          dataOutline.setColor(new Color(dataColors[filteredslLocations[i][4]]));
+          dataPointMarker.setColor(new Color(dataColors[filteredslLocations[i][4]]));
+          dataPointMarker.setOutline(dataOutline);
+          dataPointMarker.setSize(4);
+          rawFeaturesGraphics.push(map.graphics.add(new esri.Graphic(new Point(filteredslLocations[i][3],filteredslLocations[i][2]),dataPointMarker)));
+    }
+  } else{
+    for(var i = 0; i<allLocations.length; i++){
+      if(dataColors[allLocations[i][4]]){
+        filteredslLocations.push(allLocations[i]);
+        dataOutline.setColor(new Color(dataColors[allLocations[i][4]]));
+        dataPointMarker.setColor(new Color(dataColors[allLocations[i][4]]));
+        dataPointMarker.setOutline(dataOutline);
+        dataPointMarker.setSize(4);
+        rawFeaturesGraphics.push(map.graphics.add(new esri.Graphic(new Point(allLocations[i][3],allLocations[i][2]),dataPointMarker)));
+      }
+    }
+  }
 
 
 }
+
+
+
+
+
 
 function currentStartPosition() {
 
