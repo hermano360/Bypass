@@ -43,7 +43,7 @@
 
 <body>
 
-  <div class="row">
+  <div class="row nav-bar-wrapper">
     <div class="nav-bar large-12 columns">
       <div class="row">
       <div class="small-10 medium-10 large-10 columns">
@@ -190,92 +190,82 @@
   </div>
   </div>
   </div>
-  <!-- Location/ Destination Input -->
-<div class="row">
-  <div class="directions-nav-bar large-12 columns">
-    <form action="addressLookup">
-      <div class="row">
-        <div class="large-12 columns input-wrapper" id="startAddAbove">
-          <i class="fa fa-location-arrow" aria-hidden="true"></i>
-
-<!--           <input class='directions-textbox' type="text" name="startAddress" id="startAddress" placeholder='Start Location' readonly="true" data-input-state="mapTap"> -->
-
-          <div type="text" id="startAddress" class="directions-textbox" data-ready-status="notReady"></div>
 
 
 
-        </div>
-      </div>
-      <div class="row">
-        <div id="directionsDisplay" style='overflow:hidden;' class="large-12 columns"></div>
-      </div>
-      <div class="row">
-        <div class="large-12 columns input-wrapper">
-          <i class="fa fa-map-marker" aria-hidden="true"></i>
-<!--           <input class='directions-textbox' type="text" name="destinationAddress" id="destinationAddress" placeholder='End Location' readonly="true" data-input-state="mapTap"> -->
-
-<div type="text" id="destinationAddress" class="directions-textbox" data-ready-status="notReady"></div>
-
-
-        </div>
-      </div>
-
-    </form>
-  </div>
-
-</div>
-
-<!-- Route to Safety -->
-<div class="row">
-  <div id="solveRoute" class="directions-nav-bar large-12 columns" style='display:none;' data-solve-phase="generate">
-    Get Me There Safe!
-  </div>
-</div>
-
-
-<!-- Directions in Text -->
-  <!-- <div class="row">
-    <div class="filter-directions-nav-bar large-12 columns">
-      <div class="row">
-      <div id='directions-button' class="small-6 large-6 columns directions-button-inactive">
-        <span>Turn-by-Turn</span>
-      </div> -->
-      <!-- Filter Crime and interest points button -->
-
-
-    <!--         <div class="row">
-      <div class="filter-options-nav-bar large-12 columns">
+  <div class="row" style="display:none;">
+    <div class="directions-nav-bar large-12 columns">
+      <form action="addressLookup">
         <div class="row">
-          <div id='mapFormatButton' class="small-4 large-4 columns ">
-            <span>Map Format</span>
-          </div>
-          <div id='dataSetButton' class="small-4 large-4 columns">
-            <span>Data Set</span>
-          </div>
-          <div id='timeFrameButton' class="small-4 large-4 columns">
-            <span>Time Frame</span>
+          <div class="large-12 columns input-wrapper" id="startAddAbove">
+            <i class="fa fa-location-arrow" aria-hidden="true"></i>
+            <div type="text" id="startAddress" class="directions-textbox" data-ready-status="notReady"></div>
           </div>
         </div>
-      </div>
-    </div> -->
+        <div class="row">
+          <div id="directionsDisplay" style='overflow:hidden;' class="large-12 columns"></div>
+        </div>
+        <div class="row">
+          <div class="large-12 columns input-wrapper">
+            <i class="fa fa-map-marker" aria-hidden="true"></i>
 
-    <div id='map_row' class="row">
-      <div class="large-12 columns">
-        <div id="map"></div>
-      </div>
+            <div type="text" id="destinationAddress" class="directions-textbox" data-ready-status="notReady"></div>
+
+
+          </div>
+        </div>
+
+      </form>
     </div>
 
-    <button class='button radius BypassRouteUnselected' id="BypassRoute" style="display:none;" data-time-distance=""><span>Safe</span></button>
-    <button class='button radius NormalRouteUnselected' id="NormalRoute" style="display:none;" data-time-distance=""><span>Normal</span></button>
-
-  <div class="rightAlign">
-    <button id="crimesButton" class='button radius  iconTools' data-crime-display="none">Dangers</button>
-    <button id="featuresButton" class='button radius iconTools' data-features-display="none">Safety Pts</button>
   </div>
 
-  <a id="myLocation" class="button"><i class="fa fa-crosshairs" aria-hidden="true"></i></a>
 
-  <button id="resetBtn" class='button'>New Route</button>
+
+
+
+
+
+  <div id='map_wrapper'>
+    <div class="large-12 columns">
+      <div id="map"></div>
+    </div>
+
+    <div class="row">
+      <div class="directions-nav-bar large-12 columns">
+        <form action="addressLookup">
+          <div class="row">
+            <div id="directionsDisplay" style='overflow:hidden;' class="large-12 columns"></div>
+          </div>
+          <div class="row">
+            <div class="large-12">
+              <i class="fa fa-map-marker" aria-hidden="true"></i>
+              <div type="text" id="destinationAddressInitial" class="directions-textbox" data-ready-status="ready"></div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+    <button class='button radius BypassRouteUnselected' id="BypassRoute" style="display:none;" data-time-distance=""><span>Safe</span></button>
+    <button class='button radius NormalRouteUnselected' id="NormalRoute" style="display:none;" data-time-distance=""><span>Normal</span></button>
+    <div class="iconTools">
+    <div class="rightAlign">
+      <button id="crimesButton" class='button radius' data-crime-display="none">Dangers</button>
+    </div>
+        <div class="rightAlign">
+    <button id="featuresButton" class='button radius' data-features-display="none">Safety Pts</button>
+    </div>
+    </div>
+
+    <a id="myLocation" class="button"><i class="fa fa-crosshairs" aria-hidden="true"></i></a>
+
+      <div id="solveRoute" class="directions-nav-bar large-4" data-solve-phase="generate">Go!</div>
+
+     <button id="resetBtn" class='button'>New Route</button>
+  </div>
+
+
+
 
 
 
