@@ -132,6 +132,7 @@ $(document).foundation()
       ready(function() {
 
 
+
         var startGeocoder = new Geocoder({
           autoComplete:true,
           map: map,
@@ -253,8 +254,65 @@ var endGeocoder = new Geocoder({
 
 
         });
-      $("#startAddress_input").attr("placeholder","Type or Choose on Map for Start");
-      $("#destinationAddress_input").attr("placeholder","Type or Choose on Map for Destination");
+
+        var endGeocoderInitial = new Geocoder({
+          autoComplete:true,
+          map: map,
+        }, dom.byId("destinationAddressInitial"));
+        addInitialDestinationStop();
+        map.on("extent-change", addInitialDestinationStop);
+
+        endGeocoderInitial.startup();
+        endGeocoderInitial.autoNavigate = false;
+        endGeocoderInitial.on("select", function(results){
+
+
+
+          $("#destinationAddressInitial_input").val(results.result.name.replace("California", "CA"));
+
+
+          var points = webMercatorUtils.xyToLngLat(results.result.feature.geometry.x, results.result.feature.geometry.y, true);
+          var instancePoint = new Point(points[0],points[1]);
+          map.graphics.remove(routeStops.pop());
+          routeStops.push(map.graphics.add(new esri.Graphic(instancePoint,stopSymbol)));
+
+
+
+
+        var minx=map.extent.xmin;
+        var miny=map.extent.ymin;
+        var maxx=map.extent.xmax;
+        var maxy=map.extent.ymax;
+
+
+          xyUnits = webMercatorUtils.lngLatToXY(routeStops[1].geometry.x, routeStops[1].geometry.y);
+
+
+          if(map.extent.xmin>xyUnits[0]){
+            minx = xyUnits[0] - .20 * (map.extent.xmax-xyUnits[0]);
+
+          } else if(map.extent.xmax<xyUnits[0]){
+            maxx = xyUnits[0] + .20 * (xyUnits[0]-map.extent.xmin);
+          }
+
+          if(map.extent.ymin>xyUnits[1]){
+            miny = xyUnits[1] - .20 * (map.extent.ymax-xyUnits[1]);
+
+          } else if(map.extent.ymax<xyUnits[1]){
+            maxy = xyUnits[1] + .20 * (xyUnits[1]-map.extent.ymin);
+          }
+
+          var newExtent = new Extent({xmin:minx,ymin:miny,xmax:maxx,ymax:maxy,spatialReference:{wkid:102100}});
+            map.setExtent(newExtent);
+
+
+
+        });
+
+
+      //$("#startAddress_input").attr("placeholder","Type or Click on Map for Start");
+      //$("#destinationAddress_input").attr("placeholder","Type or Click on Map for Destination");
+      $("#destinationAddressInitial_input").attr("placeholder","Type Address or Click on Map!");
 
 
 
@@ -532,6 +590,39 @@ var endGeocoder = new Geocoder({
 
 
 
+////Extra textbox
+$('#destinationAddressInitial').click(function() {
+          $("#destinationAddressInitial_input").attr("placeholder","");
+        });
+
+
+        $('#destinationAddressInitial_input').each(function(){
+          $(this).focus(function(){
+            $(this).attr("placeholder","");
+
+            $(this).one('mouseup', function(event){
+              $(this).select();
+            });
+          });
+
+          $(this).blur(function(){
+            $(this).attr("placeholder","Type Address or Click on Map!");
+          });
+
+          $(this).keyup(function(){
+            if($(this).val()==""){
+              map.graphics.remove(routeStops.pop());
+              routeStops.push({});
+            }
+          });
+
+        });
+
+
+
+/////
+
+
         $('#myLocation').click(function() {
           addMyLocationDot();
         });
@@ -689,6 +780,7 @@ var endGeocoder = new Geocoder({
 
 //9/14
 $("#crimesButton").click(function(){
+
   clearFeaturesData();
   $("#featuresButton").html("Safety Pts");
   $("#featuresButton").data("featuresDisplay","none");
@@ -883,7 +975,7 @@ routeParams.outSpatialReference = {"wkid":102100};
           if(whichStopAddressInput == "start"){
             map.graphics.remove(routeStops.shift());
             routeStops.unshift(map.graphics.add(new esri.Graphic(centerpoint,startSymbol)));
-          } else if(whichStopAddressInput == "end"){
+          } else if(whichStopAddressInput == "end" || whichStopAddressInput == "endInitial"){
             map.graphics.remove(routeStops.pop());
             routeStops.push(map.graphics.add(new esri.Graphic(centerpoint,stopSymbol)));
           }
@@ -1015,6 +1107,43 @@ routeParams.outSpatialReference = {"wkid":102100};
 
           removeEventHandlers();
         });
+      }
+
+
+      function addInitialDestinationStop(){
+
+
+        mapOnClick_addStops_connect = map.on("click", function(evt){
+          var longlat = webMercatorUtils.xyToLngLat(evt.mapPoint["x"], evt.mapPoint["y"], true);
+          map.graphics.remove(routeStops.pop());
+          routeStops.push(map.graphics.add(new esri.Graphic(new Point(longlat),stopSymbol)));
+          $.ajax({
+            type: 'POST',
+            url: "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/reverseGeocode?location="+longlat[0]+"%2C+"+longlat[1]+"&distance=200&outSR=&f=pjson",
+            success: function (results, textStatus, xhr) {
+              var parsedResults = JSON.parse(results);
+              console.log(parsedResults);
+              if(parsedResults.address){
+                $("#destinationAddressInitial_input").val(parsedResults.address.Match_addr.replace("California", "CA"));
+                  //$('#solveRoute').css('display',"inline"); This would be the "Go!" Button
+                } else {
+                  console.log(routeStops.length);
+                  map.graphics.remove(routeStops.pop());
+                  routeStops.push({});
+                  $("#destinationAddressInitial_input").val("Please Try Again");
+                //$('#solveRoute').css('display',"none"); This would be the "Go!" Button
+              }
+
+            },
+            error: function (xhr, textStatus, errorThrown) {
+              console.log("test failed");
+              console.log("ERROR:" + xhr.responseText + xhr.status + errorThrown);
+              return false;
+            }
+          });
+        });
+
+
       }
 
 
