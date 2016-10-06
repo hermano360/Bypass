@@ -7,14 +7,14 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <link rel="apple-touch-icon" href="/images/favicon.png">
   <title>Bypass</title>
-    <!-- Favicon -->
+  <!-- Favicon -->
   <link rel="shortcut icon" type="image/png" href="/images/favicon.png"/>
-    <!-- Stylesheets -->
+  <!-- Stylesheets -->
   <link rel="stylesheet" href="stylesheets/foundation.min.css" />
   <link rel="stylesheet" href="stylesheets/style.css" />
   <link rel="stylesheet" href="https://js.arcgis.com/3.17/dijit/themes/claro/claro.css">
   <link rel="stylesheet" href="https://js.arcgis.com/3.17/esri/css/esri.css">
-    <!-- Fonts -->
+  <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
   <script src="https://use.fontawesome.com/78b56f5168.js"></script>
 
@@ -28,46 +28,93 @@
   <script src="https://js.arcgis.com/3.17/"></script>
   <script src="javascripts/foundation.js"></script>
   <script src="javascripts/what-input.js"></script>
+  <script src="javascripts/loadingoverlay.min.js"></script>
+
 
   <script>
     (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
     })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
 
     ga('create', 'UA-84804139-1', 'auto');
     ga('send', 'pageview');
 
   </script>
+
+
+
 </head>
 
+
 <body>
+<!--   <div class="reveal-modal" id="terms-and-conditions" data-reveal>
+    <h4>Terms and Conditions</h4>
+    <p>Certain areas of this Website are restricted from being access by you and Bypass (Safe Routing Inc.) may further restrict access by you to any areas of this Website, at any time, in absolute discretion. Any user ID and password you may have for this Website are confidential and you must maintain confidentiality as well.
 
-  <div class="row">
-    <div class="nav-bar large-12 columns">
-      <div class="row">
-      <div class="small-10 medium-10 large-10 columns">
-        <div class="logo" id="bypassLogo"><img src='/images/logo.png'></div>
+      Your Content
+      In these Website Standard Terms and Conditions, “Your Content” shall mean any audio, video text, images or other material you choose to display on this Website. By displaying Your Content, you grant Bypass (Safe Routing Inc.) a non-exclusive, worldwide irrevocable, sub licensable license to use, reproduce, adapt, publish, translate and distribute it in any and all media.
 
-        <div id="missionStatement">Personal Safety, Community Advocacy</div>
-      </div>
+      Your Content must be your own and must not be invading any third-party’s rights. Bypass (Safe Routing Inc.) reserves the right to remove any of Your Content from this Website at any time without notice.
 
-      <div class="small-2 medium-2 large-2 columns">
-        <div class="call-police">
-          <a data-open="callPolicePopup">
-            <i class="fa fa-phone" aria-hidden="true"></i>
-          </a>
+      No warranties
+      This Website is provided “as is,” with all faults, and Bypass (Safe Routing Inc.) express no representations or warranties, of any kind related to this Website or the materials contained on this Website. Also, nothing contained on this Website shall be interpreted as advising you.
+
+      Limitation of liability
+      In no event shall Bypass (Safe Routing Inc.), nor any of its officers, directors and employees, shall be held liable for anything arising out of or in any way connected with your use of this Website whether such liability is under contract.  Bypass (Safe Routing Inc.), including its officers, directors and employees shall not be held liable for any indirect, consequential or special liability arising out of or in any way related to your use of this Website.
+
+      Indemnification
+      You hereby indemnify to the fullest extent Bypass (Safe Routing Inc.) from and against any and/or all liabilities, costs, demands, causes of action, damages and expenses arising in any way related to your breach of any of the provisions of these Terms.
+
+      Severability
+      If any provision of these Terms is found to be invalid under any applicable law, such provisions shall be deleted without affecting the remaining provisions herein.
+
+      Variation of Terms
+      Bypass (Safe Routing Inc.) is permitted to revise these Terms at any time as it sees fit, and by using this Website you are expected to review these Terms on a regular basis.
+
+      Assignment
+      The Bypass (Safe Routing Inc.) is allowed to assign, transfer, and subcontract its rights and/or obligations under these Terms without any notification. However, you are not allowed to assign, transfer, or subcontract any of your rights and/or obligations under these Terms.
+
+      Entire Agreement
+      These Terms constitute the entire agreement between Bypass (Safe Routing Inc.) and you in relation to your use of this Website, and supersede all prior agreements and understandings.
+
+      Governing Law and Jurisdiction
+      These Terms will be governed by and interpreted in accordance with the laws of the State of California, and you submit to the non-exclusive jurisdiction of the state and federal courts located in California for the resolution of any disputes.
+
+      These terms and conditions have been generated at termsandcondiitionssample.com.
+
+    </p>
+    <a class="close-reveal-modal">&#215;</a>
+  </div> -->
+
+
+
+  <div class="row nav-bar-wrapper ">
+    <div class="row90pct">
+      <div class="nav-bar">
+        <div class="small-10 medium-10 large-10">
+          <div class="logo" id="bypassLogo"><img src='/images/logo.png'></div>
+
+          <div id="missionStatement">Personal Safety, Community Advocacy</div>
         </div>
-      </div>
+        <!-- About App -->
+        <div class="small-2 medium-2 large-2 app-info">
+          <div class="info-circle">
+
+            <div class = "vertical-align-center">
+              <a data-open="infoPopup">
+                <i class="fa fa-info" aria-hidden="true"></i>
+              </a>
+            </div>
+
+          </div>
+
+        </div>
+
       </div>
 
-        <!-- About App -->
-      <!-- <div class="app-info">
-        <a data-open="infoPopup">
-          <i class="fa fa-info" aria-hidden="true"></i>
-        </a>
-      </div> -->
     </div>
+
   </div>
 
   <div class="reveal" id="callPolicePopup" data-reveal>
@@ -78,228 +125,129 @@
   </div>
 
   <!-- Turn-by-turn -->
-<div id='directions-button' class="small-12 large-12 columns directions-button-active" style="display:none;">
-  <span>Turn-by-Turn Directions</span>
-</div>
-
-<!--   <div id='dataSetButton' class="small-12 large-12 columns filter-button-inactive">
-     <select>
-       <option value="default"><span>What crimes would you like to avoid?</span></option>
-       <option class="allCrime">All Crime</option>
-       <option class="crime">Abduction</option>
-       <option class="crime">Arson</option>
-       <option class="crime">Assault</option>
-       <option class="crime">Burglary</option>
-       <option class="crime">GTA</option>
-       <option class="crime">Homicide</option>
-       <option class="crime">Larceny</option>
-       <option class="crime">Narcotics</option>
-       <option class="crime">Robbery</option>
-       <option class="crime">Sex Offense</option>
-       <option class="crime">Street Nuissance</option>
-       <option class="crime">Weapon</option>
-       <option>Sex Offender</option>
-     </select>
-   </div> -->
-
-   <!-- <div id='dataSetButton' class="small-6 large-6 columns filter-button-inactive">
-    <select> -->
-<!-- Businesses -->
-     <!-- <option value="default"><span>What safe places would you like to see?</span></option>
-     <option class="allBusiness">All Spaces</option>
-     <option class="business">Transportation</option>
-     <option>Wifi Location</option>
-     <option class="business">School</option>
-     <option class="business">Residence</option> -->
-     <!-- <option class="business">Restaurant/Bar</option>
-     <option class="business">Beauty/Wellness</option>
-     <option class="business">Entertainment</option> -->
-     <!-- <option class="business">Grocery</option>
-     <option class="business">Medical</option> -->
-     <!-- <option class="business">Repair</option> -->
-     <!-- <option class="business">Retail</option>
-   </select>
-  </div> -->
-<!-- Crime Views -->
-<!--   <div id='mapFormatButton' class="small-12 large-12 columns filter-button-inactive">
-    <select>
-      <option value="default">How would you like to avoid them</option>
-      <option value="crimeGrid">By Block</option>
-      <option value="rawData">By Incident</option>
-    </select>
+  <div id='directions-button' class="small-12 large-12 columns directions-button-active" style="display:none;">
+    <span>Click Here For Directions!</span>
   </div>
 
-    <div id='timeFrameButton' class="small-12 large-12 columns filter-button-inactive">
-      <select>
-        <option value="default">How long ago did the crimes take place</option>
-        <option>Within the last day</option>
-        <option>Within the last week</option>
-        <option>Within the last month</option>
-        <option>Within the last year</option>
-      </select>
-    </div> -->
-
-
-  <!-- Data Format Options -->
   <div class="row">
-  <div class="filter-options-nav-bar large-12 columns" style="display:none;">
-  <div class="row">
-
-  <!-- <button class='button radius BypassRouteUnselected' id="BypassRoute" style="display:none;"><span>Bypass</span></button> -->
-
-  <!-- <button class='button radius BypassRouteUnselected' id="NormalRoute" style="display:none;"><span>Normal</span></button> -->
-
-  <!-- Data point types -->
-  <!-- <div id='dataSetButton' class="small-4 large-4 columns">
-    <select>
-      <option value="default">Crimes & Safety</option>
-      <option class="allCrime">Crimes</option>
-      <option class="crime">Abduction</option>
-      <option class="crime">Arson</option>
-      <option class="crime">Assault</option>
-      <option class="crime">Burglary</option>
-      <option class="crime">GTA</option>
-      <option class="crime">Homicide</option>
-      <option class="crime">Larceny</option>
-      <option class="crime">Narcotics</option>
-      <option class="crime">Robbery</option>
-      <option class="crime">Sex Offense</option>
-      <option class="crime">Street Nuissance</option>
-      <option class="crime">Weapon</option>
-      Businesses -->
-      <!-- <option class="allBusiness">Business</option>
-      <option class="business">Beauty/Wellness</option>
-      <option class="business">Entertainment</option>
-      <option class="business">Grocery</option>
-      <option class="business">Medical</option>
-      <option class="business">Repair</option>
-      <option class="business">Residence</option>
-      <option class="business">Restaurant/Bar</option>
-      <option class="business">Retail</option>
-      <option class="business">School</option>
-      <option class="business">Services</option>
-      <option class="business">Transportation</option>
-      <option>Pts of Interest</option>
-      <option>Sex Offender</option>
-      <option>Wifi Location</option>
-    </select>
-  </div>  -->
-
-  <!-- Time Frame Range -->
-
-  </div>
-  </div>
-  </div>
-  <!-- Location/ Destination Input -->
-<div class="row">
-  <div class="directions-nav-bar large-12 columns">
-    <form action="addressLookup">
+    <div class="filter-options-nav-bar large-12 columns" style="display:none;">
       <div class="row">
-        <div class="large-12 columns input-wrapper" id="startAddAbove">
-          <i class="fa fa-location-arrow" aria-hidden="true"></i>
-
-<!--           <input class='directions-textbox' type="text" name="startAddress" id="startAddress" placeholder='Start Location' readonly="true" data-input-state="mapTap"> -->
-
-          <div type="text" id="startAddress" class="directions-textbox" data-ready-status="notReady"></div>
 
 
-
-        </div>
       </div>
-      <div class="row">
-        <div id="directionsDisplay" style='overflow:hidden;' class="large-12 columns"></div>
-      </div>
-      <div class="row">
-        <div class="large-12 columns input-wrapper">
-          <i class="fa fa-map-marker" aria-hidden="true"></i>
-<!--           <input class='directions-textbox' type="text" name="destinationAddress" id="destinationAddress" placeholder='End Location' readonly="true" data-input-state="mapTap"> -->
-
-<div type="text" id="destinationAddress" class="directions-textbox" data-ready-status="notReady"></div>
-
-
-        </div>
-      </div>
-
-    </form>
+    </div>
   </div>
 
-</div>
-
-<!-- Route to Safety -->
-<div class="row">
-  <div id="solveRoute" class="directions-nav-bar large-12 columns" style='display:none;' data-solve-phase="generate">
-    Get Me There Safe!
-  </div>
-</div>
 
 
-<!-- Directions in Text -->
-  <!-- <div class="row">
-    <div class="filter-directions-nav-bar large-12 columns">
-      <div class="row">
-      <div id='directions-button' class="small-6 large-6 columns directions-button-inactive">
-        <span>Turn-by-Turn</span>
-      </div> -->
-      <!-- Filter Crime and interest points button -->
 
 
-    <!--         <div class="row">
-      <div class="filter-options-nav-bar large-12 columns">
-        <div class="row">
-          <div id='mapFormatButton' class="small-4 large-4 columns ">
-            <span>Map Format</span>
-          </div>
-          <div id='dataSetButton' class="small-4 large-4 columns">
-            <span>Data Set</span>
-          </div>
-          <div id='timeFrameButton' class="small-4 large-4 columns">
-            <span>Time Frame</span>
-          </div>
-        </div>
-      </div>
-    </div> -->
 
-    <div id='map_row' class="row">
-      <div class="large-12 columns">
+
+
+
+
+
+  <div id='map_wrapper'>
+
+
+    <div class="row">
+      <div class="directions-nav-bar large-12 columns">
         <div id="map"></div>
+
+        <div class="row90pct">
+          <div id="directionsDisplay" style='overflow:hidden;' class="large-12 columns"></div>
+        </div>
+        <div class="row90pct">
+          <div type="text" id="destinationAddressInitial" class="directions-textbox" data-ready-status="ready"></div>
+        </div>
+
+        <div class="mint-background row address-container">
+          <div class="row70pct">
+            <div id="address-wrapper" style="display:none;">
+              <div class="directions-nav-bar input-wrapper">
+                <div class="addressRow" id="">
+                  <span class="tofrom">From:</span>
+                  <div type="text" id="startAddress" class="input_address" data-ready-status="notReady"></div>
+                </div>
+                <div id="directionsDisplay" style='overflow:hidden;' class="large-12 columns"></div>
+                <div class="addressRow" id="">
+                  <span class="tofrom">To:</span>
+                  <div type="text" id="destinationAddress" class="input_address" data-ready-status="notReady"></div>
+                </div>
+              </div>
+              <div class="routeChoice mint-background">
+                <div class='routeSelected fa fa-check-square-o halfContainer' id="BypassRoute" style="display:none;" data-time-distance="">
+                  <span class="routeOption" id="bypassOption"></span>
+                </div>
+                <div class='routeUnselected fa fa-warning halfContainer' id="NormalRoute" style="display:none;" data-time-distance="">
+                  <span class="routeOption" id="normalOption"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+          <div class="row90pct">
+            <a id="myLocation" class="bottom-circle">
+              <div class="horizontal-center fa fa-crosshairs"></div>
+            </a>
+          </div>
+        </div>
+        
       </div>
     </div>
 
-    <button class='button radius BypassRouteUnselected' id="BypassRoute" style="display:none;" data-time-distance=""><span>Safe</span></button>
-    <button class='button radius NormalRouteUnselected' id="NormalRoute" style="display:none;" data-time-distance=""><span>Normal</span></button>
 
-  <div class="rightAlign">
-    <button id="crimesButton" class='button radius  iconTools' data-crime-display="none">Dangers</button>
-    <button id="featuresButton" class='button radius iconTools' data-features-display="none">Safety Pts</button>
-  </div>
+    <div class="row90pct lowerOptions">
+      
+      <div id="solveRoute" class="" data-solve-phase="generate" style="visibility:hidden;">Take Me There Safely!</div>
+    <div class="row bottom-route-bar" style="display:none">
+      <div id = "routeDistance"><span id="calc-time-dist"></span>Begin! </div>
+        <div id="beginRoute" class="mint-background"> <i class="fa fa-blind" aria-hidden="true"></i></div>
+    </div>
 
-  <a id="myLocation" class="button"><i class="fa fa-crosshairs" aria-hidden="true"></i></a>
+      <div id="featureInfo" class="" data-solve-phase="generate" style="visibility:visible;"> </div>
 
-  <button id="resetBtn" class='button'>New Route</button>
-
-
-
-      <div class="reveal" id="infoPopup" data-reveal>
-        <h4>About Bypass</h4>
-        <p>Bypass will help you get from A-B using the safest route.
-        <br><br>
-        The 'Red Call' button will call the police and send a message to your allocated emergency contact.
-        <br><br>
-        Enter your destination in the 'End Location' and'Start Location' space by typing in your address, clicking on the map, or clicking on the My Location Button. Once the routes are generated, you can toggle between the Bypass and Normal route.  Pushing Go allows you to choose your route.
-        <br><br>
-
-        Pressing the directions button after route chosen will give you written directions to your desired locations.
-        <br><br>
-        You can use the filter button to show the map layers available in your area.
-        <br><br>
-        Crime grid overlays the aggregated anaylsis. Raw data allows see crimes, businesses, and points of interest. Please allow for loading. Not all browsers may be supported.
-
-        </p>
-        <button class="close-button" data-close aria-label="Close modal" type="button">
-          <span aria-hidden="true">&times;</span>
-        </button>
+      <div class="bottom-buttons">
+        <div class="quarter-width"><button id="resetBtn" class="bottom-circle"><i class="fa fa-refresh" aria-hidden="true"></i></button></div>
+        <div class="quarter-width"><button id="featuresButton" class='bottom-circle fa fa-smile-o' data-features-display="none"></button></div>
+        <div class="quarter-width"><button id="crimesButton" class='bottom-circle fa fa-warning' data-crime-display="none"></button></div>
+        <div class="quarter-width"><div class="bottom-circle call-police"><a data-open="callPolicePopup"><i class="fa fa-phone" aria-hidden="true"></i></a></div></div>
       </div>
 
-      <script src="javascripts/app.js"></script>
-    </body>
-    </html>
+
+
+  </div>
+
+
+
+
+
+
+  <div class="reveal" id="infoPopup" data-reveal>
+    <h4>About Bypass</h4>
+    <p>Bypass will help you get from A-B using the safest route.
+      <br><br>
+      The 'Red Call' button will call the police and send a message to your allocated emergency contact.
+      <br><br>
+      Enter your destination in the 'End Location' and'Start Location' space by typing in your address, clicking on the map, or clicking on the My Location Button. Once the routes are generated, you can toggle between the Bypass and Normal route.  Pushing Go allows you to choose your route.
+      <br><br>
+
+      Pressing the directions button after route chosen will give you written directions to your desired locations.
+      <br><br>
+      You can use the filter button to show the map layers available in your area.
+      <br><br>
+      Crime grid overlays the aggregated anaylsis. Raw data allows see crimes, businesses, and points of interest. Please allow for loading. Not all browsers may be supported.
+
+    </p>
+    <button class="close-button" data-close aria-label="Close modal" type="button">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+
+  <script src="javascripts/app.js"></script>
+
+
+</body>
+</html>

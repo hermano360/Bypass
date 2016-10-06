@@ -1,14 +1,20 @@
 /*View Sizing*/
 .row {
   max-width: 100%;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
 }
 
 
 /*Fonts*/
 body{
+  position: absolute;
   font-family: 'Raleway', sans-serif;
   font-weight: lighter;
   font-size: 16px;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
 }
 h1 {
   font-size:30px;
@@ -16,14 +22,31 @@ h1 {
   font-family:
 }
 
-.app-info, .call-police {
-  font-size: 45px;
+.app-info{
+  position: absolute;
   color: gray;
-  float:right;
-  width:60px;
-  min-width:60px;
-  height:50px;
-  position:relative;
+  right:0;
+  top:0;
+  text-align:center;
+}
+
+.info-circle {
+  border: 1px solid #57585A;
+  height:40px;
+  width:40px;
+  border-radius:50%;
+  margin-left:50%;
+}
+
+.call-police {
+  margin-left:auto;
+  margin-right:auto;
+}
+
+#resetBtn {
+/*  position:absolute;
+  color: gray;
+  left:0;*/
 }
 
 a{
@@ -31,18 +54,24 @@ a{
 }
 .call-police a{
   color: #d37984;
-  position: absolute;
-  top: -8px;
-  right: 5px;
+  font-size:35px;
 }
 .app-info a{
   color: #5d5d5d;
+  top:20px;
+}
+#terms-and-conditions {
+  z-index:1000;
 }
 
 .input-wrapper i{
   position: absolute;
   margin: 5px 5px 5px 10px;
   font-size: 20px;
+}
+
+.input-wrapper {
+  margin: 2% 0px 0px 0px;
 }
 
 /*Buttons*/
@@ -72,8 +101,8 @@ a{
   border: none;
   background-color: #8CD4CC;
   outline: none;
-	-webkit-box-shadow: none;
-	-moz-box-shadow: none;
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
   box-shadow: none;
   transition: none;
 }
@@ -84,6 +113,10 @@ a{
   margin-top:10px;
   margin-bottom:6px;
 }
+.nav-bar-wrapper {
+  background-color: #FFF;
+  border-bottom: 1px solid #000;
+}
 
 .logo {
   float:left;
@@ -92,15 +125,17 @@ a{
 
 .logo > img {
   height:50px;
+  margin-bottom:4%;
 }
 
 #missionStatement {
+  position:relative;
   font-weight: bold;
   color: #5d5d5d;
   padding-top: 10px;
   padding-left: 10px;
 }
-@media screen and (max-width: 34em) {
+@media screen and (max-width: 30em) {
   #missionStatement {
     padding-top:3px;
     font-size:11px;
@@ -178,18 +213,41 @@ a{
 }
 
 #solveRoute {
+  position: relative;
+  top: 0;
+  width:60%;
+  margin-left:20%;
+  margin-bottom:5%;
   cursor:pointer;
   text-align: center;
   font-weight: bold;
   padding-top:4px;
   padding-bottom:4px;
   border-bottom: 1px solid #BBBBBB;
+  border: 1px solid #57585A;
+  background-color: #f2f2f2;
+  font-size:1rem;
+  border-radius:10px;
 }
 
-#solveRoute:hover {
-  background-color: #26A69A;
-  color: #FFFFFF;
+
+#featureInfo {
+  position: relative;
+  top: 0;
+  width: fit-content;
+  height:24px;
+  margin-left:auto;
+  margin-right:auto;
+  margin-bottom:1%;
+  cursor:pointer;
+  text-align: center;
+  font-weight: bold;
+  padding-top:1px;
+  padding-bottom:1px;
+  background: rgba(255, 255, 255, 0.6);
+  font-size:1rem;
 }
+
 
 #routeNameForm {
 	position: absolute;
@@ -199,10 +257,6 @@ a{
 	background:black;
 }
 
-.esriSimpleSlider {
-  margin-top:55px;
-  z-index:inherit !important;
-}
 
 .esriSimpleSliderIncrementButton:hover,
 .esriSimpleSliderDecrementButton:hover {
@@ -213,13 +267,20 @@ a{
 #map {
   position: absolute;
   width:100%;
-  height:85%;
-  z-index: -1;
+  top: 0px;
+  bottom: 0px;
+  z-index: -1 !important;
 }
 
-#map_row {
+#map_wrapper{
+  width:100%;
   margin-left:0;
   margin-right:0;
+}
+#map_gc{
+  position:relative !important;
+  float:left;
+  width:100%;
 }
 
 #map_row > .columns {
@@ -230,104 +291,128 @@ a{
   font-weight:bold;
   border-bottom: 1px solid #BBBBBB;
   overflow: hidden;}
-.filter-options-nav-bar > .row > .columns:first-child {
-  border-right: 1px solid #BBBBBB;
-}
-.filter-options-nav-bar > .row > .columns:nth-child(2) {
-  border-right: 1px solid #BBBBBB;
-}
-.filter-options-nav-bar > .row > .columns:last-child {
-}
-.filter-options-nav-bar > .row > .columns {
-  padding:0;
-}
-.filter-options-nav-bar > .row > .columns > select {
-  padding-left:15px;
-  cursor: pointer;
-}
-.filter-options-nav-bar > .row > .columns > select:hover {
-  background-color: #26A69A;
-  color: #FFFFFF;
-  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="32" height="24" viewBox="0 0 32 24"><polygon points="0,0 32,0 16,24" style="fill: #FFFFFF"></polygon></svg>')
-}
+  .filter-options-nav-bar > .row > .columns:first-child {
+    border-right: 1px solid #BBBBBB;
+  }
+  .filter-options-nav-bar > .row > .columns:nth-child(2) {
+    border-right: 1px solid #BBBBBB;
+  }
+  .filter-options-nav-bar > .row > .columns:last-child {
+  }
+  .filter-options-nav-bar > .row > .columns {
+    padding:0;
+  }
+  .filter-options-nav-bar > .row > .columns > select {
+    padding-left:15px;
+    cursor: pointer;
+  }
+  .filter-options-nav-bar > .row > .columns > select:hover {
+    background-color: #26A69A;
+    color: #FFFFFF;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="32" height="24" viewBox="0 0 32 24"><polygon points="0,0 32,0 16,24" style="fill: #FFFFFF"></polygon></svg>')
+  }
 
-/*Forms*/
-select {
-  margin:0;
-  border:none;
-  height: 30px;
-  padding-top: 0px;
-  padding-bottom: 0px;
-  line-height: 30px;
-  border-radius:0 !important;
-  font-size:14px;
-}
+  /*Forms*/
+  select {
+    margin:0;
+    border:none;
+    height: 30px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+    line-height: 30px;
+    border-radius:0 !important;
+    font-size:14px;
+  }
 
 /*option {
   min-height:20px;
-}*/
-/* remove the iphone bug where the input boxes are rounded */
-input {
-  -webkit-border-radius: 0px;
-  -webkit-appearance: none;
-  border-radius: 50%;
-  margin: 3px;
-}
+  }*/
+  /* remove the iphone bug where the input boxes are rounded */
+  input {
+    -webkit-border-radius: 0px;
+    -webkit-appearance: none;
+    border-radius: 50%;
+    margin: 3px;
+  }
 
-/* only affects input tag placeholder color - BEGIN */
-::-webkit-input-placeholder { /* WebKit, Blink, Edge */
-  color: #0a0a0a !important;
-}
-:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
-  color: #0a0a0a !important;
-  opacity: 1;
+  /* only affects input tag placeholder color - BEGIN */
+  ::-webkit-input-placeholder { /* WebKit, Blink, Edge */
+    color: #0a0a0a !important;
+  }
+  :-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+    color: #0a0a0a !important;
+    opacity: 1;
 
-}
-::-moz-placeholder { /* Mozilla Firefox 19+ */
-  color: #0a0a0a !important;
-  opacity: 1;
-}
-:-ms-input-placeholder { /* Internet Explorer 10-11 */
-  color: #0a0a0a !important;
-}
-/* only affects input tag placeholder color - END */
+  }
+  ::-moz-placeholder { /* Mozilla Firefox 19+ */
+    color: #0a0a0a !important;
+    opacity: 1;
+  }
+  :-ms-input-placeholder { /* Internet Explorer 10-11 */
+    color: #0a0a0a !important;
+  }
+  /* only affects input tag placeholder color - END */
 
-input:focus,
-select:focus,
-textarea:focus,
-button:focus {
-  outline: none;
-}
+  input:focus,
+  select:focus,
+  textarea:focus,
+  button:focus {
+    outline: none;
+  }
 
-input:disabled, input[readonly], textarea:disabled, textarea[readonly] {
-  opacity:.6;
-}
+  input:disabled, input[readonly], textarea:disabled, textarea[readonly] {
+    opacity:.6;
+  }
 
-#resetBtn {
-  position:absolute;
-  left: 20px;
-  bottom: 4px;
-  padding: 5px 5px 5px 5px;
-}
+  .routeChoice {
+    position:relative;
+    width:60%;
+    left:20%;
+    text-align:center;
+    color:#fff;
+    padding-bottom: 2%;
+  }
 
-.BypassRouteSelected {
+  .halfContainer {
+    width:45%;
+  }
+
+  .routeOption {
+    font-family: 'Raleway', sans-serif;
+    font-weight: lighter;
+    font-size: 12px;
+
+    vertical-align: middle;
+    position:relative;
+    left:0%;
+    width:70%;
+  }
+
+  .routeSelected {
+
+    border-bottom: 3px solid #fff;
+  }
+
+  .routeUnselected {
+    border-bottom: 3px solid #26A69A;
+  }
+
+
+/*.BypassRouteSelected {
   background-color: #26A69A;
   color: #FFFFFF;
-  min-width: 90px;
+  min-width:90px;
   max-width:80px;
 }
 
 #BypassRoute {
   right: 20px;
-  position: absolute;
-  bottom: 56px;
+  position: absolute
   min-width: 105px;
 }
 
 #BypassRoute:hover > span,
 .BypassRouteSelected > span {
-  background:url('../images/curved_arrow_white.png') left center no-repeat;
-  padding-left:21px;
 }
 
 .BypassRouteUnselected {
@@ -338,14 +423,12 @@ input:disabled, input[readonly], textarea:disabled, textarea[readonly] {
 }
 
 .BypassRouteUnselected > span {
-  background:url('../images/curved_arrow_black.png') left center no-repeat;
-  padding-left:21px;
+
 }
 
 #NormalRoute {
   right: 20px;
-  position: absolute;
-  bottom: 4px;
+  position: relative;
   min-width: 105px;
 }
 
@@ -358,8 +441,7 @@ input:disabled, input[readonly], textarea:disabled, textarea[readonly] {
 
 #NormalRoute:hover > span,
 .NormalRouteSelected > span {
-  background:url('../images/curved_arrow_white.png') left center no-repeat;
-  padding-left:21px;
+
 }
 
 .NormalRouteUnselected {
@@ -370,143 +452,163 @@ input:disabled, input[readonly], textarea:disabled, textarea[readonly] {
 }
 
 .NormalRouteUnselected > span {
-  background:url('../images/curved_arrow_black.png') left center no-repeat;
-  padding-left:21px;
-}
 
-.bottomRightNav {
-  right: 20px;
-  bottom: 2px;
-  position: absolute;
-  width:102px;
-}
+  }*/
 
-.bottomRightNav > button {
-  margin-bottom: 18px;
-}
+  .bottomRightNav {
+    right: 20px;
+    bottom: 2px;
+    position: absolute;
+    width:102px;
+  }
 
-#startAddress{
-  border-top: 1px solid #8cd4cc;
-  border-bottom: 1px solid #8cd4cc;
-  width: 300px;
-}
+  .bottomRightNav > button {
+    margin-bottom: 18px;
+  }
 
-#destinationAddress {
-  border-bottom: 1px solid #8cd4cc;
-}
+  #startAddress{
+
+
+    width: 100%;
+  }
+
+  #destinationAddress {
+
+    width: 100%;
+    margin-bottom:2%;
+  }
+  #destinationAddressInitial {
+    position:relative;
+    z-index:10;
+    width:100%;
+    margin-top:7%;
+  }
 
 
 
 /*#startAddress.directions-textbox {
   background-image:url('../images/directions_arrow.png');
-}*/
+  }*/
 
 /*}
 #destinationAddress.directions-textbox {
   background-image:url('../images/pin.png');
-}*/
+  }*/
 
-.dynamicDirectionsRow {
-  padding:5px 59px;
-}
+  .dynamicDirectionsRow {
+    position:relative;
+    padding:5px 59px;
+    background-color: #fff;
+    z-index:10;
+  }
 
-.directions-textbox {
-  text-indent:23px !important;
-  width:100% !important;
-  height:34px !important;
-  /*padding:7px 0;*/
-  margin:0 !important;
-  color:#000 !important;
-  border:none !important;
-  font-weight:bold !important; 
-  background-color: #fff !important;
-  background-position: left center !important;
-  background-repeat: no-repeat !important;
-  border-radius:0 !important;
-}
+  .directions-textbox {
+    text-indent:23px !important;
+    width:100% !important;
+    height:34px !important;
+    /*padding:7px 0;*/
+    margin:0 !important;
+    color:#000 !important;
+    border:none !important;
+    font-weight:bold !important; 
+    background-color: #fff !important;
+    background-position: left center !important;
+    background-repeat: no-repeat !important;
+    border-radius:0 !important;
+  }
 
-.directions-nav-bar {
-  padding-left:0;
-  padding-right:0;
-}
-.directions-nav-bar > form:first-child > .row,
-.directions-nav-bar > form > .row:last-child,  {
-  background: #fff;
-}
+  .directions-nav-bar {
+    padding-left:0;
+    padding-right:0;
+  }
+  .directions-nav-bar > form:first-child > .row,
+  .directions-nav-bar > form > .row:last-child,  {
+    background: #fff;
+  }
 
-.close-button {
+  .close-button {
 
-  top: 5px;
-  right: 5px;
-  position: absolute;
-  font-size:40px;
-  z-index: 5;
-}
+    top: 5px;
+    right: 5px;
+    position: absolute;
+    font-size:40px;
+    z-index: 5;
+  }
 
-#infoPopup {
-  background: #B5B5B5;
-  color: white;
-}
+  #infoPopup {
+    background: #B5B5B5;
+    color: white;
+  }
 
-#directions-button {
-  text-align: center;
-}
+  #directions-button {
+    text-align: center;
+    margin-bottom:2%;
+  }
 
-#crimesButton {
-  width:80px;
-  align:block;
-}
-#featuresButton {
-  width:88px;
-  align:block;
-}
 
-.rightAlign {
-  float:right;
-  width:190px;
-  margin-top:15px;
-}
 
-.esriGeocoder {
-  border-radius: 0px !important;
-  height: 25px !important;
+  .rightAlign {
+    float:right;
+    margin-top: 15px
+  }
+  .iconTools {
+    position:absolute;
+    right:0;
+    width: 50px;
+    float:right;
+    color: #000;
+  }
+
+  .esriGeocoder {
+    border-radius: 0px !important;
+    height: 100% !important;
     border-top:1px solid #8cd4cc;
-  border-bottom:3px solid #8cd4cc;
-
-}
-
-
-#startAddAbove {
-  height: 25px;
-}
+    border-bottom:3px solid #8cd4cc;
+  }
 
 
-.esriGeocoderContainer {
-  width: 100% !important;
-  height: 25px !important;
-  margin: 0px 0px 0px 0px  !important;
-}
-#startAddress {
-  width: 100%;
-}
-.esriGeocoderIcon {
-  display: none !important;
-}
+  #startAddAbove {
+    height: 50%;
+  }
 
-#startAddress_input {
- width: 100% !important;
-  height: 25px !important;
-  text-indent: 30px;
-  padding: 0px !important;
-  margin: 0px  !important;
-  border: none;
-  font-size: .85rem !important;
-  background-color: #f2f2f2;
-  color: #575757;
-}
 
-#destinationAddress {
-  width: 100%;
+  .esriGeocoderContainer {
+    width: 100% !important;
+    height: 100% !important;
+    margin: 0px 0px 0px 0px  !important;
+  }
+  #startAddress {
+    width: 100%;
+  }
+  .esriGeocoderIcon {
+    display: none !important;
+  }
+
+  .address-wrapper {
+    background-color:#8cd4cc;
+    position:relative;
+  }
+
+  .address-container {
+    color: #fff;
+  }
+  .mint-background {
+    background-color: #26A69A;
+  }
+  #startAddress_input {
+   width: 100% !important;
+   height: 25px !important;
+   text-indent: 30px;
+   padding: 0px !important;
+   margin: 0px  !important;
+   border: none;
+   font-size: .85rem !important;
+   background-color: #f2f2f2;
+   color: #575757;
+ }
+
+ .address_wrapper {
+  position:relative;
 }
 
 #destinationAddress_input {
@@ -521,22 +623,136 @@ input:disabled, input[readonly], textarea:disabled, textarea[readonly] {
   color: #575757;
 }
 
-#myLocation {
-  width: 40px;
-  border-radius:20px;
-  height: 40px;
+#destinationAddressInitial_input {
+  width: 100% !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: none;
+  font-size: 1rem !important;
+  background-color: #f2f2f2;
+  color: #575757;
+  text-align:center;
 }
 
 #myLocation {
-  font-size: 30px;
+  position:absolute;
   color: #5d5d5d;
-  padding: 5px;
-  margin-top:15px;
-  margin-left:20px;
+  z-index:2;
+  left:0;
+  margin-top:30px;
 }
+
 #myLocation:hover, #myLocation:active {
-  color: #FFFFFF;
 }
+
+.row90pct {
+  position:relative;
+  width:90%;
+  margin-right:5%;
+  margin-left:5%;
+}
+
+.row70pct {
+  position:relative;
+  width:70%;
+  margin-right:15%;
+  margin-left:15%;
+}
+
+
+
+.lowerOptions {
+  position:absolute;
+  bottom:0;
+  z-index: 1;
+}
+.vertical-align-center {
+  margin-top:15%;
+}
+.bottom-buttons {
+  /*  margin-top:15%;*/
+  position:relative;
+  width:100%;
+}
+
+.bottom-circle {
+  position:relative;
+  float:bottom;
+  font-size:30px !important;
+  border-radius:50%;
+  height:50px;
+  width:50px;
+  border: 1px solid #57585A;
+  background-color: #f2f2f2;
+}
+
+.quarter-width {
+  position:relative;
+  width:25%;
+  float:left;
+  text-align:center;
+}
+.horizontal-center {
+  width:100%;
+  height:100%;
+  text-align:center;
+}
+
+.right-circle {
+  z-index: 9;
+  font-size:30px !important;
+  border-radius:50%;
+  height:50px;
+  width:50px;
+  border: 1px solid #57585A;
+  background-color: #f2f2f2;
+  margin-top:10px;
+}
+
+.bottom-route-bar {
+
+  position:relative;
+  font-size: 30px;
+  /*display:none;*/
+}
+
+
+#routeDistance {
+
+  position:relative;
+  float:left;
+  width:100%;
+  height:50px;
+  font-size: 20px;
+  padding-top: 10px;
+  text-align: right;
+  padding-right: 55px;
+  border: 1px solid #ccc;
+  background-color: #f2f2f2;
+}
+
+#beginRoute {
+  position:absolute;
+  float:right;
+  height:50px;
+  border-radius: 50%;
+  width:50px;
+  right:0;
+  text-align: center;
+  border: 1px solid #ccc;
+  color: #fff;
+}
+#calc-time-dist {
+  position:relative;
+  font-family: 'Raleway', sans-serif;
+  font-weight: bolder;
+  font-size: 18px;
+float:left;
+padding-left: 10px;
+
+}
+
+
 
 
 
