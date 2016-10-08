@@ -133,6 +133,10 @@ a{
 }
 
 @media only screen and (max-device-width: 414px) and (max-device-height: 736px) {
+  .directions-nav-bar {
+    margin-top:20px;
+  }
+
   .nav-bar {
     display: none;
   }
@@ -352,9 +356,9 @@ input:disabled, input[readonly], textarea:disabled, textarea[readonly] {
 }
 
 #BypassRoute {
-  right: 20px;
+  right: 18px;
   position: absolute;
-  bottom: 156px;
+  bottom: 110px;
   min-width: 105px;
 }
 
@@ -377,9 +381,9 @@ input:disabled, input[readonly], textarea:disabled, textarea[readonly] {
 }
 
 #NormalRoute {
-  right: 20px;
+  right: 18px;
   position: absolute;
-  bottom: 104px;
+  bottom: 70px;
   min-width: 105px;
 }
 
