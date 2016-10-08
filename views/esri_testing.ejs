@@ -43,31 +43,32 @@
 
 <body>
 
-  <div class="row nav-bar-wrapper">
-    <div class="nav-bar large-12 columns">
-      
-      <div class="small-10 medium-10 large-10 columns">
+  <div class="row nav-bar-wrapper ">
+  <div class="row90pct">
+    <div class="nav-bar">
+      <div class="small-10 medium-10 large-10">
         <div class="logo" id="bypassLogo"><img src='/images/logo.png'></div>
 
         <div id="missionStatement">Personal Safety, Community Advocacy</div>
       </div>
+                  <!-- About App -->
+      <div class="small-2 medium-2 large-2 app-info">
+      <div class="info-circle">
 
-      <div class="small-2 medium-2 large-2 columns">
-        <div class="call-police">
-          <a data-open="callPolicePopup">
-            <i class="fa fa-phone" aria-hidden="true"></i>
-          </a>
-        </div>
-      </div>
-      
-
-        <!-- About App -->
-      <!-- <div class="app-info">
+<div class = "vertical-align-center">
         <a data-open="infoPopup">
           <i class="fa fa-info" aria-hidden="true"></i>
         </a>
-      </div> -->
+</div>
+
+        </div>
+
+      </div>
+
     </div>
+
+      </div>
+
   </div>
 
   <div class="reveal" id="callPolicePopup" data-reveal>
@@ -139,14 +140,15 @@
           <div class="row90pct">
               <!-- <i class="fa fa-map-marker" aria-hidden="true"></i> -->
               <div type="text" id="destinationAddressInitial" class="directions-textbox" data-ready-status="ready"></div>
-              <a id="myLocation" class="button"><i class="fa fa-crosshairs" aria-hidden="true"></i></a>
-              <div class="iconTools">
-                <div class="rightAlign">
-                  <button id="crimesButton" class='button radius' data-crime-display="none">Dangers</button>
-                </div>
-                <div class="rightAlign">
-                  <button id="featuresButton" class='button radius' data-features-display="none">Safety Pts</button>
-                </div>
+              <a id="myLocation" class="bottom-circle">
+              <div class="horizontal-center"><i class="fa fa-crosshairs" aria-hidden="true"></i></div>
+              </a>
+              <div class="iconTools rightAlign">
+
+              <button id="featuresButton" class='right-circle' data-features-display="none"><i class="fa fa-smile-o" aria-hidden="true"></i></button>
+
+              <button id="crimesButton" class='right-circle' data-crime-display="none"><i class="fa fa-warning" aria-hidden="true"></i></button>
+
               </div>
             
           </div>
@@ -157,9 +159,17 @@
     <button class='button radius NormalRouteUnselected' id="NormalRoute" style="display:none;" data-time-distance=""><span>Normal</span></button>
 
     <div class="row row90pct lowerOptions">
-      <div id="solveRoute" class="directions-nav-bar" data-solve-phase="generate">Go!</div>
-      
-      <button id="resetBtn" class='button'>New Route</button>
+      <div id="solveRoute" class="directions-nav-bar" data-solve-phase="generate">Take Me There Safely!</div>
+      <div class="bottom-buttons">
+      <button id="resetBtn" class="bottom-circle"><i class="fa fa-refresh" aria-hidden="true"></i></button>
+        <div class="call-police bottom-circle">
+          <a data-open="callPolicePopup">
+            <i class="fa fa-phone" aria-hidden="true"></i>
+          </a>
+        </div>
+        </div>
+
+
     </div>
   </div>
 

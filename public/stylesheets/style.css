@@ -20,16 +20,26 @@ h1 {
   font-family:
 }
 
-.app-info, .call-police {
-  font-size: 45px;
+.app-info{
+  position:absolute;
+  color: gray;
+  right:0;
+  top:0;
+  text-align:center;
+}
+
+.info-circle {
+    border: 1px solid #57585A;
+    height:40px;
+    width:40px;
+    border-radius:50%;
+}
+
+.call-police {
   position:relative;
   color: gray;
-
-  width:60px;
-  min-width:60px;
-  height:50px;
-  right:0px;
-  
+  float:right;
+  text-align:center;
 }
 
 a{
@@ -37,11 +47,11 @@ a{
 }
 .call-police a{
   color: #d37984;
-  position: absolute;
-  top: -8px;
+  font-size:35px;
 }
 .app-info a{
   color: #5d5d5d;
+  top:20px;
 }
 
 .input-wrapper i{
@@ -105,9 +115,11 @@ a{
 
 .logo > img {
   height:50px;
+  margin-bottom:4%;
 }
 
 #missionStatement {
+  position:relative;
   font-weight: bold;
   color: #5d5d5d;
   padding-top: 10px;
@@ -191,6 +203,7 @@ a{
 }
 
 #solveRoute {
+  position: relative;
   top: 80%;
   width:70%;
   margin-left:15%;
@@ -201,6 +214,8 @@ a{
   padding-bottom:4px;
   border-bottom: 1px solid #BBBBBB;
   border: 1px solid #57585A;
+  background-color: #f2f2f2;
+  font-size:1rem;
 }
 
 #solveRoute:hover {
@@ -217,7 +232,7 @@ a{
 }
 
 .esriSimpleSlider {
-  margin-top:80%;
+  top:48% !important;
   z-index:10 ;
 }
 
@@ -327,11 +342,6 @@ input:disabled, input[readonly], textarea:disabled, textarea[readonly] {
   opacity:.6;
 }
 
-#resetBtn {
-  z-index: 9;
-  top: 90%;
-
-}
 
 .BypassRouteSelected {
   background-color: #26A69A;
@@ -419,7 +429,7 @@ input:disabled, input[readonly], textarea:disabled, textarea[readonly] {
   width: 100%;
 }
 #destinationAddressInitial {
-  
+  z-index:10;
   width:100%;
   margin-top:7%;
   border-bottom: 1px solid #8cd4cc;
@@ -482,14 +492,7 @@ input:disabled, input[readonly], textarea:disabled, textarea[readonly] {
   text-align: center;
 }
 
-#crimesButton {
-  width:80px;
 
-}
-#featuresButton {
-  width:88px;
-
-}
 
 .rightAlign {
   float:right;
@@ -498,8 +501,8 @@ input:disabled, input[readonly], textarea:disabled, textarea[readonly] {
 .iconTools {
   position:absolute;
   right:0;
-  top: 100%;
-  width: 100px;
+  top: 500%;
+  width: 50px;
   float:right;
   
 }
@@ -568,13 +571,10 @@ input:disabled, input[readonly], textarea:disabled, textarea[readonly] {
 
 #myLocation {
   position:absolute;
-  top:10%;
-  width: 40px;
-  border-radius:20px;
-  height: 40px;
-  font-size: 30px;
+  top:120%;
   color: #5d5d5d;
-  padding: 5px;
+  z-index:-1;
+
 }
 
 #myLocation:hover, #myLocation:active {
@@ -589,8 +589,42 @@ input:disabled, input[readonly], textarea:disabled, textarea[readonly] {
 }
 .lowerOptions {
   position:absolute;
-  bottom:5%;
+  bottom:7%;
 }
+.vertical-align-center {
+  margin-top:15%
+}
+.bottom-buttons {
+  margin-top:5%;
+  position:relative;
+}
+
+.bottom-circle {
+  z-index: 9;
+  font-size:30px;
+  border-radius:50%;
+  height:50px;
+  width:50px;
+  border: 1px solid #57585A;
+  background-color: #f2f2f2;
+}
+.horizontal-center {
+  width:100%;
+  height:100%;
+  text-align:center;
+}
+
+.right-circle {
+  z-index: 9;
+  font-size:30px;
+  border-radius:50%;
+  height:50px;
+  width:50px;
+  border: 1px solid #57585A;
+  background-color: #f2f2f2;
+  margin-top:10px;
+}
+
 
 
 
