@@ -16,7 +16,7 @@ h1 {
   font-family:
 }
 
-.app-info, .call-police {
+.infoBtn {
   font-size: 45px;
   color: gray;
   float:right;
@@ -29,14 +29,33 @@ h1 {
 a{
   color: #fff;
 }
-.call-police a{
-  color: #d37984;
+.infoBtn a {
+  color: black;
   position: absolute;
   top: -8px;
   right: 5px;
 }
-.app-info a{
-  color: #5d5d5d;
+
+.emergencyBtn {
+  font-size: 45px;
+  width:37px;
+  min-width:37px;
+  height:50px;
+  position:absolute;
+  right: 20px;
+  bottom: 18px;
+}
+
+.emergencyBtn a {
+  color: #d37984;
+  min-width: 105px;
+}
+
+#callEmergencyPopup > a {
+  width: 100%;
+  margin-top:40px;
+  margin-bottom:40px;
+  z-index:-1;
 }
 
 .input-wrapper i{
@@ -62,10 +81,8 @@ a{
   color: #FFFFFF;
 }
 
-
 .reveal {
   padding-top:20px;
-  height:80px;
 }
 
 [type=color], [type=date], [type=datetime-local], [type=datetime], [type=email], [type=month], [type=number], [type=password], [type=search], [type=tel], [type=text], [type=time], [type=url], [type=week], textarea, [type='text']:focus, [type='password']:focus, [type='date']:focus, [type='datetime']:focus, [type='datetime-local']:focus, [type='month']:focus, [type='week']:focus, [type='email']:focus, [type='number']:focus, [type='search']:focus, [type='tel']:focus, [type='time']:focus, [type='url']:focus, [type='color']:focus, textarea:focus {
@@ -107,19 +124,30 @@ a{
   }
 }
 
+.infoBtnMobile {
+  display:none;
+}
+
+.infoBtnMobile > a {
+  color:#26A69A;
+}
+
 @media only screen and (max-device-width: 414px) and (max-device-height: 736px) {
   .nav-bar {
     display: none;
   }
-}
 
-#callPolicePopup > a {
-  width: 100%;
-  margin-top:40px;
-  margin-bottom:40px;
-  z-index:-1;
+  .infoBtnMobile {
+    display:block;
+    font-size: 45px;
+    width:37px;
+    min-width:37px;
+    height:50px;
+    position:absolute;
+    right: 80px;
+    bottom: 18px;
+  }
 }
-
 
 .filter-directions-nav-bar {
   font-weight:bold;
@@ -312,7 +340,7 @@ input:disabled, input[readonly], textarea:disabled, textarea[readonly] {
 #resetBtn {
   position:absolute;
   left: 20px;
-  bottom: 4px;
+  bottom: 20px;
   padding: 5px 5px 5px 5px;
 }
 
@@ -326,7 +354,7 @@ input:disabled, input[readonly], textarea:disabled, textarea[readonly] {
 #BypassRoute {
   right: 20px;
   position: absolute;
-  bottom: 56px;
+  bottom: 156px;
   min-width: 105px;
 }
 
@@ -351,7 +379,7 @@ input:disabled, input[readonly], textarea:disabled, textarea[readonly] {
 #NormalRoute {
   right: 20px;
   position: absolute;
-  bottom: 4px;
+  bottom: 104px;
   min-width: 105px;
 }
 
@@ -441,9 +469,8 @@ input:disabled, input[readonly], textarea:disabled, textarea[readonly] {
 }
 
 .close-button {
-
   top: 5px;
-  right: 5px;
+  right: 10px;
   position: absolute;
   font-size:40px;
   z-index: 5;

@@ -46,32 +46,57 @@
   <div class="row">
     <div class="nav-bar large-12 columns">
       <div class="row">
-      <div class="small-10 medium-10 large-10 columns">
-        <div class="logo" id="bypassLogo"><img src='/images/logo.png'></div>
+        <div class="small-10 medium-10 large-10 columns">
+          <div class="logo" id="bypassLogo"><img src='/images/logo.png'></div>
+          <div id="missionStatement">Personal Safety, Community Advocacy</div>
+        </div>
 
-        <div id="missionStatement">Personal Safety, Community Advocacy</div>
-      </div>
-
-      <div class="small-2 medium-2 large-2 columns">
-        <div class="call-police">
-          <a data-open="callPolicePopup">
-            <i class="fa fa-phone" aria-hidden="true"></i>
-          </a>
+        <div class="small-2 medium-2 large-2 columns">
+          <div class="infoBtn">
+            <a data-open="callInfoPopup">
+              <i class="fa fa-info" aria-hidden="true"></i>
+            </a>
+          </div>
         </div>
       </div>
-      </div>
-
-        <!-- About App -->
-      <!-- <div class="app-info">
-        <a data-open="infoPopup">
-          <i class="fa fa-info" aria-hidden="true"></i>
-        </a>
-      </div> -->
     </div>
   </div>
 
-  <div class="reveal" id="callPolicePopup" data-reveal>
+  <div class="infoBtnMobile">
+    <a data-open="callInfoPopup">
+      <i class="fa fa-info-circle" aria-hidden="true"></i>
+    </a>
+  </div>
+
+  <div class="emergencyBtn">
+    <a data-open="callEmergencyPopup">
+      <i class="fa fa-phone-square" aria-hidden="true"></i>
+    </a>
+  </div>
+
+  <div class="reveal" id="callEmergencyPopup" data-reveal>
     <a class='button alert radius' href="tel:911">Call Police</a>
+    <button class="close-button" data-close aria-label="Close modal" type="button">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+
+  <div class="reveal" id="callInfoPopup" data-reveal>
+    <h4>About Bypass</h4>
+    <p>
+      Bypass will help you get from A-B using the safest route.
+      <br><br>
+      The 'Red Call' button will call the police and send a message to your allocated emergency contact.
+      <br><br>
+      Enter your destination in the 'End Location' and 'Start Location' space by typing in your address, clicking on the map, or clicking on the My Location Button. Once the routes are generated, you can toggle between the Bypass and Normal route. Pushing Go allows you to choose your route.
+      <br><br>
+
+      Pressing the directions button after route chosen will give you written directions to your desired locations.
+      <br><br>
+      You can use the filter button to show the map layers available in your area.
+      <br><br>
+      Crime grid overlays the aggregated anaylsis. Raw data allows see crimes, businesses, and points of interest. Please allow for loading. Not all browsers may be supported.
+    </p>
     <button class="close-button" data-close aria-label="Close modal" type="button">
       <span aria-hidden="true">&times;</span>
     </button>
@@ -277,29 +302,6 @@
 
   <button id="resetBtn" class='button'>New Route</button>
 
-
-
-      <div class="reveal" id="infoPopup" data-reveal>
-        <h4>About Bypass</h4>
-        <p>Bypass will help you get from A-B using the safest route.
-        <br><br>
-        The 'Red Call' button will call the police and send a message to your allocated emergency contact.
-        <br><br>
-        Enter your destination in the 'End Location' and'Start Location' space by typing in your address, clicking on the map, or clicking on the My Location Button. Once the routes are generated, you can toggle between the Bypass and Normal route.  Pushing Go allows you to choose your route.
-        <br><br>
-
-        Pressing the directions button after route chosen will give you written directions to your desired locations.
-        <br><br>
-        You can use the filter button to show the map layers available in your area.
-        <br><br>
-        Crime grid overlays the aggregated anaylsis. Raw data allows see crimes, businesses, and points of interest. Please allow for loading. Not all browsers may be supported.
-
-        </p>
-        <button class="close-button" data-close aria-label="Close modal" type="button">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-
-      <script src="javascripts/app.js"></script>
-    </body>
-    </html>
+  <script src="javascripts/app.js"></script>
+  </body>
+</html>
