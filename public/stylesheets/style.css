@@ -58,6 +58,11 @@ a{
   z-index:-1;
 }
 
+.input-wrapper {
+  padding-left:0;
+  padding-right:0;
+}
+
 .input-wrapper i{
   position: absolute;
   margin: 5px 5px 5px 10px;
@@ -132,9 +137,15 @@ a{
   color:#26A69A;
 }
 
+.mobileTopBlankSpace {
+  height:0;
+  min-height:0;
+}
+
 @media only screen and (max-device-width: 414px) and (max-device-height: 736px) {
-  .directions-nav-bar {
-    margin-top:20px;
+  .mobileTopBlankSpace {
+    height:20px;
+    min-height:20px;
   }
 
   .nav-bar {
@@ -463,15 +474,6 @@ input:disabled, input[readonly], textarea:disabled, textarea[readonly] {
   border-radius:0 !important;
 }
 
-.directions-nav-bar {
-  padding-left:0;
-  padding-right:0;
-}
-.directions-nav-bar > form:first-child > .row,
-.directions-nav-bar > form > .row:last-child,  {
-  background: #fff;
-}
-
 .close-button {
   top: 5px;
   right: 10px;
@@ -507,16 +509,15 @@ input:disabled, input[readonly], textarea:disabled, textarea[readonly] {
 .esriGeocoder {
   border-radius: 0px !important;
   height: 25px !important;
-    border-top:1px solid #8cd4cc;
+  border-top:1px solid #8cd4cc;
   border-bottom:3px solid #8cd4cc;
-
+  border-left:0 !important;
+  border-right:0 !important;
 }
-
 
 #startAddAbove {
   height: 25px;
 }
-
 
 .esriGeocoderContainer {
   width: 100% !important;
