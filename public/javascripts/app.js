@@ -75,7 +75,7 @@ $(document).foundation()
       var bypassRouteDirections;
 
       var myLocationAddress;
-      var whichStopAddressInput;
+      var whichStopAddressInput = "initial";
       var filteredPoints = [];
       var footTrafficSquares = [];
       var normalizedArray;
@@ -266,7 +266,7 @@ var endGeocoder = new Geocoder({
         endGeocoderInitial.autoNavigate = false;
         endGeocoderInitial.on("select", function(results){
           $("#destinationAddressInitial_input").val(results.result.name.replace("California", "CA"));
-
+          $('#solveRoute').css("display","block");
           var points = webMercatorUtils.xyToLngLat(results.result.feature.geometry.x, results.result.feature.geometry.y, true);
           var instancePoint = new Point(points[0],points[1]);
           map.centerAndZoom(instancePoint,16);
@@ -599,7 +599,7 @@ $('#destinationAddressInitial').click(function() {
           if($("#startAddress").attr("disabled")){
             enableStartEndTextboxes()
           }
-          console.log($("#startAddress"));
+          
 
 
           newRouteAllowed = false;
@@ -621,6 +621,8 @@ $('#destinationAddressInitial').click(function() {
 
           $('#startAddress_input').val("");
           $('#destinationAddress_input').val("");
+          $("#destinationAddressInitial_input").val("");
+          $("#destinationAddressInitial_input").attr("placeholder","Click on Map or Type Address!");
           $('#directionsDisplay').empty();
           $('.filter-options-nav-bar').css("display","none");
           $('#solveRoute').css("display","none");
@@ -747,27 +749,31 @@ $('#destinationAddressInitial').click(function() {
 $("#crimesButton").click(function(){
 
   clearFeaturesData();
-  $("#featuresButton").html("Safety Pts");
+  
   $("#featuresButton").data("featuresDisplay","none");
 if($("#crimesButton").data("crimeDisplay")=="none"){
   barrierVisibility = true;
   resetBarriers(); 
   $("#crimesButton").data("crimeDisplay","crimeGrid");
-  $("#crimesButton").html("Crime Grid");
+    $("#crimesButton").removeClass("fa-warning");
+  $("#crimesButton").addClass("fa-delicious");
 } else if($("#crimesButton").data("crimeDisplay")=="crimeGrid"){
   barrierVisibility = false;
   resetBarriers();
   crimesPlot();
   $("#crimesButton").data("crimeDisplay","crimePoints");
-  $("#crimesButton").html("Recent Crime");
+  $("#crimesButton").removeClass("fa-delicious");
+  $("#crimesButton").addClass("fa-history");
 }else if($("#crimesButton").data("crimeDisplay")=="crimePoints"){
   clearCrimesData();
   sexOffendersPlot();
-  $("#crimesButton").html("Sex Offenders");
+    $("#crimesButton").removeClass("fa-history");
+  $("#crimesButton").addClass("fa-male");
 $("#crimesButton").data("crimeDisplay","sexOffenders");
 } else if($("#crimesButton").data("crimeDisplay")=="sexOffenders"){
   clearCrimesData();
-  $("#crimesButton").html("Dangers");
+  $("#crimesButton").removeClass("fa-male");
+  $("#crimesButton").addClass("fa-warning");
 $("#crimesButton").data("crimeDisplay","none");
 }  
 
@@ -779,23 +785,30 @@ $("#featuresButton").click(function(){
     barrierVisibility = false;
     resetBarriers();
     clearCrimesData();
-    $("#crimesButton").html("Dangers");
+
+  $("#crimesButton").removeClass("fa-delicious");
+  $("#crimesButton").removeClass("fa-history");
+  $("#crimesButton").removeClass("fa-male");
+  $("#crimesButton").addClass("fa-warning");
     $("#crimesButton").data("crimeDisplay","none");
 
     if($("#featuresButton").data("featuresDisplay")=="none"){
       clearFeaturesData();
       openBusinessPlot();
       $("#featuresButton").data("featuresDisplay","openBusiness");
-      $("#featuresButton").html("Open Business");
+      $("#featuresButton").removeClass("fa-smile-o");
+      $("#featuresButton").addClass("fa-cutlery");
     } else if($("#featuresButton").data("featuresDisplay")=="openBusiness"){
       clearFeaturesData();
       wifiLocationsPlot();
       $("#featuresButton").data("featuresDisplay","wifiLocations");
-      $("#featuresButton").html("Wifi Spots");
+      $("#featuresButton").removeClass("fa-cutlery");
+      $("#featuresButton").addClass("fa-wifi");
     } else if($("#featuresButton").data("featuresDisplay")=="wifiLocations"){
       clearFeaturesData();
       $("#featuresButton").data("featuresDisplay","none");
-      $("#featuresButton").html("Safety Pts");
+      $("#featuresButton").removeClass("fa-wifi");
+      $("#featuresButton").addClass("fa-smile-o");
     }
   });
 
@@ -1036,7 +1049,7 @@ routeParams.outSpatialReference = {"wkid":102100};
               if(parsedResults.address){
                 $("#destinationAddressInitial_input").val(parsedResults.address.Match_addr.replace("California", "CA"));
                 map.centerAt(evt.mapPoint);
-                  //$('#solveRoute').css('display',"inline"); This would be the "Go!" Button
+                  $('#solveRoute').css("display","block");
                 } else {
                   console.log(routeStops.length);
                   map.graphics.remove(routeStops.pop());
@@ -1111,6 +1124,7 @@ routeParams.outSpatialReference = {"wkid":102100};
         var maxx=map.extent.xmax;
         var maxy=map.extent.ymax;
         console.log(minx,miny,maxx,maxy);
+        var myAddress;
 
         var locationOutline = new SimpleLineSymbol();
         var locationPointMarker = new SimpleMarkerSymbol();
@@ -1141,10 +1155,20 @@ routeParams.outSpatialReference = {"wkid":102100};
             type: 'POST',
             url: "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/reverseGeocode?location="+long+"%2C+"+lat+"&distance=200&outSR=&f=pjson",
             success: function (results, textStatus, xhr) {
+
+
               var parsedResults = JSON.parse(results);
+              myAddress=parsedResults.address.Address;
+              if(parsedResults.address && whichStopAddressInput=="initial"){
+                clearStops();
+                $('#solveRoute').css("display","none");
+                $("#destinationAddressInitial_input").val("");
+                $("#destinationAddressInitial_input").attr("placeholder","Your Location is ... "+ myAddress);
+              }
+
+
               if(whichStopAddressInput == "start"){
                 if(parsedResults.address){
-
                   $("#startAddress_input").val(parsedResults.address.Match_addr.replace("California", "CA"));
                   $("#startAddress").data("ready-status","ready");
                   if($('#startAddress').data("ready-status") == "ready" && $('#destinationAddress').data("ready-status") == "ready"){
@@ -1171,6 +1195,7 @@ routeParams.outSpatialReference = {"wkid":102100};
                   routeStops.push(map.graphics.add({}));
                   $("#destinationAddress_input").val("Please Try Again");
                   $('#solveRoute').css('display',"none");
+
                 }
               }
 
@@ -1183,7 +1208,7 @@ routeParams.outSpatialReference = {"wkid":102100};
             });
 
 
-          if(whichStopAddressInput){
+          if(whichStopAddressInput=="start" ||  whichStopAddressInput=="end"){
             xyUnits = webMercatorUtils.lngLatToXY(long, lat);
 
 
@@ -1205,8 +1230,6 @@ routeParams.outSpatialReference = {"wkid":102100};
             map.setExtent(newExtent);
           } else {
             map.centerAndZoom(centerpoint,13);
-            $("#destinationAddressInitial_input").val("");
-            $("#destinationAddressInitial_input").attr("placeholder","Your Location...");
             // map.graphics.remove(routeStops.pop());
             // routeStops.push(map.graphics.add({}));
           }
