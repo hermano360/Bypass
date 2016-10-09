@@ -92,7 +92,7 @@ $(document).foundation()
       var filteredCrimeLocations = [];
       var filteredSexOffendersLocations = [];
       var filteredWifiLocations = [];
-      var filteredBusinessLocations = [];      
+      var filteredBusinessLocations = [];
       var bypassTimeDistance;
       var normalTimeDistance;
       var newRouteAllowed = true;
@@ -256,7 +256,7 @@ var endGeocoder = new Geocoder({
       $("#startAddress_input").attr("placeholder","Type or Choose on Map for Start");
       $("#destinationAddress_input").attr("placeholder","Type or Choose on Map for Destination");
 
-      
+
 
       //geocoder.on("select", showLocation);
 
@@ -405,7 +405,7 @@ var endGeocoder = new Geocoder({
               console.log("direction list was populated");
               $('#directionsDisplay').empty();
             }
-          
+
         });
 
 
@@ -694,7 +694,7 @@ $("#crimesButton").click(function(){
   $("#featuresButton").data("featuresDisplay","none");
 if($("#crimesButton").data("crimeDisplay")=="none"){
   barrierVisibility = true;
-  resetBarriers(); 
+  resetBarriers();
   $("#crimesButton").data("crimeDisplay","crimeGrid");
   $("#crimesButton").html("Crime Grid");
 } else if($("#crimesButton").data("crimeDisplay")=="crimeGrid"){
@@ -712,7 +712,7 @@ $("#crimesButton").data("crimeDisplay","sexOffenders");
   clearCrimesData();
   $("#crimesButton").html("Dangers");
 $("#crimesButton").data("crimeDisplay","none");
-}  
+}
 
 });
 
@@ -752,7 +752,7 @@ var yCoord = 0;
 var region;
 routeCheckerStop=[false,false];
 
-var finalGeocodingURL = "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/geocodeAddresses?addresses={%22records%22:[{%22attributes%22:{%22OBJECTID%22:1,%22SingleLine%22:%22" + givenAddress.replace(" ","%20") + "%22}}]}&sourceCountry=USA&token=" + globalToken + "&f=pjson";
+var finalGeocodingURL = "https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/geocodeAddresses?addresses={%22records%22:[{%22attributes%22:{%22OBJECTID%22:1,%22SingleLine%22:%22" + givenAddress.replace(" ","%20") + "%22}}]}&sourceCountry=USA&token=" + globalToken + "&f=pjson";
 
 var finalResults;
 $.ajax({
@@ -891,7 +891,7 @@ routeParams.outSpatialReference = {"wkid":102100};
 
           $.ajax({
             type: 'POST',
-            url: "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/reverseGeocode?location="+long+"%2C+"+lat+"&distance=200&outSR=&f=pjson",
+            url: "https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/reverseGeocode?location="+long+"%2C+"+lat+"&distance=200&outSR=&f=pjson",
             success: function (results, textStatus, xhr) {
               var parsedResults = JSON.parse(results);
               if(whichStopAddressInput == "start"){
@@ -935,7 +935,7 @@ routeParams.outSpatialReference = {"wkid":102100};
           routeStops.unshift(map.graphics.add(new esri.Graphic(new Point(longlat),startSymbol)));
           $.ajax({
             type: 'POST',
-            url: "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/reverseGeocode?location="+longlat[0]+"%2C+"+longlat[1]+"&distance=200&outSR=&f=pjson",
+            url: "https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/reverseGeocode?location="+longlat[0]+"%2C+"+longlat[1]+"&distance=200&outSR=&f=pjson",
             success: function (results, textStatus, xhr) {
               var parsedResults = JSON.parse(results);
               console.log(parsedResults);
@@ -986,7 +986,7 @@ routeParams.outSpatialReference = {"wkid":102100};
           routeStops.push(map.graphics.add(new esri.Graphic(new Point(longlat),stopSymbol)));
           $.ajax({
             type: 'POST',
-            url: "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/reverseGeocode?location="+longlat[0]+"%2C+"+longlat[1]+"&distance=200&outSR=&f=pjson",
+            url: "https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/reverseGeocode?location="+longlat[0]+"%2C+"+longlat[1]+"&distance=200&outSR=&f=pjson",
             success: function (results, textStatus, xhr) {
               var parsedResults = JSON.parse(results);
               console.log(parsedResults);
@@ -1099,7 +1099,7 @@ routeParams.outSpatialReference = {"wkid":102100};
 
           $.ajax({
             type: 'POST',
-            url: "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/reverseGeocode?location="+long+"%2C+"+lat+"&distance=200&outSR=&f=pjson",
+            url: "https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/reverseGeocode?location="+long+"%2C+"+lat+"&distance=200&outSR=&f=pjson",
             success: function (results, textStatus, xhr) {
               var parsedResults = JSON.parse(results);
               if(whichStopAddressInput == "start"){
@@ -1274,7 +1274,7 @@ routeParams.outSpatialReference = {"wkid":102100};
 
         polygonBarriersURL= "polygonBarriers=" + polygonBarriersURL;
 
-        var finalSynchronousBarriersURL = 'http://route.arcgis.com/arcgis/rest/services/World/Route/NAServer/Route_World/solve?'+walkModeUrl+'token='+globalToken+'&stops='+stops[0][0]+','+stops[0][1]+';'+stops[1][0]+','+stops[1][1]+"&"+ polygonBarriersURL+'&f=json&returnPolygonBarriers=true';
+        var finalSynchronousBarriersURL = 'https://route.arcgis.com/arcgis/rest/services/World/Route/NAServer/Route_World/solve?'+walkModeUrl+'token='+globalToken+'&stops='+stops[0][0]+','+stops[0][1]+';'+stops[1][0]+','+stops[1][1]+"&"+ polygonBarriersURL+'&f=json&returnPolygonBarriers=true';
 
         console.log(stops);
         $.ajax({
@@ -1291,36 +1291,36 @@ routeParams.outSpatialReference = {"wkid":102100};
                         bypassRouteDirections = JSON.parse(results).directions;
                         bypassRoute = new esri.geometry.Polyline(sRouteWB.routes.features[0].geometry.paths[0]);
                         routes.push(map.graphics.add(new esri.Graphic(bypassRoute,routeSymbols["selectedRoute"])));
-            
-            
+
+
                         if(sRouteWB.routes.features[0].geometry.paths[0].length>sRoute.routes.features[0].geometry.paths[0].length){
                           minRoutePathLength = sRoute.routes.features[0].geometry.paths[0].length;
                         } else {
                           minRoutePathLength=sRouteWB.routes.features[0].geometry.paths[0].length;
                         }
-                          
-                        
+
+
                         for(var i = 0; i < minRoutePathLength; i++){
                           //only if routes are the same do you give the option for bypass and normal routes.
                           if(sRouteWB.routes.features[0].geometry.paths[0][i][1] !=  sRoute.routes.features[0].geometry.paths[0][i][1]){
-            
+
                             $("#BypassRoute").css('display',"inline");
                             $("#NormalRoute").css('display',"inline");
                           }
                         }
-            
+
                         chosenRouteDirections = sRouteWB.directions;
                         $('#solveRoute').data("solvePhase","finalize");
-            
+
                         if((sRouteWB.directions[0].summary.totalLength*60/3.1).toFixed(0)==1){
                           pluralityMinutes = "minute";
                         }
-            
+
                         bypassTimeDistance = "(" + sRouteWB.directions[0].summary.totalLength.toFixed(2) +" miles "+ (sRouteWB.directions[0].summary.totalLength*60/3.1).toFixed(0) + " "+ pluralityMinutes + ")";
                         $('#solveRoute').text("Pick Safer Way" + " " + bypassTimeDistance);
                         //enableNewRouteBtn();
                         enableStartEndTextboxes();
-            
+
             }
           },
           error: function (xhr, textStatus, errorThrown) {
@@ -1339,7 +1339,7 @@ routeParams.outSpatialReference = {"wkid":102100};
         var pluralityMinutes = "minutes";
         $.ajax({
           type: 'POST',
-          url: 'http://route.arcgis.com/arcgis/rest/services/World/Route/NAServer/Route_World/solve?'+walkModeUrl+'token='+globalToken+'&stops='+stops[0][0]+','+stops[0][1]+';'+stops[1][0]+','+stops[1][1]+'&f=json',
+          url: 'https://route.arcgis.com/arcgis/rest/services/World/Route/NAServer/Route_World/solve?'+walkModeUrl+'token='+globalToken+'&stops='+stops[0][0]+','+stops[0][1]+';'+stops[1][0]+','+stops[1][1]+'&f=json',
 
           success: function (results, textStatus, xhr) {
 
@@ -1349,18 +1349,18 @@ routeParams.outSpatialReference = {"wkid":102100};
                         pluralityMinutes = "minutes";
                         normalRoute = new esri.geometry.Polyline(sRoute.routes.features[0].geometry.paths[0]);
                         routes.push(map.graphics.add(new esri.Graphic(normalRoute,routeSymbols["unselectedRoute"])));
-            
+
                         for(var i = 0 ; i < sRoute.directions[0].features.length; i++)
                         {
                           //console.log(sRoute.directions[0].features[i].attributes.text); shows written directions
                         };
-            
-            
+
+
                        if((sRoute.directions[0].summary.totalLength*60/3.1).toFixed(0)==1){
                           pluralityMinutes = "minute";
                        }
-                        
-            
+
+
                         normalTimeDistance = "(" + sRoute.directions[0].summary.totalLength.toFixed(2) +" miles "+ (sRoute.directions[0].summary.totalLength*60/3.1).toFixed(0) + " "+ pluralityMinutes + ")";
                         }
           },
@@ -1777,7 +1777,7 @@ routeParams.outSpatialReference = {"wkid":102100};
 
           //console.log(givenAddress);
 
-          finalGeocodingURL = "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/geocodeAddresses?addresses={%22records%22:[{%22attributes%22:{%22OBJECTID%22:1,%22SingleLine%22:%22" + givenAddress.replace(" ","%20") + "%22}}]}&sourceCountry=USA&token=" + globalToken + "&f=pjson";
+          finalGeocodingURL = "https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/geocodeAddresses?addresses={%22records%22:[{%22attributes%22:{%22OBJECTID%22:1,%22SingleLine%22:%22" + givenAddress.replace(" ","%20") + "%22}}]}&sourceCountry=USA&token=" + globalToken + "&f=pjson";
 
           $.ajax({
             type: 'POST',
@@ -2190,7 +2190,7 @@ function currentStartPosition() {
 
     $.ajax({
       type: 'POST',
-      url: "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/reverseGeocode?location="+long+"%2C+"+lat+"&distance=200&outSR=&f=pjson",
+      url: "https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/reverseGeocode?location="+long+"%2C+"+lat+"&distance=200&outSR=&f=pjson",
       success: function (results, textStatus, xhr) {
 
         startAddress = JSON.parse(results).address.Match_addr;
