@@ -38,10 +38,17 @@ h1 {
 }
 
 .call-police {
-  position:relative;
+  position:absolute;
   color: gray;
-  float:right;
+  right:0;
   text-align:center;
+  
+}
+
+#resetBtn {
+  position:absolute;
+  color: gray;
+  left:0;
 }
 
 a{
@@ -251,10 +258,10 @@ a{
 }
 
 #solveRoute {
-  position: relative;
-  top: 80%;
-  width:40%;
-  margin-left:30%;
+  position: absolute;
+  top: 0;
+  width:60%;
+  margin-left:20%;
   cursor:pointer;
   text-align: center;
   font-weight: bold;
@@ -264,6 +271,7 @@ a{
   border: 1px solid #57585A;
   background-color: #f2f2f2;
   font-size:1rem;
+  border-radius:10px;
 }
 
 #solveRoute:hover {
@@ -630,14 +638,14 @@ input:disabled, input[readonly], textarea:disabled, textarea[readonly] {
 }
 .lowerOptions {
   position:absolute;
-  bottom:7%;
+  bottom:22%;
+  height:0;
 }
 .vertical-align-center {
   margin-top:15%
 }
 .bottom-buttons {
-  margin-top:5%;
-  position:relative;
+  margin-top:15%;
 }
 
 .bottom-circle {
