@@ -400,72 +400,40 @@ input:disabled, input[readonly], textarea:disabled, textarea[readonly] {
   opacity:.6;
 }
 
-
-
-
-.BypassRouteSelected {
+.routeChoice {
+  position:absolute;
+  width:60%;
+  left:20%;
+  text-align:center;
   background-color: #26A69A;
-  color: #FFFFFF;
-  min-width: 90px;
-  max-width:80px;
+    color:#fff;
 }
 
-#BypassRoute {
-  right: 18px;
-  position: absolute;
-  bottom: 110px;
-  min-width: 105px;
+.halfContainer {
+  width:45%;
 }
 
-#BypassRoute:hover > span,
-.BypassRouteSelected > span {
-  background:url('../images/curved_arrow_white.png') left center no-repeat;
-  padding-left:21px;
+.routeOption {
+  font-family: 'Raleway', sans-serif;
+  font-weight: lighter;
+  font-size: 12px;
+
+  vertical-align: middle;
+    position:relative;
+  left:0%;
+  width:70%;
 }
 
-.BypassRouteUnselected {
-  background-color: #FFFFFF;
-  color: #000000;
-  min-width: 90px;
-  max-width:80px;
+.routeSelected {
+
+  border-bottom: 3px solid #fff;
 }
 
-.BypassRouteUnselected > span {
-  background:url('../images/curved_arrow_black.png') left center no-repeat;
-  padding-left:21px;
+
+.routeUnselected {
+border-bottom: 3px solid #26A69A;
 }
 
-#NormalRoute {
-  right: 18px;
-  position: absolute;
-  bottom: 70px;
-  min-width: 105px;
-}
-
-.NormalRouteSelected {
-  background-color: #26A69A;
-  color: #FFFFFF;
-    min-width: 90px;
-  max-width:80px;
-}
-
-#NormalRoute:hover > span,
-.NormalRouteSelected > span {
-  background:url('../images/curved_arrow_white.png') left center no-repeat;
-  padding-left:21px;
-}
-
-.NormalRouteUnselected {
-  background-color: #FFFFFF;
-  color: #000000;
-  min-width: 90px;
-  max-width:80px;
-}
-
-.NormalRouteUnselected > span {
-  background:url('../images/curved_arrow_black.png') left center no-repeat;
-  padding-left:21px;
-}
 
 .bottomRightNav {
   right: 20px;
@@ -492,7 +460,6 @@ input:disabled, input[readonly], textarea:disabled, textarea[readonly] {
   z-index:10;
   width:100%;
   margin-top:7%;
-  border-bottom: 1px solid #8cd4cc;
 }
 
 
@@ -551,7 +518,7 @@ input:disabled, input[readonly], textarea:disabled, textarea[readonly] {
 .iconTools {
   position:absolute;
   right:0;
-  top: 500%;
+  top: 450%;
   width: 50px;
   float:right;
   
@@ -567,7 +534,7 @@ input:disabled, input[readonly], textarea:disabled, textarea[readonly] {
 }
 
 #startAddAbove {
-  height: 25px;
+  height: 50%;
 }
 
 .esriGeocoderContainer {
@@ -599,6 +566,7 @@ input:disabled, input[readonly], textarea:disabled, textarea[readonly] {
 #destinationAddress_input {
   width: 100% !important;
   height: 30px !important;
+  text-indent: 30px;
   padding: 0 !important;
   margin: 0 !important;
   border: none;
@@ -623,7 +591,7 @@ input:disabled, input[readonly], textarea:disabled, textarea[readonly] {
   top:120%;
   color: #5d5d5d;
   z-index:-1;
-
+  left:0;
 }
 
 #myLocation:hover, #myLocation:active {
