@@ -444,6 +444,12 @@ var endGeocoder = new Geocoder({
           $("#crimesButton").removeClass("fa-warning");
           $("#crimesButton").addClass("fa-delicious");
           solveInitialRoute();
+          $(".nav-bar-wrapper").css('display',"none");
+          $('#solveRoute').text("Please Wait...");
+          $("#destinationAddressInitial").css('display',"none");
+          $("#address-wrapper").css('display',"block");
+          removeEventHandlers();
+
 
           // if($('#solveRoute').data("solve-phase")=="generate"){
           //   newRouteAllowed = false;
@@ -603,6 +609,7 @@ $('#destinationAddressInitial').click(function() {
 
         $("#resetBtn").click( function () {
           whichStopAddressInput="initial";
+          $(".nav-bar-wrapper").css('display',"inline");
           $("#startAddress").data("ready-status","notReady");
           $("#destinationAddress").data("ready-status","notReady");
           if($("#startAddress").attr("disabled")){
@@ -651,34 +658,33 @@ $('#destinationAddressInitial').click(function() {
 
         $("#BypassRoute").click(function () {
           chooseBypass();
-          $("#BypassRoute").addClass("BypassRouteSelected");
-          $("#BypassRoute").removeClass("BypassRouteUnselected");
-          $("#NormalRoute").removeClass("NormalRouteSelected");
-          $("#NormalRoute").addClass("NormalRouteUnselected");
+          $("#BypassRoute").addClass("routeSelected");
+          $("#BypassRoute").removeClass("routeUnselected");
+          $("#NormalRoute").removeClass("routeSelected");
+          $("#NormalRoute").addClass("routeUnselected");
           console.log(routes.length);
           if ($("#directions-button").hasClass("directions-button-active") == true) {
             if(!$('#directionsDisplay').is(':empty')){
               activateDirections();
             }
           }
-          $('#solveRoute').text("Pick Safer Way " + bypassTimeDistance);
+
         });
 
 
 
         $("#NormalRoute").click( function () {
           chooseNormal();
-          $("#NormalRoute").removeClass("NormalRouteUnselected");
-          $("#NormalRoute").addClass("NormalRouteSelected");
-          $("#BypassRoute").addClass("BypassRouteUnselected");
-          $("#BypassRoute").removeClass("BypassRouteSelected");
+          $("#NormalRoute").removeClass("routeUnselected");
+          $("#NormalRoute").addClass("routeSelected");
+          $("#BypassRoute").addClass("routeUnselected");
+          $("#BypassRoute").removeClass("routeSelected");
           if ($("#directions-button").hasClass("directions-button-active") == true) {
             if(!$('#directionsDisplay').is(':empty')){
               activateDirections();
             }
           }
 
-          $('#solveRoute').text("Pick Normal Way " + normalTimeDistance);
         });
 
         $("#mapCrimeIndex").click( function () {
@@ -966,6 +972,12 @@ routeParams.outSpatialReference = {"wkid":102100};
             }
           });
         });
+      }
+
+
+      function plotInitialStart(){
+        map.graphics.remove(routeStops.shift());
+        routeStops.unshift(map.graphics.add(new esri.Graphic(initialCenterPoint,startSymbol)));
       }
 
 
@@ -1393,9 +1405,12 @@ routeParams.outSpatialReference = {"wkid":102100};
 
           success: function (results, textStatus, xhr) {
 
-            if(newRouteAllowed == true){
+            $("#BypassRoute").css('display',"inline-block");
+            $("#NormalRoute").css('display',"inline-block");
+
+            
                         $('#directions-button').css('display',"inline");
-                        console.log("with barriers success");
+
                         sRouteWB = JSON.parse(results);
                         bypassRouteDirections = JSON.parse(results).directions;
                         bypassRoute = new esri.geometry.Polyline(sRouteWB.routes.features[0].geometry.paths[0]);
@@ -1411,11 +1426,8 @@ routeParams.outSpatialReference = {"wkid":102100};
                         
                         for(var i = 0; i < minRoutePathLength; i++){
                           //only if routes are the same do you give the option for bypass and normal routes.
-                          if(sRouteWB.routes.features[0].geometry.paths[0][i][1] !=  sRoute.routes.features[0].geometry.paths[0][i][1]){
-            
-                            $("#BypassRoute").css('display',"inline");
-                            $("#NormalRoute").css('display',"inline");
-                          }
+                            $("#BypassRoute").css('display',"inline-block");
+                            $("#NormalRoute").css('display',"inline-block");
                         }
             
                         chosenRouteDirections = sRouteWB.directions;
@@ -1426,11 +1438,14 @@ routeParams.outSpatialReference = {"wkid":102100};
                         }
             
                         bypassTimeDistance = "(" + sRouteWB.directions[0].summary.totalLength.toFixed(2) +" miles "+ (sRouteWB.directions[0].summary.totalLength*60/3.1).toFixed(0) + " "+ pluralityMinutes + ")";
-                        $('#solveRoute').text("Pick Safer Way" + " " + bypassTimeDistance);
+                        //$('#solveRoute').text("Pick Safer Way" + " " + bypassTimeDistance);
+
+                        $("#bypassOption").html((sRouteWB.directions[0].summary.totalLength*60/3.1).toFixed(0)+" min");
+                        $('#solveRoute').css('display',"none");
                         //enableNewRouteBtn();
                         enableStartEndTextboxes();
             
-            }
+ 
           },
           error: function (xhr, textStatus, errorThrown) {
             console.log("test failed");
@@ -1471,6 +1486,7 @@ routeParams.outSpatialReference = {"wkid":102100};
                         
             
                         normalTimeDistance = "(" + sRoute.directions[0].summary.totalLength.toFixed(2) +" miles "+ (sRoute.directions[0].summary.totalLength*60/3.1).toFixed(0) + " "+ pluralityMinutes + ")";
+                        $("#normalOption").html((sRoute.directions[0].summary.totalLength*60/3.1).toFixed(0)+" min");
                         }
           },
           error: function (xhr, textStatus, errorThrown) {
@@ -1502,7 +1518,6 @@ routeParams.outSpatialReference = {"wkid":102100};
       //Solves the routes. Any errors will trigger the errorHandler function.
       function solveRoute() {
         removeEventHandlers();
-
         navigationExtents();
         newRouteAllowed = true;
         syncRouteWOB(routeStops);
@@ -1511,8 +1526,8 @@ routeParams.outSpatialReference = {"wkid":102100};
 
       function solveInitialRoute() {
         removeEventHandlers();
-        
-        console.log(routeStops);
+        console.log(initialCenterPoint);
+        plotInitialStart();
         navigationExtents();
         syncRouteWOB(routeStops);
         syncRouteWB(routeStops);

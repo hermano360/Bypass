@@ -351,25 +351,55 @@ input:disabled, input[readonly], textarea:disabled, textarea[readonly] {
   opacity:.6;
 }
 
+.routeChoice {
+  position:absolute;
+  width:60%;
+  left:20%;
+  text-align:center;
+  background-color: #26A69A;
+    color:#fff;
+}
 
-.BypassRouteSelected {
+.halfContainer {
+  width:45%;
+}
+
+.routeOption {
+  font-family: 'Raleway', sans-serif;
+  font-weight: lighter;
+  font-size: 12px;
+
+  vertical-align: middle;
+    position:relative;
+  left:0%;
+  width:70%;
+}
+
+.routeSelected {
+
+  border-bottom: 3px solid #fff;
+}
+
+.routeUnselected {
+border-bottom: 3px solid #26A69A;
+}
+
+
+/*.BypassRouteSelected {
   background-color: #26A69A;
   color: #FFFFFF;
-  min-width: 90px;
+  min-width:90px;
   max-width:80px;
 }
 
 #BypassRoute {
   right: 20px;
-  position: absolute;
-  bottom: 56px;
+  position: absolute
   min-width: 105px;
 }
 
 #BypassRoute:hover > span,
 .BypassRouteSelected > span {
-  background:url('../images/curved_arrow_white.png') left center no-repeat;
-  padding-left:21px;
 }
 
 .BypassRouteUnselected {
@@ -380,14 +410,12 @@ input:disabled, input[readonly], textarea:disabled, textarea[readonly] {
 }
 
 .BypassRouteUnselected > span {
-  background:url('../images/curved_arrow_black.png') left center no-repeat;
-  padding-left:21px;
+
 }
 
 #NormalRoute {
   right: 20px;
-  position: absolute;
-  bottom: 4px;
+  position: relative;
   min-width: 105px;
 }
 
@@ -400,8 +428,7 @@ input:disabled, input[readonly], textarea:disabled, textarea[readonly] {
 
 #NormalRoute:hover > span,
 .NormalRouteSelected > span {
-  background:url('../images/curved_arrow_white.png') left center no-repeat;
-  padding-left:21px;
+
 }
 
 .NormalRouteUnselected {
@@ -412,9 +439,8 @@ input:disabled, input[readonly], textarea:disabled, textarea[readonly] {
 }
 
 .NormalRouteUnselected > span {
-  background:url('../images/curved_arrow_black.png') left center no-repeat;
-  padding-left:21px;
-}
+
+}*/
 
 .bottomRightNav {
   right: 20px;
@@ -441,7 +467,6 @@ input:disabled, input[readonly], textarea:disabled, textarea[readonly] {
   z-index:10;
   width:100%;
   margin-top:7%;
-  border-bottom: 1px solid #8cd4cc;
 }
 
 
@@ -510,7 +535,7 @@ input:disabled, input[readonly], textarea:disabled, textarea[readonly] {
 .iconTools {
   position:absolute;
   right:0;
-  top: 500%;
+  top: 450%;
   width: 50px;
   float:right;
   
@@ -526,7 +551,7 @@ input:disabled, input[readonly], textarea:disabled, textarea[readonly] {
 
 
 #startAddAbove {
-  height: 25px;
+  height: 50%;
 }
 
 
@@ -559,6 +584,7 @@ input:disabled, input[readonly], textarea:disabled, textarea[readonly] {
 #destinationAddress_input {
   width: 100% !important;
   height: 30px !important;
+  text-indent: 30px;
   padding: 0 !important;
   margin: 0 !important;
   border: none;
@@ -583,7 +609,7 @@ input:disabled, input[readonly], textarea:disabled, textarea[readonly] {
   top:120%;
   color: #5d5d5d;
   z-index:-1;
-
+  left:0;
 }
 
 #myLocation:hover, #myLocation:active {

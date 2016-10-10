@@ -94,31 +94,18 @@
 
 
 
-  <div class="row" style="display:none;">
-    <div class="directions-nav-bar large-12 columns">
-      <form action="addressLookup">
-        <div class="row">
-          <div class="large-12 columns input-wrapper" id="startAddAbove">
+  <div class="row90pct" id="address-wrapper" style="display:none;">
+    <div class="directions-nav-bar input-wrapper">
+          <div class="" id="">
             <i class="fa fa-location-arrow" aria-hidden="true"></i>
             <div type="text" id="startAddress" class="directions-textbox" data-ready-status="notReady"></div>
           </div>
-        </div>
-        <div class="row">
           <div id="directionsDisplay" style='overflow:hidden;' class="large-12 columns"></div>
-        </div>
-        <div class="row">
-          <div class="large-12 columns input-wrapper">
+          <div class="">
             <i class="fa fa-map-marker" aria-hidden="true"></i>
-
             <div type="text" id="destinationAddress" class="directions-textbox" data-ready-status="notReady"></div>
-
-
           </div>
-        </div>
-
-      </form>
     </div>
-
   </div>
 
 
@@ -140,6 +127,16 @@
           <div class="row90pct">
               <!-- <i class="fa fa-map-marker" aria-hidden="true"></i> -->
               <div type="text" id="destinationAddressInitial" class="directions-textbox" data-ready-status="ready"></div>
+
+              <div class="routeChoice">
+              <div class='routeSelected fa fa-check-square-o halfContainer' id="BypassRoute" style="display:none;" data-time-distance="">
+                <span class="routeOption" id="bypassOption"></span>
+              </div>
+              <div class='routeUnselected fa fa-warning halfContainer' id="NormalRoute" style="display:none;" data-time-distance="">
+              <span class="routeOption" id="normalOption"></span>
+              </div>
+              </div>
+
               <a id="myLocation" class="bottom-circle">
               <div class="horizontal-center fa fa-crosshairs"></div>
               </a>
@@ -155,8 +152,7 @@
         
       </div>
     </div>
-    <button class='button radius BypassRouteUnselected' id="BypassRoute" style="display:none;" data-time-distance=""><span>Safe</span></button>
-    <button class='button radius NormalRouteUnselected' id="NormalRoute" style="display:none;" data-time-distance=""><span>Normal</span></button>
+
 
     <div class="row row90pct lowerOptions">
       <div id="solveRoute" class="directions-nav-bar" data-solve-phase="generate" style="display:none;">Take Me There Safely!</div>
