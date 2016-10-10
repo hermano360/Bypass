@@ -80,7 +80,7 @@
 
   <!-- Turn-by-turn -->
 <div id='directions-button' class="small-12 large-12 columns directions-button-active" style="display:none;">
-  <span>Turn-by-Turn Directions</span>
+  <span>Click Here For Directions!</span>
 </div>
 
   <div class="row">
@@ -94,19 +94,7 @@
 
 
 
-  <div class="row90pct" id="address-wrapper" style="display:none;">
-    <div class="directions-nav-bar input-wrapper">
-          <div class="" id="">
-            <i class="fa fa-location-arrow" aria-hidden="true"></i>
-            <div type="text" id="startAddress" class="directions-textbox" data-ready-status="notReady"></div>
-          </div>
-          <div id="directionsDisplay" style='overflow:hidden;' class="large-12 columns"></div>
-          <div class="">
-            <i class="fa fa-map-marker" aria-hidden="true"></i>
-            <div type="text" id="destinationAddress" class="directions-textbox" data-ready-status="notReady"></div>
-          </div>
-    </div>
-  </div>
+
 
 
 
@@ -119,36 +107,51 @@
 
     <div class="row">
       <div class="directions-nav-bar large-12 columns">
-      <div id="map"></div>
-       
-          <div class="row">
-            <div id="directionsDisplay" style='overflow:hidden;' class="large-12 columns"></div>
-          </div>
-          <div class="row90pct">
-              <!-- <i class="fa fa-map-marker" aria-hidden="true"></i> -->
-              <div type="text" id="destinationAddressInitial" class="directions-textbox" data-ready-status="ready"></div>
+        <div id="map"></div>
 
-              <div class="routeChoice">
+        <div class="row">
+          <div id="directionsDisplay" style='overflow:hidden;' class="large-12 columns"></div>
+        </div>
+<div class="row90pct">
+        <div type="text" id="destinationAddressInitial" class="directions-textbox" data-ready-status="ready"></div>
+</div>
+
+<div class="mint-background row address-container">
+        <div class="row70pct">
+          <div id="address-wrapper" style="display:none;">
+            <div class="directions-nav-bar input-wrapper">
+            <div class="" id="">
+                <span>From:</span>
+                <div type="text" id="startAddress" class="input_address" data-ready-status="notReady"></div>
+              </div>
+              <div id="directionsDisplay" style='overflow:hidden;' class="large-12 columns"></div>
+              <div class="" id="">
+                <span>To:</span>
+                <div type="text" id="destinationAddress" class="input_address" data-ready-status="notReady"></div>
+              </div>
+            </div>
+            <div class="routeChoice mint-background">
               <div class='routeSelected fa fa-check-square-o halfContainer' id="BypassRoute" style="display:none;" data-time-distance="">
                 <span class="routeOption" id="bypassOption"></span>
               </div>
               <div class='routeUnselected fa fa-warning halfContainer' id="NormalRoute" style="display:none;" data-time-distance="">
-              <span class="routeOption" id="normalOption"></span>
+                <span class="routeOption" id="normalOption"></span>
               </div>
-              </div>
-
-              <a id="myLocation" class="bottom-circle">
-              <div class="horizontal-center fa fa-crosshairs"></div>
-              </a>
-              <div class="iconTools rightAlign">
-
-              <button id="featuresButton" class='right-circle fa fa-smile-o' data-features-display="none"></button>
-
-              <button id="crimesButton" class='right-circle fa fa-warning' data-crime-display="none"></button>
-
-              </div>
-            
+            </div>
           </div>
+        </div>
+
+
+        <div class="row90pct">
+          <a id="myLocation" class="bottom-circle">
+            <div class="horizontal-center fa fa-crosshairs"></div>
+          </a>
+          <div class="iconTools rightAlign">
+            <button id="featuresButton" class='right-circle fa fa-smile-o' data-features-display="none"></button>
+            <button id="crimesButton" class='right-circle fa fa-warning' data-crime-display="none"></button>
+          </div>
+        </div>
+        </div>
         
       </div>
     </div>
@@ -167,6 +170,8 @@
 
 
     </div>
+
+    
   </div>
 
 
