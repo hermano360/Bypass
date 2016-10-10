@@ -96,6 +96,7 @@ $(document).foundation()
       var bypassTimeDistance;
       var normalTimeDistance;
       var newRouteAllowed = true;
+      var initialCenterPoint;
 
 
       var authdata = {client_id: '2FiTpg1kQIhDPS1H', client_secret: '926550d14c5e4fe9b39fc25229654ce7', grant_type: 'client_credentials', expiration: '1440'}
@@ -131,6 +132,8 @@ $(document).foundation()
 
       ready(function() {
 
+        //Getting Start Address Ready for initial route generation
+        inputInitialAddress();
 
 
         var startGeocoder = new Geocoder({
@@ -433,36 +436,42 @@ var endGeocoder = new Geocoder({
 
 
         $("#solveRoute").click( function(){
-          if($('#solveRoute').data("solve-phase")=="generate"){
+          barrierVisibility = true;
+          resetBarriers();
+          $("#crimesButton").data("crimeDisplay","crimeGrid");
+          $("#crimesButton").removeClass("fa-history");
+          $("#crimesButton").removeClass("fa-male");
+          $("#crimesButton").removeClass("fa-warning");
+          $("#crimesButton").addClass("fa-delicious");
+          solveInitialRoute();
 
-            newRouteAllowed = false;
-            disableStartEndTextboxes();
-            clearRoutes();
-            solveRoute();
-            barrierVisibility = true;
-            resetBarriers();
-            $("#crimesButton").data("crimeDisplay","crimeGrid");
-            $("#BypassRoute").addClass("BypassRouteSelected");
-            $("#BypassRoute").removeClass("BypassRouteUnselected");
-            $('#solveRoute').text("Please Wait...");
-            $('#solveRoute').data("solvePhase","finalize");
-          } else if($('#solveRoute').data("solvePhase","finalize")){
-            $('#solveRoute').css("display","none");
-            $('#solveRoute').text("Get Me There Safely!");
-            if(routes.length > 1){
-              map.graphics.remove(routes.shift());
-            }
+          // if($('#solveRoute').data("solve-phase")=="generate"){
+          //   newRouteAllowed = false;
+          //   disableStartEndTextboxes();
+          //   clearRoutes();
+          //   solveRoute();
+          //   barrierVisibility = true;
+          //   resetBarriers();
+          //   $("#crimesButton").data("crimeDisplay","crimeGrid");
+          //   $("#BypassRoute").addClass("BypassRouteSelected");
+          //   $("#BypassRoute").removeClass("BypassRouteUnselected");
+          //   $('#solveRoute').text("Please Wait...");
+          //   $('#solveRoute').data("solvePhase","finalize");
+          // } else if($('#solveRoute').data("solvePhase","finalize")){
+          //   $('#solveRoute').css("display","none");
+          //   $('#solveRoute').text("Get Me There Safely!");
+          //   if(routes.length > 1){
+          //     map.graphics.remove(routes.shift());
+          //   }
 
-            $("#BypassRoute").css('display',"none");
-            $("#NormalRoute").css('display',"none");
-            barrierVisibility = false;
-            resetBarriers();
-            $("#crimesButton").data("crimeDisplay","none");
-            $('#myLocation').css("display","block");
-            $('#solveRoute').data("solvePhase","generate");
-          }
-
-
+          //   $("#BypassRoute").css('display',"none");
+          //   $("#NormalRoute").css('display',"none");
+          //   barrierVisibility = false;
+          //   resetBarriers();
+          //   $("#crimesButton").data("crimeDisplay","none");
+          //   $('#myLocation').css("display","block");
+          //   $('#solveRoute').data("solvePhase","generate");
+          // }
         })
 
         $('#startAddress').click(function() {
@@ -593,7 +602,7 @@ $('#destinationAddressInitial').click(function() {
         });
 
         $("#resetBtn").click( function () {
-
+          whichStopAddressInput="initial";
           $("#startAddress").data("ready-status","notReady");
           $("#destinationAddress").data("ready-status","notReady");
           if($("#startAddress").attr("disabled")){
@@ -933,6 +942,34 @@ routeParams.outSpatialReference = {"wkid":102100};
       }
 
 
+
+
+      function inputInitialAddress(){
+        navigator.geolocation.getCurrentPosition(function(position){
+          long = position.coords.longitude;
+          lat = position.coords.latitude;
+          initialCenterPoint = new Point(long,lat);
+
+          // map.graphics.remove(routeStops.shift());
+          // routeStops.unshift(map.graphics.add(new esri.Graphic(initialCenterPoint,startSymbol)));
+
+          $.ajax({
+            type: 'POST',
+            url: "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/reverseGeocode?location="+long+"%2C+"+lat+"&distance=200&outSR=&f=pjson",
+            success: function (results, textStatus, xhr) {
+              var parsedResults = JSON.parse(results);
+              $("#startAddress").val(parsedResults.address.Match_addr.replace("California","CA"));
+            },
+            error: function (xhr, textStatus, errorThrown) {
+              console.log("test failed");
+              console.log("ERROR:" + xhr.responseText + xhr.status + errorThrown);
+              return false;
+            }
+          });
+        });
+      }
+
+
       function addStartStop(){
         removeEventHandlers();
         $("#myLocation").on('click', inputAddress);
@@ -1160,6 +1197,7 @@ routeParams.outSpatialReference = {"wkid":102100};
 
               var parsedResults = JSON.parse(results);
               myAddress=parsedResults.address.Address;
+
               if(parsedResults.address && whichStopAddressInput=="initial"){
                 clearStops();
                 $('#solveRoute').css("display","none");
@@ -1468,6 +1506,15 @@ routeParams.outSpatialReference = {"wkid":102100};
 
         navigationExtents();
         newRouteAllowed = true;
+        syncRouteWOB(routeStops);
+        syncRouteWB(routeStops);
+      }
+
+      function solveInitialRoute() {
+        removeEventHandlers();
+        
+        console.log(routeStops);
+        navigationExtents();
         syncRouteWOB(routeStops);
         syncRouteWB(routeStops);
       }
@@ -2284,7 +2331,6 @@ function navigationExtents() {
   var miny=map.extent.ymin;
   var maxx=map.extent.xmax;
   var maxy=map.extent.ymax;
-
   var startStopXY = [webMercatorUtils.lngLatToXY(routeStops[0].geometry.x, routeStops[0].geometry.y),webMercatorUtils.lngLatToXY(routeStops[1].geometry.x, routeStops[1].geometry.y)];
   var startCoord = {x: startStopXY[0][0], y: startStopXY[0][1]};
   var endCoord = {x: startStopXY[1][0], y: startStopXY[1][1]};
