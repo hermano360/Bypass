@@ -269,6 +269,7 @@ var endGeocoder = new Geocoder({
         endGeocoderInitial.autoNavigate = false;
         endGeocoderInitial.on("select", function(results){
           $("#destinationAddressInitial_input").val(results.result.name.replace("California", "CA"));
+          $("#destinationAddress_input").val(results.result.name.replace("California", "CA"));
           $('#solveRoute').css("display","block");
           var points = webMercatorUtils.xyToLngLat(results.result.feature.geometry.x, results.result.feature.geometry.y, true);
           var instancePoint = new Point(points[0],points[1]);
@@ -964,7 +965,7 @@ routeParams.outSpatialReference = {"wkid":102100};
             url: "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/reverseGeocode?location="+long+"%2C+"+lat+"&distance=200&outSR=&f=pjson",
             success: function (results, textStatus, xhr) {
               var parsedResults = JSON.parse(results);
-              $("#startAddress").val(parsedResults.address.Match_addr.replace("California","CA"));
+              $("#startAddress_input").val(parsedResults.address.Match_addr.replace("California","CA"));
             },
             error: function (xhr, textStatus, errorThrown) {
               console.log("test failed");
@@ -1098,6 +1099,7 @@ routeParams.outSpatialReference = {"wkid":102100};
               console.log(parsedResults);
               if(parsedResults.address){
                 $("#destinationAddressInitial_input").val(parsedResults.address.Match_addr.replace("California", "CA"));
+                $("#destinationAddress_input").val(parsedResults.address.Match_addr.replace("California", "CA"));
                 map.centerAt(evt.mapPoint);
                   $('#solveRoute').css("display","block");
                 } else {
