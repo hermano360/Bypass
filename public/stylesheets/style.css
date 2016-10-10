@@ -143,11 +143,6 @@ a{
 }
 
 @media only screen and (max-device-width: 414px) and (max-device-height: 736px) {
-  .mobileTopBlankSpace {
-    height:20px;
-    min-height:20px;
-  }
-
   .nav-bar {
     display: none;
   }
