@@ -97,6 +97,7 @@ $(document).foundation()
       var normalTimeDistance;
       var newRouteAllowed = true;
       var initialCenterPoint;
+      var initialAddress;
 
 
       var authdata = {client_id: '2FiTpg1kQIhDPS1H', client_secret: '926550d14c5e4fe9b39fc25229654ce7', grant_type: 'client_credentials', expiration: '1440'}
@@ -443,6 +444,7 @@ var endGeocoder = new Geocoder({
 
         $("#solveRoute").click( function(){
           $(".map").LoadingOverlay("show");
+          disableButtons();
           barrierVisibility = true;
           resetBarriers();
           $("#featureInfo").html("Crime Grid");
@@ -643,7 +645,7 @@ $('#destinationAddressInitial').click(function() {
           clearFeaturesData();
           clearMyLocation();
 
-          $('#startAddress_input').val("");
+          $("#startAddress_input").val(initialAddress);
           $('#destinationAddress_input').val("");
           $("#destinationAddressInitial").css('display',"block");
           $(".nav-bar-wrapper").css('display',"block");
@@ -766,6 +768,16 @@ $('#destinationAddressInitial').click(function() {
       function enableStartEndTextboxes() {
         $("#startAddress").removeAttr("disabled");
         $("#destinationAddress").removeAttr("disabled");
+      }
+
+      function enableButtons() {
+        $(".bottom-buttons").removeAttr("disabled");
+        $("#myLocation").removeAttr("disabled");
+      }
+
+      function disableButtons() {
+        $(".bottom-buttons").removeAttr("disabled");
+        $("#myLocation").removeAttr("disabled");
       }
 
 //9/14
@@ -980,7 +992,8 @@ routeParams.outSpatialReference = {"wkid":102100};
             url: "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/reverseGeocode?location="+long+"%2C+"+lat+"&distance=200&outSR=&f=pjson",
             success: function (results, textStatus, xhr) {
               var parsedResults = JSON.parse(results);
-              $("#startAddress_input").val(parsedResults.address.Match_addr.replace("California","CA"));
+              initialAddress = parsedResults.address.Match_addr.replace("California","CA");
+              $("#startAddress_input").val(initialAddress);
             },
             error: function (xhr, textStatus, errorThrown) {
               console.log("test failed");
@@ -1455,8 +1468,11 @@ console.log(whichStopAddressInput);
                         //$('#solveRoute').text("Pick Safer Way" + " " + bypassTimeDistance);
 
                         $("#bypassOption").html((sRouteWB.directions[0].summary.totalLength*60/3.1).toFixed(0)+" min");
+
+
                         $(".map").LoadingOverlay("hide");
                         //enableNewRouteBtn();
+                        enableButtons();
                         enableStartEndTextboxes();
             
  
