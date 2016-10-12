@@ -1,6 +1,8 @@
 /*View Sizing*/
 .row {
   max-width: 100%;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
 }
 
 
@@ -283,7 +285,7 @@ a{
   height:24px;
   margin-left:auto;
   margin-right:auto;
-  margin-bottom:4%;
+  margin-bottom:1%;
   cursor:pointer;
   text-align: center;
   font-weight: bold;
@@ -293,10 +295,6 @@ a{
   font-size:1rem;
 }
 
-#solveRoute:hover {
-  background-color: #26A69A;
-  color: #FFFFFF;
-}
 
 #routeNameForm {
 	position: absolute;
@@ -645,9 +643,10 @@ border-bottom: 3px solid #26A69A;
 
 
 .lowerOptions {
+
+  border: 1px solid #57585A;
   position:absolute;
-  bottom:27.5%;
-  height:0;
+  bottom:0;
   z-index: 1;
 }
 .vertical-align-center {
@@ -656,12 +655,14 @@ border-bottom: 3px solid #26A69A;
 .bottom-buttons {
 /*  margin-top:15%;*/
   position:relative;
+  float:bottom;
   width:100%;
 
 }
 
 .bottom-circle {
-
+  position:relative;
+  float:bottom;
   font-size:30px !important;
   border-radius:50%;
   height:50px;
@@ -691,6 +692,20 @@ border-bottom: 3px solid #26A69A;
   background-color: #f2f2f2;
   margin-top:10px;
 }
+
+.bottom-nav-bar {
+  position:relative;
+  height:20px;
+  border: 1px solid #57585A;
+}
+
+#routeDistance {
+  float:left;
+}
+#beginRoute {
+  float:left;
+}
+
 
 
 
