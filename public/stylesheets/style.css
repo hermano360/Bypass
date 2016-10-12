@@ -38,17 +38,14 @@ h1 {
 }
 
 .call-police {
-  position:absolute;
-  color: gray;
-  right:0;
-  text-align:center;
-  
+margin-left:auto;
+margin-right:auto;
 }
 
 #resetBtn {
-  position:absolute;
+/*  position:absolute;
   color: gray;
-  left:0;
+  left:0;*/
 }
 
 a{
@@ -258,10 +255,30 @@ a{
 }
 
 #solveRoute {
-  position: absolute;
+  position: relative;
   top: 0;
   width:60%;
   margin-left:20%;
+  margin-bottom:10%;
+  cursor:pointer;
+  text-align: center;
+  font-weight: bold;
+  padding-top:4px;
+  padding-bottom:4px;
+  border-bottom: 1px solid #BBBBBB;
+  border: 1px solid #57585A;
+  background-color: #f2f2f2;
+  font-size:1rem;
+  border-radius:10px;
+}
+
+
+#featuresInfo {
+  position: relative;
+  top: 0;
+  width:60%;
+  margin-left:20%;
+  margin-bottom:10%;
   cursor:pointer;
   text-align: center;
   font-weight: bold;
@@ -629,24 +646,33 @@ border-bottom: 3px solid #26A69A;
 
 .lowerOptions {
   position:absolute;
-  bottom:22%;
+  bottom:24%;
   height:0;
 }
 .vertical-align-center {
   margin-top:15%
 }
 .bottom-buttons {
-  margin-top:15%;
+/*  margin-top:15%;*/
+  position:relative;
+  width:100%;
+
 }
 
 .bottom-circle {
-  z-index: 9;
-  font-size:30px;
+  z-index: -1;
+  font-size:30px !important;
   border-radius:50%;
   height:50px;
   width:50px;
   border: 1px solid #57585A;
   background-color: #f2f2f2;
+}
+
+.quarter-width {
+  width:25%;
+  float:left;
+  text-align:center;
 }
 .horizontal-center {
   width:100%;
