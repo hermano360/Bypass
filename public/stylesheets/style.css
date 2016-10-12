@@ -32,16 +32,16 @@ h1 {
 }
 
 .info-circle {
-    border: 1px solid #57585A;
-    height:40px;
-    width:40px;
-    border-radius:50%;
-    margin-left:50%;
+  border: 1px solid #57585A;
+  height:40px;
+  width:40px;
+  border-radius:50%;
+  margin-left:50%;
 }
 
 .call-police {
-margin-left:auto;
-margin-right:auto;
+  margin-left:auto;
+  margin-right:auto;
 }
 
 #resetBtn {
@@ -126,8 +126,8 @@ a{
   border: none;
   background-color: #8CD4CC;
   outline: none;
-	-webkit-box-shadow: none;
-	-moz-box-shadow: none;
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
   box-shadow: none;
   transition: none;
 }
@@ -340,153 +340,155 @@ a{
   font-weight:bold;
   border-bottom: 1px solid #BBBBBB;
   overflow: hidden;}
-.filter-options-nav-bar > .row > .columns:first-child {
-  border-right: 1px solid #BBBBBB;
-}
-.filter-options-nav-bar > .row > .columns:nth-child(2) {
-  border-right: 1px solid #BBBBBB;
-}
-.filter-options-nav-bar > .row > .columns:last-child {
-}
-.filter-options-nav-bar > .row > .columns {
-  padding:0;
-}
-.filter-options-nav-bar > .row > .columns > select {
-  padding-left:15px;
-  cursor: pointer;
-}
-.filter-options-nav-bar > .row > .columns > select:hover {
-  background-color: #26A69A;
-  color: #FFFFFF;
-  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="32" height="24" viewBox="0 0 32 24"><polygon points="0,0 32,0 16,24" style="fill: #FFFFFF"></polygon></svg>')
-}
+  .filter-options-nav-bar > .row > .columns:first-child {
+    border-right: 1px solid #BBBBBB;
+  }
+  .filter-options-nav-bar > .row > .columns:nth-child(2) {
+    border-right: 1px solid #BBBBBB;
+  }
+  .filter-options-nav-bar > .row > .columns:last-child {
+  }
+  .filter-options-nav-bar > .row > .columns {
+    padding:0;
+  }
+  .filter-options-nav-bar > .row > .columns > select {
+    padding-left:15px;
+    cursor: pointer;
+  }
+  .filter-options-nav-bar > .row > .columns > select:hover {
+    background-color: #26A69A;
+    color: #FFFFFF;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="32" height="24" viewBox="0 0 32 24"><polygon points="0,0 32,0 16,24" style="fill: #FFFFFF"></polygon></svg>')
+  }
 
-/*Forms*/
-select {
-  margin:0;
-  border:none;
-  height: 30px;
-  padding-top: 0px;
-  padding-bottom: 0px;
-  line-height: 30px;
-  border-radius:0 !important;
-  font-size:14px;
-}
+  /*Forms*/
+  select {
+    margin:0;
+    border:none;
+    height: 30px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+    line-height: 30px;
+    border-radius:0 !important;
+    font-size:14px;
+  }
 
 /*option {
   min-height:20px;
-}*/
-/* remove the iphone bug where the input boxes are rounded */
-input {
-  -webkit-border-radius: 0px;
-  -webkit-appearance: none;
-  border-radius: 50%;
-  margin: 3px;
-}
+  }*/
+  /* remove the iphone bug where the input boxes are rounded */
+  input {
+    -webkit-border-radius: 0px;
+    -webkit-appearance: none;
+    border-radius: 50%;
+    margin: 3px;
+  }
 
-/* only affects input tag placeholder color - BEGIN */
-::-webkit-input-placeholder { /* WebKit, Blink, Edge */
-  color: #0a0a0a !important;
-}
-:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
-  color: #0a0a0a !important;
-  opacity: 1;
+  /* only affects input tag placeholder color - BEGIN */
+  ::-webkit-input-placeholder { /* WebKit, Blink, Edge */
+    color: #0a0a0a !important;
+  }
+  :-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+    color: #0a0a0a !important;
+    opacity: 1;
 
-}
-::-moz-placeholder { /* Mozilla Firefox 19+ */
-  color: #0a0a0a !important;
-  opacity: 1;
-}
-:-ms-input-placeholder { /* Internet Explorer 10-11 */
-  color: #0a0a0a !important;
-}
-/* only affects input tag placeholder color - END */
+  }
+  ::-moz-placeholder { /* Mozilla Firefox 19+ */
+    color: #0a0a0a !important;
+    opacity: 1;
+  }
+  :-ms-input-placeholder { /* Internet Explorer 10-11 */
+    color: #0a0a0a !important;
+  }
+  /* only affects input tag placeholder color - END */
 
-input:focus,
-select:focus,
-textarea:focus,
-button:focus {
-  outline: none;
-}
+  input:focus,
+  select:focus,
+  textarea:focus,
+  button:focus {
+    outline: none;
+  }
 
-input:disabled, input[readonly], textarea:disabled, textarea[readonly] {
-  opacity:.6;
-}
+  input:disabled, input[readonly], textarea:disabled, textarea[readonly] {
+    opacity:.6;
+  }
 
-.routeChoice {
-  position:relative;
-  width:60%;
-  left:20%;
-  text-align:center;
+  .routeChoice {
+    position:relative;
+    width:60%;
+    left:20%;
+    text-align:center;
     color:#fff;
     padding-bottom: 2%;
-}
+  }
 
-.halfContainer {
-  width:45%;
-}
+  .halfContainer {
+    width:45%;
+  }
 
-.routeOption {
-  font-family: 'Raleway', sans-serif;
-  font-weight: lighter;
-  font-size: 12px;
+  .routeOption {
+    font-family: 'Raleway', sans-serif;
+    font-weight: lighter;
+    font-size: 12px;
 
-  vertical-align: middle;
+    vertical-align: middle;
     position:relative;
-  left:0%;
-  width:70%;
-}
+    left:0%;
+    width:70%;
+  }
 
-.routeSelected {
+  .routeSelected {
 
-  border-bottom: 3px solid #fff;
-}
-
-
-.routeUnselected {
-border-bottom: 3px solid #26A69A;
-}
+    border-bottom: 3px solid #fff;
+  }
 
 
-.bottomRightNav {
-  right: 20px;
-  bottom: 2px;
-  position: absolute;
-  width:102px;
-}
-
-.bottomRightNav > button {
-  margin-bottom: 18px;
-}
-
-#startAddress{
+  .routeUnselected {
+    border-bottom: 3px solid #26A69A;
+  }
 
 
-  width: 100%;
-}
+  .bottomRightNav {
+    right: 20px;
+    bottom: 2px;
+    position: absolute;
+    width:102px;
+  }
 
-#destinationAddress {
 
-  width: 100%;
-  margin-bottom:2%;
-}
-#destinationAddressInitial {
-  position:relative;
-  z-index:10;
-  width:100%;
-  margin-top:7%;
-}
+  .bottomRightNav > button {
+    margin-bottom: 18px;
+  }
+
+  #startAddress{
+
+
+    width: 100%;
+  }
+
+  #destinationAddress {
+
+    width: 100%;
+    margin-bottom:2%;
+  }
+  #destinationAddressInitial {
+    position:relative;
+    z-index:10;
+    width:100%;
+    margin-top:7%;
+  }
 
 
 
 /*#startAddress.directions-textbox {
   background-image:url('../images/directions_arrow.png');
-}*/
+  }*/
 
 /*}
 #destinationAddress.directions-textbox {
   background-image:url('../images/pin.png');
-}*/
+  }*/
+
 
 .dynamicDirectionsRow {
   position:relative;
@@ -518,77 +520,91 @@ border-bottom: 3px solid #26A69A;
   z-index: 5;
 }
 
-#infoPopup {
-  background: #B5B5B5;
-  color: white;
-}
 
-#directions-button {
-  text-align: center;
-  margin-bottom:2%;
-}
+  .close-button {
+
+    top: 5px;
+    right: 5px;
+    position: absolute;
+    font-size:40px;
+    z-index: 5;
+  }
+
+  #infoPopup {
+    background: #B5B5B5;
+    color: white;
+  }
+
+  #directions-button {
+    text-align: center;
+    margin-bottom:2%;
+  }
 
 
 
-.rightAlign {
-  float:right;
-  margin-top: 15px
-}
-.iconTools {
-  position:absolute;
-  right:0;
-  width: 50px;
-  float:right;
-  color: #000;
-}
 
-.esriGeocoder {
-  border-radius: 0px !important;
-  height: 100% !important;
-  border-top:1px solid #8cd4cc;
-  border-bottom:3px solid #8cd4cc;
-}
+  .rightAlign {
+    float:right;
+    margin-top: 15px
+  }
+  .iconTools {
+    position:absolute;
+    right:0;
+    width: 50px;
+    float:right;
+    color: #000;
+  }
 
-#startAddAbove {
-  height: 50%;
-}
+  .esriGeocoder {
+    border-radius: 0px !important;
+    height: 100% !important;
+    border-top:1px solid #8cd4cc;
+    border-bottom:3px solid #8cd4cc;
+  }
 
-.esriGeocoderContainer {
-  width: 100% !important;
-  height: 100% !important;
-  margin: 0px 0px 0px 0px  !important;
-}
-#startAddress {
-  width: 100%;
-}
-.esriGeocoderIcon {
-  display: none !important;
-}
 
-.address-wrapper {
-  background-color:#8cd4cc;
-  position:relative;
-}
+  #startAddAbove {
+    height: 50%;
+  }
 
-.address-container {
-  color: #fff;
-}
-.mint-background {
-  background-color: #26A69A;
-}
-#startAddress_input {
- width: 100% !important;
-  height: 25px !important;
-  text-indent: 30px;
-  padding: 0px !important;
-  margin: 0px  !important;
-  border: none;
-  font-size: .85rem !important;
-  background-color: #f2f2f2;
-  color: #575757;
-}
 
-.address_wrapper {
+
+  .esriGeocoderContainer {
+    width: 100% !important;
+    height: 100% !important;
+    margin: 0px 0px 0px 0px  !important;
+  }
+  #startAddress {
+    width: 100%;
+  }
+  .esriGeocoderIcon {
+    display: none !important;
+  }
+
+  .address-wrapper {
+    background-color:#8cd4cc;
+    position:relative;
+  }
+
+  .address-container {
+    color: #fff;
+  }
+  .mint-background {
+    background-color: #26A69A;
+  }
+  #startAddress_input {
+   width: 100% !important;
+   height: 25px !important;
+   text-indent: 30px;
+   padding: 0px !important;
+   margin: 0px  !important;
+   border: none;
+   font-size: .85rem !important;
+   background-color: #f2f2f2;
+   color: #575757;
+ }
+
+ .address_wrapper {
   position:relative;
 }
 
@@ -643,8 +659,6 @@ border-bottom: 3px solid #26A69A;
 
 
 .lowerOptions {
-
-  border: 1px solid #57585A;
   position:absolute;
   bottom:0;
   z-index: 1;
@@ -653,11 +667,9 @@ border-bottom: 3px solid #26A69A;
   margin-top:15%;
 }
 .bottom-buttons {
-/*  margin-top:15%;*/
+  /*  margin-top:15%;*/
   position:relative;
   width:100%;
-  border: 1px solid #abcabc;
-
 }
 
 .bottom-circle {
@@ -695,19 +707,46 @@ border-bottom: 3px solid #26A69A;
 }
 
 .bottom-route-bar {
+
   position:relative;
-  border: 1px solid #57585A;
+  font-size: 30px;
+  /*display:none;*/
 }
+
 
 #routeDistance {
 
+  position:relative;
+  float:left;
   width:100%;
-  font-size: 50px;
-  
+  height:50px;
+  font-size: 20px;
+  padding-top: 10px;
+  text-align: right;
+  padding-right: 55px;
+  border: 1px solid #ccc;
+  background-color: #f2f2f2;
 }
+
 #beginRoute {
-position:absolute;
-right:0;
+  position:absolute;
+  float:right;
+  height:50px;
+  border-radius: 50%;
+  width:50px;
+  right:0;
+  text-align: center;
+  border: 1px solid #ccc;
+  color: #fff;
+}
+#calc-time-dist {
+  position:relative;
+  font-family: 'Raleway', sans-serif;
+  font-weight: bolder;
+  font-size: 18px;
+float:left;
+padding-left: 10px;
+
 }
 
 

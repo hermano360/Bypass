@@ -489,6 +489,25 @@ var endGeocoder = new Geocoder({
           //   $('#myLocation').css("display","block");
           //   $('#solveRoute').data("solvePhase","generate");
           // }
+        });
+
+
+        $("#beginRoute").click(function() {
+
+          $('.bottom-route-bar').css("display","none");
+          if(routes.length > 1){
+            map.graphics.remove(routes.shift());
+          }
+          $("#address-wrapper").css('display',"none");
+          barrierVisibility = false;
+          resetBarriers(); 
+          $("#featuresButton").data("featuresDisplay","none");
+          $("#featureInfo").html("");
+          $("#crimesButton").data("crimeDisplay","none");
+          $("#crimesButton").removeClass("fa-history");
+          $("#crimesButton").removeClass("fa-male");
+          $("#crimesButton").removeClass("fa-warning");
+          $("#crimesButton").addClass("fa-delicious");
         })
 
         $('#startAddress').click(function() {
@@ -650,6 +669,7 @@ $('#destinationAddressInitial').click(function() {
           $("#destinationAddressInitial").css('display',"block");
           $(".nav-bar-wrapper").css('display',"block");
           $("#address-wrapper").css('display',"none");
+          $(".bottom-route-bar").css('display',"none");
           $("#destinationAddressInitial_input").val("");
           $("#destinationAddressInitial_input").attr("placeholder","Click on Map or Type Address!");
           $('#directionsDisplay').empty();
@@ -1402,7 +1422,6 @@ console.log(whichStopAddressInput);
 
       function syncRouteWB(routeStops) { //With Barriers
         var minRoutePathLength;
-        var pluralityMinutes = "minutes";
         var stops = [[routeStops[0].geometry.x,routeStops[0].geometry.y],[routeStops[1].geometry.x,routeStops[1].geometry.y]];
 
         var polygonBarriersURL= "{\"features\":[";
@@ -1437,11 +1456,13 @@ console.log(whichStopAddressInput);
 
             $("#BypassRoute").css('display',"inline-block");
             $("#NormalRoute").css('display',"inline-block");
+            $(".bottom-route-bar").css('display',"block");
 
             
                         $('#directions-button').css('display',"inline");
 
                         sRouteWB = JSON.parse(results);
+
                         bypassRouteDirections = JSON.parse(results).directions;
                         bypassRoute = new esri.geometry.Polyline(sRouteWB.routes.features[0].geometry.paths[0]);
                         routes.push(map.graphics.add(new esri.Graphic(bypassRoute,routeSymbols["selectedRoute"])));
@@ -1465,15 +1486,14 @@ console.log(whichStopAddressInput);
                         chosenRouteDirections = sRouteWB.directions;
                         $('#solveRoute').data("solvePhase","finalize");
 
-                        if((sRouteWB.directions[0].summary.totalLength*60/3.1).toFixed(0)==1){
-                          pluralityMinutes = "minute";
-                        }
+            
+            
+                        bypassTimeDistance = "(" + sRouteWB.directions[0].summary.totalLength.toFixed(1) +" mi "+ (sRouteWB.directions[0].summary.totalLength*60/3.1).toFixed(0) + " min)";
 
-                        bypassTimeDistance = "(" + sRouteWB.directions[0].summary.totalLength.toFixed(2) +" miles "+ (sRouteWB.directions[0].summary.totalLength*60/3.1).toFixed(0) + " "+ pluralityMinutes + ")";
                         //$('#solveRoute').text("Pick Safer Way" + " " + bypassTimeDistance);
 
                         $("#bypassOption").html((sRouteWB.directions[0].summary.totalLength*60/3.1).toFixed(0)+" min");
-
+                        $("#calc-time-dist").html(bypassTimeDistance)
 
                         $(".map").LoadingOverlay("hide");
                         //enableNewRouteBtn();
@@ -1504,7 +1524,7 @@ console.log(whichStopAddressInput);
             if(newRouteAllowed == true){
                         sRoute = JSON.parse(results);
                         normalRouteDirections = JSON.parse(results).directions;
-                        pluralityMinutes = "minutes";
+
                         normalRoute = new esri.geometry.Polyline(sRoute.routes.features[0].geometry.paths[0]);
                         routes.push(map.graphics.add(new esri.Graphic(normalRoute,routeSymbols["unselectedRoute"])));
 
@@ -1512,15 +1532,10 @@ console.log(whichStopAddressInput);
                         {
                           //console.log(sRoute.directions[0].features[i].attributes.text); shows written directions
                         };
+                        normalTimeDistance = "(" + sRoute.directions[0].summary.totalLength.toFixed(1) +" mi "+ (sRoute.directions[0].summary.totalLength*60/3.1).toFixed(0) + " min)";
 
-
-                       if((sRoute.directions[0].summary.totalLength*60/3.1).toFixed(0)==1){
-                          pluralityMinutes = "minute";
-                       }
-
-
-                        normalTimeDistance = "(" + sRoute.directions[0].summary.totalLength.toFixed(2) +" miles "+ (sRoute.directions[0].summary.totalLength*60/3.1).toFixed(0) + " "+ pluralityMinutes + ")";
                         $("#normalOption").html((sRoute.directions[0].summary.totalLength*60/3.1).toFixed(0)+" min");
+
                         }
           },
           error: function (xhr, textStatus, errorThrown) {
@@ -1538,6 +1553,7 @@ console.log(whichStopAddressInput);
         routes.push(map.graphics.add(new esri.Graphic(normalRoute,routeSymbols["unselectedRoute"])));
         routes.push(map.graphics.add(new esri.Graphic(bypassRoute,routeSymbols["selectedRoute"])));
         chosenRouteDirections = bypassRouteDirections;
+        $("#calc-time-dist").html(bypassTimeDistance);
       }
 
       function chooseNormal(){
@@ -1547,6 +1563,7 @@ console.log(whichStopAddressInput);
         routes.push(map.graphics.add(new esri.Graphic(bypassRoute,routeSymbols["unselectedRoute"])));
         routes.push(map.graphics.add(new esri.Graphic(normalRoute,routeSymbols["selectedRoute"])));
         chosenRouteDirections = normalRouteDirections;
+        $("#calc-time-dist").html(normalTimeDistance);
       }
 
       //Solves the routes. Any errors will trigger the errorHandler function.
