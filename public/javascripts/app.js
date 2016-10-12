@@ -643,6 +643,7 @@ $('#destinationAddressInitial').click(function() {
 
           $('#startAddress_input').val("");
           $('#destinationAddress_input').val("");
+          $("#destinationAddressInitial").css('display',"block");
           $("#destinationAddressInitial_input").val("");
           $("#destinationAddressInitial_input").attr("placeholder","Click on Map or Type Address!");
           $('#directionsDisplay').empty();
@@ -963,6 +964,8 @@ routeParams.outSpatialReference = {"wkid":102100};
 
 
       function inputInitialAddress(){
+
+        $("#startAddress_input").attr("placeholder","Your Location...");
         navigator.geolocation.getCurrentPosition(function(position){
           long = position.coords.longitude;
           lat = position.coords.latitude;
