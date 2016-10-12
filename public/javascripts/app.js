@@ -120,7 +120,7 @@ $(document).foundation()
       }
 
       map = new Map("map", {
-        basemap: "topo",
+        basemap: "streets",
         center: [-118.49132, 34.01455],
         zoom: 14,
         smartNavigation: false, //by adding this, the scroll mouse goes in and out, rather than up and down. perhaps the other way is better though, idk
