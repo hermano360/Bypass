@@ -473,6 +473,7 @@ border-bottom: 3px solid #26A69A;
   margin-bottom:2%;
 }
 #destinationAddressInitial {
+  position:relative;
   z-index:10;
   width:100%;
   margin-top:7%;

@@ -158,6 +158,7 @@ $(document).foundation()
           var instancePoint = new Point(points[0],points[1]);
           map.graphics.remove(routeStops.shift());
           routeStops.unshift(map.graphics.add(new esri.Graphic(instancePoint,startSymbol)));
+
           if($('#startAddress').data("ready-status") == "ready" && $('#destinationAddress').data("ready-status") == "ready"){
             $('#solveRoute').css("visibility", "visible");
             $('#solveRoute').text("Get Me There Safely!");
@@ -273,6 +274,7 @@ var endGeocoder = new Geocoder({
         endGeocoderInitial.on("select", function(results){
           $("#destinationAddressInitial_input").val(results.result.name.replace("California", "CA"));
           $("#destinationAddress_input").val(results.result.name.replace("California", "CA"));
+
           $('#solveRoute').css("visibility", "visible");
           var points = webMercatorUtils.xyToLngLat(results.result.feature.geometry.x, results.result.feature.geometry.y, true);
           var instancePoint = new Point(points[0],points[1]);
@@ -644,6 +646,8 @@ $('#destinationAddressInitial').click(function() {
           $('#startAddress_input').val("");
           $('#destinationAddress_input').val("");
           $("#destinationAddressInitial").css('display',"block");
+          $(".nav-bar-wrapper").css('display',"block");
+          $("#address-wrapper").css('display',"none");
           $("#destinationAddressInitial_input").val("");
           $("#destinationAddressInitial_input").attr("placeholder","Click on Map or Type Address!");
           $('#directionsDisplay').empty();
