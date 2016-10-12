@@ -58,6 +58,9 @@ a{
   color: #5d5d5d;
   top:20px;
 }
+#terms-and-conditions {
+  z-index:1000;
+}
 
 .input-wrapper i{
   position: absolute;
@@ -212,7 +215,7 @@ a{
   top: 0;
   width:60%;
   margin-left:20%;
-  margin-bottom:10%;
+  margin-bottom:5%;
   cursor:pointer;
   text-align: center;
   font-weight: bold;
@@ -226,22 +229,21 @@ a{
 }
 
 
-#featuresInfo {
+#featureInfo {
   position: relative;
   top: 0;
-  width:60%;
-  margin-left:20%;
-  margin-bottom:10%;
+  width: fit-content;
+  height:24px;
+  margin-left:auto;
+  margin-right:auto;
+  margin-bottom:4%;
   cursor:pointer;
   text-align: center;
   font-weight: bold;
-  padding-top:4px;
-  padding-bottom:4px;
-  border-bottom: 1px solid #BBBBBB;
-  border: 1px solid #57585A;
-  background-color: #f2f2f2;
+  padding-top:1px;
+  padding-bottom:1px;
+  background: rgba(255, 255, 255, 0.6);
   font-size:1rem;
-  border-radius:10px;
 }
 
 #solveRoute:hover {
@@ -257,10 +259,6 @@ a{
 	background:black;
 }
 
-.esriSimpleSlider {
-  top:48% !important;
-  z-index:10 ;
-}
 
 .esriSimpleSliderIncrementButton:hover,
 .esriSimpleSliderDecrementButton:hover {
@@ -644,7 +642,6 @@ border-bottom: 3px solid #26A69A;
 }
 
 #myLocation:hover, #myLocation:active {
-  color: #FFFFFF;
 }
 
 .row90pct {
@@ -665,11 +662,12 @@ border-bottom: 3px solid #26A69A;
 
 .lowerOptions {
   position:absolute;
-  bottom:24%;
+  bottom:27.5%;
   height:0;
+  z-index: -1;
 }
 .vertical-align-center {
-  margin-top:15%
+  margin-top:15%;
 }
 .bottom-buttons {
 /*  margin-top:15%;*/

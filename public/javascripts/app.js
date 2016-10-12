@@ -131,7 +131,9 @@ $(document).foundation()
 
 
 
+
       ready(function() {
+
 
         //Getting Start Address Ready for initial route generation
         inputInitialAddress();
@@ -438,16 +440,19 @@ var endGeocoder = new Geocoder({
 
 
         $("#solveRoute").click( function(){
+          $(".map").LoadingOverlay("show");
           barrierVisibility = true;
           resetBarriers();
+          $("#featureInfo").html("Crime Grid");
           $("#crimesButton").data("crimeDisplay","crimeGrid");
           $("#crimesButton").removeClass("fa-history");
           $("#crimesButton").removeClass("fa-male");
           $("#crimesButton").removeClass("fa-warning");
           $("#crimesButton").addClass("fa-delicious");
           solveInitialRoute();
-          $(".nav-bar-wrapper").css('display',"inline");
-          $('#solveRoute').text("Please Wait...");
+          $(".nav-bar-wrapper").css('display',"none");
+          $('#solveRoute').css("visibility","hidden");
+
           $("#destinationAddressInitial").css('display',"none");
           $("#address-wrapper").css('display',"block");
           removeEventHandlers();
@@ -611,20 +616,19 @@ $('#destinationAddressInitial').click(function() {
 
         $("#resetBtn").click( function () {
           whichStopAddressInput="initial";
-          $(".nav-bar-wrapper").css('display',"inline");
-          $("#startAddress").data("ready-status","notReady");
-          $("#destinationAddress").data("ready-status","notReady");
-          if($("#startAddress").attr("disabled")){
-            enableStartEndTextboxes()
-          }
+          // $("#startAddress").data("ready-status","notReady");
+          // $("#destinationAddress").data("ready-status","notReady");
+          // if($("#startAddress").attr("disabled")){
+          //   enableStartEndTextboxes()
+          // }
           
 
 
-          newRouteAllowed = false;
-          if ($("#resetBtn").hasClass("disabled") == true) {
-            return false
-          }
-          console.log($('#myLocation').css('display'));
+          // newRouteAllowed = false;
+          // if ($("#resetBtn").hasClass("disabled") == true) {
+          //   return false
+          // }
+          // console.log($('#myLocation').css('display'));
           chosenRouteDirections = "";
           clearStops();
           routeStops= [{},{}];
@@ -642,15 +646,12 @@ $('#destinationAddressInitial').click(function() {
           $("#destinationAddressInitial_input").val("");
           $("#destinationAddressInitial_input").attr("placeholder","Click on Map or Type Address!");
           $('#directionsDisplay').empty();
-          $('.filter-options-nav-bar').css("display","none");
           $('#solveRoute').css("visibility", "hidden");
-          $('#solveRoute').text("Get Me There Safely!");
-          $('#solveRoute').data("solvePhase","generate");
+          $("#featureInfo").html("");
+
           $('#BypassRoute').css('display',"none");
           $('#NormalRoute').css('display',"none");
-          $('#myLocation').css('display',"block");
-          $('#startAddress').css('display',"block");
-          $('#destinationAddress').css('display',"block");
+
           deactivateDirections();
           deactivateFilters();
           barrierVisibility = false;
@@ -771,6 +772,7 @@ $("#crimesButton").click(function(){
 if($("#crimesButton").data("crimeDisplay")=="none"){
   barrierVisibility = true;
   resetBarriers(); 
+  $("#featureInfo").html("Crime Grid");
   $("#crimesButton").data("crimeDisplay","crimeGrid");
     $("#crimesButton").removeClass("fa-warning");
   $("#crimesButton").addClass("fa-delicious");
@@ -778,17 +780,20 @@ if($("#crimesButton").data("crimeDisplay")=="none"){
   barrierVisibility = false;
   resetBarriers();
   crimesPlot();
+  $("#featureInfo").html("Crime in Last 24 Hours");
   $("#crimesButton").data("crimeDisplay","crimePoints");
   $("#crimesButton").removeClass("fa-delicious");
   $("#crimesButton").addClass("fa-history");
 }else if($("#crimesButton").data("crimeDisplay")=="crimePoints"){
   clearCrimesData();
   sexOffendersPlot();
+  $("#featureInfo").html("Sex Offenders");
     $("#crimesButton").removeClass("fa-history");
   $("#crimesButton").addClass("fa-male");
 $("#crimesButton").data("crimeDisplay","sexOffenders");
 } else if($("#crimesButton").data("crimeDisplay")=="sexOffenders"){
   clearCrimesData();
+  $("#featureInfo").html("");
   $("#crimesButton").removeClass("fa-male");
   $("#crimesButton").addClass("fa-warning");
 $("#crimesButton").data("crimeDisplay","none");
@@ -812,17 +817,20 @@ $("#featuresButton").click(function(){
     if($("#featuresButton").data("featuresDisplay")=="none"){
       clearFeaturesData();
       openBusinessPlot();
+      $("#featureInfo").html("Open Restaurants/Bars");
       $("#featuresButton").data("featuresDisplay","openBusiness");
       $("#featuresButton").removeClass("fa-smile-o");
       $("#featuresButton").addClass("fa-cutlery");
     } else if($("#featuresButton").data("featuresDisplay")=="openBusiness"){
       clearFeaturesData();
       wifiLocationsPlot();
+      $("#featureInfo").html("Wifi Locations");
       $("#featuresButton").data("featuresDisplay","wifiLocations");
       $("#featuresButton").removeClass("fa-cutlery");
       $("#featuresButton").addClass("fa-wifi");
     } else if($("#featuresButton").data("featuresDisplay")=="wifiLocations"){
       clearFeaturesData();
+      $("#featureInfo").html("");
       $("#featuresButton").data("featuresDisplay","none");
       $("#featuresButton").removeClass("fa-wifi");
       $("#featuresButton").addClass("fa-smile-o");
@@ -980,6 +988,8 @@ routeParams.outSpatialReference = {"wkid":102100};
       function plotInitialStart(){
         map.graphics.remove(routeStops.shift());
         routeStops.unshift(map.graphics.add(new esri.Graphic(initialCenterPoint,startSymbol)));
+
+
       }
 
 
@@ -1085,8 +1095,6 @@ routeParams.outSpatialReference = {"wkid":102100};
 
 
       function addInitialDestinationStop(){
-
-
         mapOnClick_addStops_connect = map.on("click", function(evt){
           var longlat = webMercatorUtils.xyToLngLat(evt.mapPoint["x"], evt.mapPoint["y"], true);
           map.graphics.remove(routeStops.pop());
@@ -1107,9 +1115,7 @@ routeParams.outSpatialReference = {"wkid":102100};
                   map.graphics.remove(routeStops.pop());
                   routeStops.push({});
                   $("#destinationAddressInitial_input").val("Please Try Again");
-                //$('#solveRoute').css('display',"none"); This would be the "Go!" Button
               }
-
             },
             error: function (xhr, textStatus, errorThrown) {
               console.log("test failed");
@@ -1118,8 +1124,6 @@ routeParams.outSpatialReference = {"wkid":102100};
             }
           });
         });
-
-
       }
 
 
@@ -1444,7 +1448,7 @@ console.log(whichStopAddressInput);
                         //$('#solveRoute').text("Pick Safer Way" + " " + bypassTimeDistance);
 
                         $("#bypassOption").html((sRouteWB.directions[0].summary.totalLength*60/3.1).toFixed(0)+" min");
-                        $('#solveRoute').css('visibility',"hidden");
+                        $(".map").LoadingOverlay("hide");
                         //enableNewRouteBtn();
                         enableStartEndTextboxes();
             
