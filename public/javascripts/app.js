@@ -123,7 +123,8 @@ $(document).foundation()
         basemap: "topo",
         center: [-118.49132, 34.01455],
         zoom: 14,
-        smartNavigation: false //by adding this, the scroll mouse goes in and out, rather than up and down. perhaps the other way is better though, idk.
+        smartNavigation: false, //by adding this, the scroll mouse goes in and out, rather than up and down. perhaps the other way is better though, idk
+        slider:false  
       });
 
 
@@ -146,7 +147,7 @@ $(document).foundation()
         startGeocoder.on("select", function(results){
 
           clearRoutes();
-        $('#solveRoute').css("display","none");
+        $('#solveRoute').css("visibility","hidden");
         $('#solveRoute').text("Get Me There Safely!");
 
           $("#startAddress_input").val(results.result.name.replace("California", "CA"));
@@ -156,7 +157,7 @@ $(document).foundation()
           map.graphics.remove(routeStops.shift());
           routeStops.unshift(map.graphics.add(new esri.Graphic(instancePoint,startSymbol)));
           if($('#startAddress').data("ready-status") == "ready" && $('#destinationAddress').data("ready-status") == "ready"){
-            $('#solveRoute').css('display',"inline");
+            $('#solveRoute').css("visibility", "visible");
             $('#solveRoute').text("Get Me There Safely!");
             $('#solveRoute').data("solvePhase","generate");
           }
@@ -270,7 +271,7 @@ var endGeocoder = new Geocoder({
         endGeocoderInitial.on("select", function(results){
           $("#destinationAddressInitial_input").val(results.result.name.replace("California", "CA"));
           $("#destinationAddress_input").val(results.result.name.replace("California", "CA"));
-          $('#solveRoute').css("display","block");
+          $('#solveRoute').css("visibility", "visible");
           var points = webMercatorUtils.xyToLngLat(results.result.feature.geometry.x, results.result.feature.geometry.y, true);
           var instancePoint = new Point(points[0],points[1]);
           map.centerAndZoom(instancePoint,16);
@@ -445,7 +446,7 @@ var endGeocoder = new Geocoder({
           $("#crimesButton").removeClass("fa-warning");
           $("#crimesButton").addClass("fa-delicious");
           solveInitialRoute();
-          $(".nav-bar-wrapper").css('display',"none");
+          $(".nav-bar-wrapper").css('display',"inline");
           $('#solveRoute').text("Please Wait...");
           $("#destinationAddressInitial").css('display',"none");
           $("#address-wrapper").css('display',"block");
@@ -642,7 +643,7 @@ $('#destinationAddressInitial').click(function() {
           $("#destinationAddressInitial_input").attr("placeholder","Click on Map or Type Address!");
           $('#directionsDisplay').empty();
           $('.filter-options-nav-bar').css("display","none");
-          $('#solveRoute').css("display","none");
+          $('#solveRoute').css("visibility", "hidden");
           $('#solveRoute').text("Get Me There Safely!");
           $('#solveRoute').data("solvePhase","generate");
           $('#BypassRoute').css('display',"none");
@@ -1100,7 +1101,7 @@ routeParams.outSpatialReference = {"wkid":102100};
                 $("#destinationAddressInitial_input").val(parsedResults.address.Match_addr.replace("California", "CA"));
                 $("#destinationAddress_input").val(parsedResults.address.Match_addr.replace("California", "CA"));
                 map.centerAt(evt.mapPoint);
-                  $('#solveRoute').css("display","block");
+                  $('#solveRoute').css("visibility", "visible");
                 } else {
                   console.log(routeStops.length);
                   map.graphics.remove(routeStops.pop());
@@ -1213,7 +1214,7 @@ routeParams.outSpatialReference = {"wkid":102100};
 
               if(parsedResults.address && whichStopAddressInput=="initial"){
                 clearStops();
-                $('#solveRoute').css("display","none");
+                $('#solveRoute').css("visibility","hidden");
                 $("#destinationAddressInitial_input").val("");
                 $("#destinationAddressInitial_input").attr("placeholder","Your Location is ... "+ myAddress);
               }
@@ -1259,7 +1260,7 @@ routeParams.outSpatialReference = {"wkid":102100};
               }
             });
 
-
+console.log(whichStopAddressInput);
           if(whichStopAddressInput=="start" ||  whichStopAddressInput=="end"){
             xyUnits = webMercatorUtils.lngLatToXY(long, lat);
 
@@ -1279,7 +1280,7 @@ routeParams.outSpatialReference = {"wkid":102100};
             }
 
             newExtent = new Extent({xmin:minx,ymin:miny,xmax:maxx,ymax:maxy,spatialReference:{wkid:102100}});
-            map.setExtent(newExtent);
+            //map.setExtent(newExtent);
           } else {
             map.centerAndZoom(centerpoint,13);
             // map.graphics.remove(routeStops.pop());
@@ -1443,7 +1444,7 @@ routeParams.outSpatialReference = {"wkid":102100};
                         //$('#solveRoute').text("Pick Safer Way" + " " + bypassTimeDistance);
 
                         $("#bypassOption").html((sRouteWB.directions[0].summary.totalLength*60/3.1).toFixed(0)+" min");
-                        $('#solveRoute').css('display',"none");
+                        $('#solveRoute').css('visibility',"hidden");
                         //enableNewRouteBtn();
                         enableStartEndTextboxes();
             
