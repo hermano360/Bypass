@@ -674,8 +674,8 @@ border-bottom: 3px solid #26A69A;
 .bottom-buttons {
 /*  margin-top:15%;*/
   position:relative;
-  float:bottom;
   width:100%;
+  border: 1px solid #abcabc;
 
 }
 
@@ -691,6 +691,7 @@ border-bottom: 3px solid #26A69A;
 }
 
 .quarter-width {
+  position:relative;
   width:25%;
   float:left;
   text-align:center;
@@ -712,17 +713,20 @@ border-bottom: 3px solid #26A69A;
   margin-top:10px;
 }
 
-.bottom-nav-bar {
+.bottom-route-bar {
   position:relative;
-  height:20px;
   border: 1px solid #57585A;
 }
 
 #routeDistance {
-  float:left;
+
+  width:100%;
+  font-size: 50px;
+  
 }
 #beginRoute {
-  float:left;
+position:absolute;
+right:0;
 }
 
 
