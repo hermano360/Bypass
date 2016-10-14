@@ -48,6 +48,10 @@ $(document).foundation()
       var irreleventBarriers = [];
       var stopSymbol, barrierSymbol, customRouteSymbol, routeSymbols, polygonBarrierSymbol;
       var mapOnClick_addStops_connect, mapOnClick_addBarriers_connect, mapOnClick_addPolygonBarriers_connect, mapOnClick_testCrime_connect, mapOnClick_mapIndex_connect, myLocationToAddress_connect;
+      var mapOnClick_addInitialStop_connect;
+      var mapOnClick_addDestinationStop_connect;
+      var mapOnClick_addStartStop_connect;
+
       var stopCounter = 0;
       var barrierToggle = 0;
       var sortedData;
@@ -137,7 +141,7 @@ $(document).foundation()
 
 
       ready(function() {
-        whichStopAddressInput="";
+        
         map.on("extent-change", addDesignatedStop);
         inputInitialAddress();
         var endGeocoderInitial = new Geocoder({
@@ -923,7 +927,10 @@ routeParams.outSpatialReference = {"wkid":102100};
         navigator.geolocation.getCurrentPosition(function(position){
           long = position.coords.longitude;
           lat = position.coords.latitude;
-          initialCenterPoint = new Point(long,lat);
+
+          //Temporary Tests
+
+          initialCenterPoint = new Point(-118.496475, 34.024212);
           $("#myLocation").css("visibility", "visible");
           myLocationAvailable = true;
           $.ajax({
@@ -954,10 +961,13 @@ routeParams.outSpatialReference = {"wkid":102100};
       function addDesignatedStop(){
         console.log(whichStopAddressInput);
         if(whichStopAddressInput=="initial"){
+          removeEventHandlers();
           addInitialDestinationStop();
         } else if(whichStopAddressInput=="start"){
+          removeEventHandlers();
           addStartStop();
         } else if(whichStopAddressInput=="end"){
+          removeEventHandlers();
           addDestinationStop();
         } else {
           console.log("remove Event Handlers called");
@@ -970,8 +980,8 @@ routeParams.outSpatialReference = {"wkid":102100};
 
       function addStartStop(){
         $("#myLocation").on('click', inputAddress);
-        removeEventHandlers();
-        mapOnClick_addStops_connect = map.on("click", function(evt){
+
+        mapOnClick_addStartStop_connect= map.on("click", function(evt){
         $('#solveRoute').css("visibility", "hidden");
         $("#BypassRoute").css('display',"none");
         $("#NormalRoute").css('display',"none");
@@ -1017,7 +1027,9 @@ routeParams.outSpatialReference = {"wkid":102100};
       function addDestinationStop(){
 
         $("#myLocation").on('click', inputAddress);
-        mapOnClick_addStops_connect = map.on("click", function(evt){
+
+       
+      mapOnClick_addDestinationStop_connect= map.on("click", function(evt){
           $("#BypassRoute").css('display',"none");
         $("#NormalRoute").css('display',"none");
         $('#solveRoute').css("visibility", "hidden");
@@ -1062,7 +1074,7 @@ routeParams.outSpatialReference = {"wkid":102100};
 
       function addInitialDestinationStop(){
         console.log("add initial dest called");
-        mapOnClick_addStops_connect = map.on("click", function(evt){
+        mapOnClick_addInitialStop_connect= map.on("click", function(evt){
           var longlat = webMercatorUtils.xyToLngLat(evt.mapPoint["x"], evt.mapPoint["y"], true);
           map.graphics.remove(routeStops.pop());
           routeStops.push(map.graphics.add(new esri.Graphic(new Point(longlat),stopSymbol)));
@@ -1091,10 +1103,6 @@ routeParams.outSpatialReference = {"wkid":102100};
               return false;
             }
           });
-                  console.log(whichStopAddressInput)
-        if(whichStopAddressInput != "initial"){
-          removeEventHandlers();
-        }
         });
 
 
@@ -1331,8 +1339,17 @@ routeParams.outSpatialReference = {"wkid":102100};
       //Stops listening for click events to add barriers and stops (if they've already been wired)
       function removeEventHandlers() {
 
-        if (mapOnClick_addStops_connect) {
-          mapOnClick_addStops_connect.remove();
+        
+
+              if (mapOnClick_addInitialStop_connect) {
+          mapOnClick_addInitialStop_connect.remove();
+        }
+                if (mapOnClick_addDestinationStop_connect) {
+          mapOnClick_addDestinationStop_connect.remove();
+        }
+
+        if (mapOnClick_addStartStop_connect) {
+          mapOnClick_addStartStop_connect.remove();
         }
         if (mapOnClick_addBarriers_connect) {
           mapOnClick_addBarriers_connect.remove();
@@ -1352,7 +1369,9 @@ routeParams.outSpatialReference = {"wkid":102100};
 
         var polygonBarriersURL= "{\"features\":[";
 
-        for(var i = 0; i< barriers.length; i++){
+        //temporarily change for testing 5 where barriers.length was before
+
+        for(var i = 0; i< 5; i++){
 
           polygonBarriersURL += "{\"geometry\":{\"rings\":[[";
           for(var j = 0; j < 5/*barriers[i].geometry.rings[0].length*/; j++){
