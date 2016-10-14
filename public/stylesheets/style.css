@@ -229,15 +229,22 @@ a{
   cursor:pointer;
   padding-top:3px;
   padding-bottom:2px;
+  text-align: center;
+  margin-bottom:2%;
 }
 #directions-button:hover,
 .directions-button-active {
+/*  background-color: #26A69A;
+  color: #FFFFFF;*/
+}
+
+.directions-button-on {
   background-color: #26A69A;
   color: #FFFFFF;
 }
 .directions-button-inactive {
-  background-color: #FFFFFF;
-  color: #000000;
+/*  background-color: #FFFFFF;
+  color: #000000;*/
 }
 #directions-button:hover > span,
 .directions-button-active > span {
@@ -278,21 +285,35 @@ a{
 }
 
 
-#featureInfo {
+.extraData {
   position: relative;
   top: 0;
-  width: fit-content;
-  height:24px;
-  margin-left:auto;
-  margin-right:auto;
+  height:30px;
+  width:100%;
   margin-bottom:1%;
   cursor:pointer;
-  text-align: center;
   font-weight: bold;
   padding-top:1px;
   padding-bottom:1px;
+  
+  font-size:.65rem;
+}
+
+#featureInfo {
+  position: absolute;
+  width:30%;
+  left:20%;
+  text-align:center;
   background: rgba(255, 255, 255, 0.6);
-  font-size:1rem;
+}
+
+
+#crimeInfo {
+  position: absolute;
+  width:30%;
+  left:50%;
+  text-align:center;
+  background: rgba(255, 255, 255, 0.6);
 }
 
 
@@ -473,7 +494,7 @@ a{
   }
   #destinationAddressInitial {
     position:relative;
-    z-index:10;
+    z-index:9;
     width:100%;
     margin-top:7%;
   }
@@ -488,6 +509,24 @@ a{
 #destinationAddress.directions-textbox {
   background-image:url('../images/pin.png');
   }*/
+
+
+  .iconSelected {
+    background-color: #26A69A;
+    color:#fff;
+  }
+
+  .iconUnselected {
+    background-color: #f2f2f2;
+    color:#000;
+  }
+
+  .dynamicDirectionsRow {
+    position:relative;
+    padding:5px 59px;
+    background-color: #fff;
+    z-index:10;
+  }
 
 
 .dynamicDirectionsRow {
@@ -533,11 +572,11 @@ a{
   #infoPopup {
     background: #B5B5B5;
     color: white;
+    position: absolute;
   }
 
   #directions-button {
-    text-align: center;
-    margin-bottom:2%;
+
   }
 
 
@@ -574,6 +613,12 @@ a{
     height: 100% !important;
     margin: 0px 0px 0px 0px  !important;
   }
+
+    .esriGeocoderResults {
+ color:#000;
+  }
+
+
   #startAddress {
     width: 100%;
   }
@@ -595,7 +640,7 @@ a{
   #startAddress_input {
    width: 100% !important;
    height: 25px !important;
-   text-indent: 30px;
+   text-indent: 15px;
    padding: 0px !important;
    margin: 0px  !important;
    border: none;
@@ -611,7 +656,7 @@ a{
 #destinationAddress_input {
   width: 100% !important;
   height: 25px !important;
-  text-indent: 30px;
+  text-indent: 15px;
   padding: 0 !important;
   margin: 0 !important;
   border: none;
@@ -633,7 +678,6 @@ a{
 
 #myLocation {
   position:absolute;
-  color: #5d5d5d;
   z-index:2;
   left:0;
   margin-top:30px;
@@ -660,7 +704,7 @@ a{
 
 .lowerOptions {
   position:absolute;
-  bottom:0;
+  bottom:3%;
   z-index: 1;
 }
 .vertical-align-center {
@@ -674,13 +718,11 @@ a{
 
 .bottom-circle {
   position:relative;
-  float:bottom;
   font-size:30px !important;
   border-radius:50%;
   height:50px;
   width:50px;
   border: 1px solid #57585A;
-  background-color: #f2f2f2;
 }
 
 .quarter-width {

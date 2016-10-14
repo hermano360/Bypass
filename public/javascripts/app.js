@@ -98,6 +98,9 @@ $(document).foundation()
       var newRouteAllowed = true;
       var initialCenterPoint;
       var initialAddress;
+      var startPoint;
+      var endPoint;
+      var myLocationAvailable = false;
 
 
       var authdata = {client_id: '2FiTpg1kQIhDPS1H', client_secret: '926550d14c5e4fe9b39fc25229654ce7', grant_type: 'client_credentials', expiration: '1440'}
@@ -134,141 +137,15 @@ $(document).foundation()
 
 
       ready(function() {
-
-
-        //Getting Start Address Ready for initial route generation
+        whichStopAddressInput="";
+        map.on("extent-change", addDesignatedStop);
         inputInitialAddress();
-
-
-        var startGeocoder = new Geocoder({
-          autoComplete:true,
-          map: map,
-        }, dom.byId("startAddress"));
-
-        startGeocoder.startup();
-        startGeocoder.autoNavigate = false;
-        startGeocoder.on("select", function(results){
-
-          clearRoutes();
-        $('#solveRoute').css("visibility","hidden");
-        $('#solveRoute').text("Get Me There Safely!");
-
-          $("#startAddress_input").val(results.result.name.replace("California", "CA"));
-          $('#startAddress').data("ready-status","ready");
-          var points = webMercatorUtils.xyToLngLat(results.result.feature.geometry.x, results.result.feature.geometry.y, true);
-          var instancePoint = new Point(points[0],points[1]);
-          map.graphics.remove(routeStops.shift());
-          routeStops.unshift(map.graphics.add(new esri.Graphic(instancePoint,startSymbol)));
-
-          if($('#startAddress').data("ready-status") == "ready" && $('#destinationAddress').data("ready-status") == "ready"){
-            $('#solveRoute').css("visibility", "visible");
-            $('#solveRoute').text("Get Me There Safely!");
-            $('#solveRoute').data("solvePhase","generate");
-          }
-
-        var minx=map.extent.xmin;
-        var miny=map.extent.ymin;
-        var maxx=map.extent.xmax;
-        var maxy=map.extent.ymax;
-
-
-          xyUnits = webMercatorUtils.lngLatToXY(routeStops[0].geometry.x, routeStops[0].geometry.y);
-
-
-          if(map.extent.xmin>xyUnits[0]){
-            minx = xyUnits[0] - .20 * (map.extent.xmax-xyUnits[0]);
-
-          } else if(map.extent.xmax<xyUnits[0]){
-            maxx = xyUnits[0] + .20 * (xyUnits[0]-map.extent.xmin);
-          }
-
-          if(map.extent.ymin>xyUnits[1]){
-            miny = xyUnits[1] - .20 * (map.extent.ymax-xyUnits[1]);
-
-          } else if(map.extent.ymax<xyUnits[1]){
-            maxy = xyUnits[1] + .20 * (xyUnits[1]-map.extent.ymin);
-          }
-
-          var newExtent = new Extent({xmin:minx,ymin:miny,xmax:maxx,ymax:maxy,spatialReference:{wkid:102100}});
-            map.setExtent(newExtent);
-
-
-
-
-
-        });
-
-
-
-
-var endGeocoder = new Geocoder({
-          autoComplete:true,
-          map: map,
-        }, dom.byId("destinationAddress"));
-
-        endGeocoder.startup();
-        endGeocoder.autoNavigate = false;
-        endGeocoder.on("select", function(results){
-
-          clearRoutes();
-        $('#solveRoute').css("display","none");
-        $('#solveRoute').text("Get Me There Safely!");
-
-          $("#destinationAddress_input").val(results.result.name.replace("California", "CA"));
-          $("#destinationAddress").data("ready-status","ready");
-
-
-          var points = webMercatorUtils.xyToLngLat(results.result.feature.geometry.x, results.result.feature.geometry.y, true);
-          var instancePoint = new Point(points[0],points[1]);
-          map.graphics.remove(routeStops.pop());
-          routeStops.push(map.graphics.add(new esri.Graphic(instancePoint,stopSymbol)));
-
-
-          if($('#startAddress').data("ready-status") == "ready" && $('#destinationAddress').data("ready-status") == "ready"){
-            $('#solveRoute').css('display',"inline");
-            $('#solveRoute').text("Get Me There Safely!");
-            $('#solveRoute').data("solvePhase","generate");
-          }
-
-
-
-
-        var minx=map.extent.xmin;
-        var miny=map.extent.ymin;
-        var maxx=map.extent.xmax;
-        var maxy=map.extent.ymax;
-
-
-          xyUnits = webMercatorUtils.lngLatToXY(routeStops[1].geometry.x, routeStops[1].geometry.y);
-
-
-          if(map.extent.xmin>xyUnits[0]){
-            minx = xyUnits[0] - .20 * (map.extent.xmax-xyUnits[0]);
-
-          } else if(map.extent.xmax<xyUnits[0]){
-            maxx = xyUnits[0] + .20 * (xyUnits[0]-map.extent.xmin);
-          }
-
-          if(map.extent.ymin>xyUnits[1]){
-            miny = xyUnits[1] - .20 * (map.extent.ymax-xyUnits[1]);
-
-          } else if(map.extent.ymax<xyUnits[1]){
-            maxy = xyUnits[1] + .20 * (xyUnits[1]-map.extent.ymin);
-          }
-
-          var newExtent = new Extent({xmin:minx,ymin:miny,xmax:maxx,ymax:maxy,spatialReference:{wkid:102100}});
-            map.setExtent(newExtent);
-
-
-
-        });
-
         var endGeocoderInitial = new Geocoder({
           autoComplete:true,
           map: map,
         }, dom.byId("destinationAddressInitial"));
-        addInitialDestinationStop();
-        map.on("extent-change", addInitialDestinationStop);
+        
+        
 
         endGeocoderInitial.startup();
         endGeocoderInitial.autoNavigate = false;
@@ -283,6 +160,93 @@ var endGeocoder = new Geocoder({
           map.graphics.remove(routeStops.pop());
           routeStops.push(map.graphics.add(new esri.Graphic(instancePoint,stopSymbol)));
         });
+
+
+
+
+
+        var startGeocoder = new Geocoder({
+          autoComplete:true,
+          map: map,
+        }, dom.byId("startAddress"));
+
+        startGeocoder.startup();
+        startGeocoder.autoNavigate = false;
+        startGeocoder.on("select", function(results){
+          clearRoutes();
+          $('.bottom-route-bar').css("display","none");
+          $("#startAddress_input").val(results.result.name.replace("California", "CA"));
+          var points = webMercatorUtils.xyToLngLat(results.result.feature.geometry.x, results.result.feature.geometry.y, true);
+          var instancePoint = new Point(points[0],points[1]);
+          startPoint = instancePoint;
+          map.graphics.remove(routeStops.shift());
+          routeStops.unshift(map.graphics.add(new esri.Graphic(instancePoint,startSymbol)));
+          navigationExtents();
+          if(routeStops[0].geometry && routeStops[1].geometry){
+            $('#solveRoute').css("visibility", "visible");
+          }
+          // var minx=map.extent.xmin;
+          // var miny=map.extent.ymin;
+          // var maxx=map.extent.xmax;
+          // var maxy=map.extent.ymax;
+          // xyUnits = webMercatorUtils.lngLatToXY(routeStops[0].geometry.x, routeStops[0].geometry.y);
+          // if(map.extent.xmin>xyUnits[0]){
+          //   minx = xyUnits[0] - .20 * (map.extent.xmax-xyUnits[0]);
+          // } else if(map.extent.xmax<xyUnits[0]){
+          //   maxx = xyUnits[0] + .20 * (xyUnits[0]-map.extent.xmin);
+          // }
+          // if(map.extent.ymin>xyUnits[1]){
+          //   miny = xyUnits[1] - .20 * (map.extent.ymax-xyUnits[1]);
+
+          // } else if(map.extent.ymax<xyUnits[1]){
+          //   maxy = xyUnits[1] + .20 * (xyUnits[1]-map.extent.ymin);
+          // }
+          // var newExtent = new Extent({xmin:minx,ymin:miny,xmax:maxx,ymax:maxy,spatialReference:{wkid:102100}});
+          // map.setExtent(newExtent);
+        });
+
+        var endGeocoder = new Geocoder({
+          autoComplete:true,
+          map: map,
+        }, dom.byId("destinationAddress"));
+
+        endGeocoder.startup();
+        endGeocoder.autoNavigate = false;
+        endGeocoder.on("select", function(results){
+          var points = webMercatorUtils.xyToLngLat(results.result.feature.geometry.x, results.result.feature.geometry.y, true);
+          var instancePoint = new Point(points[0],points[1]);
+          map.graphics.remove(routeStops.pop());
+          routeStops.push(map.graphics.add(new esri.Graphic(instancePoint,stopSymbol)));
+          clearRoutes();
+          navigationExtents();
+          $('.bottom-route-bar').css("display","none");
+          $("#destinationAddress_input").val(results.result.name.replace("California", "CA"));
+          
+          
+          if(routeStops[0].geometry && routeStops[1].geometry){
+            $('#solveRoute').css("visibility", "visible");
+          }
+
+        // var minx=map.extent.xmin;
+        // var miny=map.extent.ymin;
+        // var maxx=map.extent.xmax;
+        // var maxy=map.extent.ymax;
+        // xyUnits = webMercatorUtils.lngLatToXY(routeStops[1].geometry.x, routeStops[1].geometry.y);
+        // if(map.extent.xmin>xyUnits[0]){
+        //   minx = xyUnits[0] - .20 * (map.extent.xmax-xyUnits[0]);
+        // } else if(map.extent.xmax<xyUnits[0]){
+        //     maxx = xyUnits[0] + .20 * (xyUnits[0]-map.extent.xmin);
+        //   }
+        //   if(map.extent.ymin>xyUnits[1]){
+        //     miny = xyUnits[1] - .20 * (map.extent.ymax-xyUnits[1]);
+        //   } else if(map.extent.ymax<xyUnits[1]){
+        //     maxy = xyUnits[1] + .20 * (xyUnits[1]-map.extent.ymin);
+        //   }
+        //   var newExtent = new Extent({xmin:minx,ymin:miny,xmax:maxx,ymax:maxy,spatialReference:{wkid:102100}});
+        //   map.setExtent(newExtent);
+
+        });
+
 
 
       //$("#startAddress_input").attr("placeholder","Type or Click on Map for Start");
@@ -400,10 +364,10 @@ var endGeocoder = new Geocoder({
             $('#startAddress').css('display',"block");
             $('#destinationAddress').css('display',"block");
             if($('#solveRoute').text()==="Go!"){
-              $('#solveRoute').css("display","block");
+              $('#solveRoute').css("visibility","hidden");
               $('#directionsDisplay').empty();
             } else {
-              $('#solveRoute').css("display","none");
+              //$('#solveRoute').css("display","none");
             }
 
             activateDirections();
@@ -443,52 +407,7 @@ var endGeocoder = new Geocoder({
 
 
         $("#solveRoute").click( function(){
-          $(".map").LoadingOverlay("show");
-          disableButtons();
-          barrierVisibility = true;
-          resetBarriers();
-          $("#featureInfo").html("Crime Grid");
-          $("#crimesButton").data("crimeDisplay","crimeGrid");
-          $("#crimesButton").removeClass("fa-history");
-          $("#crimesButton").removeClass("fa-male");
-          $("#crimesButton").removeClass("fa-warning");
-          $("#crimesButton").addClass("fa-delicious");
-          solveInitialRoute();
-          $(".nav-bar-wrapper").css('display',"none");
-          $('#solveRoute').css("visibility","hidden");
-
-          $("#destinationAddressInitial").css('display',"none");
-          $("#address-wrapper").css('display',"block");
-          removeEventHandlers();
-
-
-          // if($('#solveRoute').data("solve-phase")=="generate"){
-          //   newRouteAllowed = false;
-          //   disableStartEndTextboxes();
-          //   clearRoutes();
-          //   solveRoute();
-          //   barrierVisibility = true;
-          //   resetBarriers();
-          //   $("#crimesButton").data("crimeDisplay","crimeGrid");
-          //   $("#BypassRoute").addClass("BypassRouteSelected");
-          //   $("#BypassRoute").removeClass("BypassRouteUnselected");
-          //   $('#solveRoute').text("Please Wait...");
-          //   $('#solveRoute').data("solvePhase","finalize");
-          // } else if($('#solveRoute').data("solvePhase","finalize")){
-          //   $('#solveRoute').css("display","none");
-          //   $('#solveRoute').text("Get Me There Safely!");
-          //   if(routes.length > 1){
-          //     map.graphics.remove(routes.shift());
-          //   }
-
-          //   $("#BypassRoute").css('display',"none");
-          //   $("#NormalRoute").css('display',"none");
-          //   barrierVisibility = false;
-          //   resetBarriers();
-          //   $("#crimesButton").data("crimeDisplay","none");
-          //   $('#myLocation').css("display","block");
-          //   $('#solveRoute').data("solvePhase","generate");
-          // }
+          solveRouteClick();
         });
 
 
@@ -502,30 +421,29 @@ var endGeocoder = new Geocoder({
           barrierVisibility = false;
           resetBarriers(); 
           $("#featuresButton").data("featuresDisplay","none");
-          $("#featureInfo").html("");
+          $("#crimeInfo").html("Crime Grid");
           $("#crimesButton").data("crimeDisplay","none");
           $("#crimesButton").removeClass("fa-history");
           $("#crimesButton").removeClass("fa-male");
           $("#crimesButton").removeClass("fa-warning");
           $("#crimesButton").addClass("fa-delicious");
+
+          $("#crimesButton").addClass("iconSelected");
+          $("#crimesButton").removeClass("iconUnselected");
+          $("#featuresButton").addClass("iconUnselected");
+          $("#featuresButton").removeClass("iconSelected");
+          map.centerAndZoom(startPoint,17);
+
+
         })
 
         $('#startAddress').click(function() {
           whichStopAddressInput = "start";
-          addStartStop();
-            if($('#startAddress').data("inputState")=="mapTap"){
-              $('#startAddress').data("input-state","typeTap");
-            } else if($('#startAddress').data("inputState")=="typeTap"){
-              $('#startAddress').prop("readonly",false);
-            }
+          addDesignatedStop();
+
 
         });
 
-        $('.fa-location-arrow').click(function(){
-          whichStopAddressInput = "start";
-          addStartStop();
-          $('#startAddress_input').select();
-        })
 
 
 
@@ -543,6 +461,7 @@ var endGeocoder = new Geocoder({
             if($(this).val()==""){
               map.graphics.remove(routeStops.shift());
               routeStops.unshift({});
+              clearRoutes();
             }
           });
 
@@ -550,26 +469,15 @@ var endGeocoder = new Geocoder({
 
 
         $('#startAddress').keyup(function(){
-          $('#startAddress').data("ready-status","notReady");
-          $('#solveRoute').css('display',"none");
+          $('#solveRoute').css("visibility", "hidden");
         });
 
         $('#destinationAddress').click(function() {
           $("#destinationAddress_input").attr("placeholder","");
           whichStopAddressInput = "end";
-          addDestinationStop();
-          if($('#destinationAddress').data("inputState")=="mapTap"){
-              $('#destinationAddress').data("input-state","typeTap");
-            } else if($('#destinationAddress').data("inputState")=="typeTap"){
-              $('#destinationAddress').prop("readonly",false);
-            }
+          addDesignatedStop();
         });
 
-        $('.fa-map-marker').click(function(){
-          whichStopAddressInput = "end";
-          addDestinationStop();
-          $('#destinationAddress_input').select();
-        })
 
         $('#destinationAddress_input').each(function(){
           $(this).focus(function(){
@@ -588,14 +496,14 @@ var endGeocoder = new Geocoder({
             if($(this).val()==""){
               map.graphics.remove(routeStops.pop());
               routeStops.push({});
+              clearRoutes();
             }
           });
 
         });
 
         $('#destinationAddress_input').keyup(function(){
-          $('#destinationAddress').data("ready-status","notReady");
-          $('#solveRoute').css('display',"none");
+          $('#solveRoute').css('visibility',"hidden");
         });
 
 
@@ -639,19 +547,6 @@ $('#destinationAddressInitial').click(function() {
 
         $("#resetBtn").click( function () {
           whichStopAddressInput="initial";
-          // $("#startAddress").data("ready-status","notReady");
-          // $("#destinationAddress").data("ready-status","notReady");
-          // if($("#startAddress").attr("disabled")){
-          //   enableStartEndTextboxes()
-          // }
-          
-
-
-          // newRouteAllowed = false;
-          // if ($("#resetBtn").hasClass("disabled") == true) {
-          //   return false
-          // }
-          // console.log($('#myLocation').css('display'));
           chosenRouteDirections = "";
           clearStops();
           routeStops= [{},{}];
@@ -675,6 +570,24 @@ $('#destinationAddressInitial').click(function() {
           $('#directionsDisplay').empty();
           $('#solveRoute').css("visibility", "hidden");
           $("#featureInfo").html("");
+          $("#crimeInfo").html("");
+
+          $("#crimesButton").removeClass("fa-delicious");
+          $("#crimesButton").removeClass("fa-history");
+          $("#crimesButton").removeClass("fa-male");
+          $("#crimesButton").addClass("fa-warning");
+          
+          $("#featuresButton").removeClass("fa-wifi");
+          $("#featuresButton").removeClass("fa-cutlery");
+          $("#featuresButton").addClass("fa-shield");
+
+
+
+          $("#featuresButton").removeClass("iconSelected");
+          $("#crimesButton").removeClass("iconSelected");
+          $("#featuresButton").addClass("iconUnselected");
+          $("#crimesButton").addClass("iconUnselected");
+
 
           $('#BypassRoute').css('display',"none");
           $('#NormalRoute').css('display',"none");
@@ -803,36 +716,44 @@ $('#destinationAddressInitial').click(function() {
 //9/14
 $("#crimesButton").click(function(){
 
-  clearFeaturesData();
-  
-  $("#featuresButton").data("featuresDisplay","none");
+  $("#crimesButton").removeClass("iconUnselected");
+  $("#crimesButton").addClass("iconSelected");
 if($("#crimesButton").data("crimeDisplay")=="none"){
+  $("#crimesButton").removeClass("iconUnselected");
+  $("#crimesButton").addClass("iconSelected");
   barrierVisibility = true;
 
   resetBarriers(); 
-  $("#featureInfo").html("Crime Grid");
+
+  $("#crimeInfo").html("Crime Grid");
 
   $("#crimesButton").data("crimeDisplay","crimeGrid");
     $("#crimesButton").removeClass("fa-warning");
   $("#crimesButton").addClass("fa-delicious");
 } else if($("#crimesButton").data("crimeDisplay")=="crimeGrid"){
+  $("#crimesButton").removeClass("iconUnselected");
+  $("#crimesButton").addClass("iconSelected");
   barrierVisibility = false;
   resetBarriers();
   crimesPlot();
-  $("#featureInfo").html("Crime in Last 24 Hours");
+  $("#crimeInfo").html("Crime in Last 24 Hours");
   $("#crimesButton").data("crimeDisplay","crimePoints");
   $("#crimesButton").removeClass("fa-delicious");
   $("#crimesButton").addClass("fa-history");
 }else if($("#crimesButton").data("crimeDisplay")=="crimePoints"){
+  $("#crimesButton").removeClass("iconUnselected");
+  $("#crimesButton").addClass("iconSelected");
   clearCrimesData();
   sexOffendersPlot();
-  $("#featureInfo").html("Sex Offenders");
+  $("#crimeInfo").html("Sex Offenders");
     $("#crimesButton").removeClass("fa-history");
   $("#crimesButton").addClass("fa-male");
 $("#crimesButton").data("crimeDisplay","sexOffenders");
 } else if($("#crimesButton").data("crimeDisplay")=="sexOffenders"){
+  $("#crimesButton").removeClass("iconSelected");
+  $("#crimesButton").addClass("iconUnselected");
   clearCrimesData();
-  $("#featureInfo").html("");
+  $("#crimeInfo").html("");
   $("#crimesButton").removeClass("fa-male");
   $("#crimesButton").addClass("fa-warning");
 $("#crimesButton").data("crimeDisplay","none");
@@ -843,24 +764,19 @@ $("#crimesButton").data("crimeDisplay","none");
 
 
 $("#featuresButton").click(function(){
-    barrierVisibility = false;
-    resetBarriers();
-    clearCrimesData();
-
-  $("#crimesButton").removeClass("fa-delicious");
-  $("#crimesButton").removeClass("fa-history");
-  $("#crimesButton").removeClass("fa-male");
-  $("#crimesButton").addClass("fa-warning");
-    $("#crimesButton").data("crimeDisplay","none");
 
     if($("#featuresButton").data("featuresDisplay")=="none"){
+          $("#featuresButton").removeClass("iconUnselected");
+  $("#featuresButton").addClass("iconSelected");
       clearFeaturesData();
       openBusinessPlot();
       $("#featureInfo").html("Open Restaurants/Bars");
       $("#featuresButton").data("featuresDisplay","openBusiness");
-      $("#featuresButton").removeClass("fa-smile-o");
+      $("#featuresButton").removeClass("fa-shield");
       $("#featuresButton").addClass("fa-cutlery");
     } else if($("#featuresButton").data("featuresDisplay")=="openBusiness"){
+          $("#featuresButton").removeClass("iconUnselected");
+  $("#featuresButton").addClass("iconSelected");
       clearFeaturesData();
       wifiLocationsPlot();
       $("#featureInfo").html("Wifi Locations");
@@ -868,11 +784,13 @@ $("#featuresButton").click(function(){
       $("#featuresButton").removeClass("fa-cutlery");
       $("#featuresButton").addClass("fa-wifi");
     } else if($("#featuresButton").data("featuresDisplay")=="wifiLocations"){
+          $("#featuresButton").removeClass("iconSelected");
+  $("#featuresButton").addClass("iconUnselected");
       clearFeaturesData();
       $("#featureInfo").html("");
       $("#featuresButton").data("featuresDisplay","none");
       $("#featuresButton").removeClass("fa-wifi");
-      $("#featuresButton").addClass("fa-smile-o");
+      $("#featuresButton").addClass("fa-shield");
     }
   });
 
@@ -954,16 +872,17 @@ routeParams.outSpatialReference = {"wkid":102100};
 
       function inputAddress(){
         clearRoutes();
-        $('#solveRoute').css("display","none");
-        $('#solveRoute').text("Get Me There Safely!");
+        $('#solveRoute').css("visibility","hidden");
+        //$('#solveRoute').text("Get Me There Safely!");
         navigator.geolocation.getCurrentPosition(function(position){
           long = position.coords.longitude;
           lat = position.coords.latitude;
           centerpoint = new Point(long,lat);
           if(whichStopAddressInput == "start"){
+            startPoint = centerpoint;
             map.graphics.remove(routeStops.shift());
             routeStops.unshift(map.graphics.add(new esri.Graphic(centerpoint,startSymbol)));
-          } else if(whichStopAddressInput == "end" || whichStopAddressInput == "endInitial"){
+          } else if(whichStopAddressInput == "end"){
             map.graphics.remove(routeStops.pop());
             routeStops.push(map.graphics.add(new esri.Graphic(centerpoint,stopSymbol)));
           }
@@ -982,7 +901,7 @@ routeParams.outSpatialReference = {"wkid":102100};
               $("#myLocation").off('click', inputAddress);
 
               if($('#startAddress').val() && $('#destinationAddress').val()){
-                $('#solveRoute').css('display',"inline");
+                $('#solveRoute').css("visibility", "visible");
               }
             },
             error: function (xhr, textStatus, errorThrown) {
@@ -1000,16 +919,13 @@ routeParams.outSpatialReference = {"wkid":102100};
 
 
       function inputInitialAddress(){
-
         $("#startAddress_input").attr("placeholder","Your Location...");
         navigator.geolocation.getCurrentPosition(function(position){
           long = position.coords.longitude;
           lat = position.coords.latitude;
           initialCenterPoint = new Point(long,lat);
-
-          // map.graphics.remove(routeStops.shift());
-          // routeStops.unshift(map.graphics.add(new esri.Graphic(initialCenterPoint,startSymbol)));
-
+          $("#myLocation").css("visibility", "visible");
+          myLocationAvailable = true;
           $.ajax({
             type: 'POST',
             url: "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/reverseGeocode?location="+long+"%2C+"+lat+"&distance=200&outSR=&f=pjson",
@@ -1029,29 +945,42 @@ routeParams.outSpatialReference = {"wkid":102100};
 
 
       function plotInitialStart(){
+        startPoint = initialCenterPoint;
         map.graphics.remove(routeStops.shift());
         routeStops.unshift(map.graphics.add(new esri.Graphic(initialCenterPoint,startSymbol)));
+        console.log(routeStops[0].geometry);
+      }
 
-
+      function addDesignatedStop(){
+        console.log(whichStopAddressInput);
+        if(whichStopAddressInput=="initial"){
+          addInitialDestinationStop();
+        } else if(whichStopAddressInput=="start"){
+          addStartStop();
+        } else if(whichStopAddressInput=="end"){
+          addDestinationStop();
+        } else {
+          console.log("remove Event Handlers called");
+          removeEventHandlers();
+        }
+        console.log(whichStopAddressInput);
+        
       }
 
 
       function addStartStop(){
-        removeEventHandlers();
         $("#myLocation").on('click', inputAddress);
-
+        removeEventHandlers();
         mapOnClick_addStops_connect = map.on("click", function(evt){
-          whichStopAddressInput = "";
-        $("#startAddress").data("ready-status","notReady");
-        $('#solveRoute').css("display","none");
-        $('#solveRoute').data("solvePhase","hidden");
+        $('#solveRoute').css("visibility", "hidden");
         $("#BypassRoute").css('display',"none");
         $("#NormalRoute").css('display',"none");
           clearRoutes();
           var longlat = webMercatorUtils.xyToLngLat(evt.mapPoint["x"], evt.mapPoint["y"], true);
           console.log("There are " + routeStops.length + " stops");
           map.graphics.remove(routeStops.shift());
-          routeStops.unshift(map.graphics.add(new esri.Graphic(new Point(longlat),startSymbol)));
+          startPoint = new Point(longlat);
+          routeStops.unshift(map.graphics.add(new esri.Graphic(startPoint,startSymbol)));
           $.ajax({
             type: 'POST',
             url: "https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/reverseGeocode?location="+longlat[0]+"%2C+"+longlat[1]+"&distance=200&outSR=&f=pjson",
@@ -1061,17 +990,16 @@ routeParams.outSpatialReference = {"wkid":102100};
               if(parsedResults.address){
 
                 $("#startAddress_input").val(parsedResults.address.Match_addr.replace("California", "CA"));
-                $("#startAddress").data("ready-status","ready");
-                if($('#startAddress').data("ready-status") == "ready" && $('#destinationAddress').data("ready-status") == "ready"){
-                  $('#solveRoute').css('display',"inline");
-                  $('#solveRoute').data("solvePhase","generate");
+
+                if(routeStops[0].geometry && routeStops[1].geometry){
+                  $('#solveRoute').css("visibility", "visible");
                 }
               } else {
                 console.log(routeStops.length);
                 map.graphics.remove(routeStops.shift());
                 routeStops.unshift({});
                 $("#startAddress_input").val("Please Try Again");
-                $('#solveRoute').css('display',"none");
+                $('#solveRoute').css("visibility", "hidden");
               }
             },
             error: function (xhr, textStatus, errorThrown) {
@@ -1081,7 +1009,6 @@ routeParams.outSpatialReference = {"wkid":102100};
             }
           });
 
-          removeEventHandlers();
 
         });
 
@@ -1089,20 +1016,18 @@ routeParams.outSpatialReference = {"wkid":102100};
 
       function addDestinationStop(){
 
-        removeEventHandlers();
         $("#myLocation").on('click', inputAddress);
         mapOnClick_addStops_connect = map.on("click", function(evt){
-          whichStopAddressInput = "";
-          $("#destinationAddress").data("ready-status","notReady");
           $("#BypassRoute").css('display',"none");
         $("#NormalRoute").css('display',"none");
-        $('#solveRoute').css("display","none");
-        $('#solveRoute').text("Get Me There Safely!");
+        $('#solveRoute').css("visibility", "hidden");
+        
           clearRoutes();
           var longlat = webMercatorUtils.xyToLngLat(evt.mapPoint["x"], evt.mapPoint["y"], true);
           console.log("There are " + routeStops.length + " stops");
           map.graphics.remove(routeStops.pop());
-          routeStops.push(map.graphics.add(new esri.Graphic(new Point(longlat),stopSymbol)));
+          endPoint = new Point(longlat)
+          routeStops.push(map.graphics.add(new esri.Graphic(endPoint,stopSymbol)));
           $.ajax({
             type: 'POST',
             url: "https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/reverseGeocode?location="+longlat[0]+"%2C+"+longlat[1]+"&distance=200&outSR=&f=pjson",
@@ -1111,17 +1036,16 @@ routeParams.outSpatialReference = {"wkid":102100};
               console.log(parsedResults);
               if(parsedResults.address){
                 $("#destinationAddress_input").val(parsedResults.address.Match_addr.replace("California", "CA"));
-                $("#destinationAddress").data("ready-status","ready");
-                if($('#startAddress').data("ready-status") == "ready" && $('#destinationAddress').data("ready-status") == "ready"){
-                  $('#solveRoute').css('display',"inline");
-                  $('#solveRoute').data("solvePhase","generate");
+                
+                if(routeStops[0].geometry && routeStops[1].geometry){
+                  $('#solveRoute').css("visibility", "visible");
                 }
               } else {
                 console.log(routeStops.length);
                 map.graphics.remove(routeStops.pop());
                 routeStops.push({});
                 $("#destinationAddress_input").val("Please Try Again");
-                $('#solveRoute').css('display',"none");
+                $('#solveRoute').css("visibility", "hidden");
               }
 
             },
@@ -1132,12 +1056,12 @@ routeParams.outSpatialReference = {"wkid":102100};
             }
           });
 
-          removeEventHandlers();
         });
       }
 
 
       function addInitialDestinationStop(){
+        console.log("add initial dest called");
         mapOnClick_addStops_connect = map.on("click", function(evt){
           var longlat = webMercatorUtils.xyToLngLat(evt.mapPoint["x"], evt.mapPoint["y"], true);
           map.graphics.remove(routeStops.pop());
@@ -1153,6 +1077,7 @@ routeParams.outSpatialReference = {"wkid":102100};
                 $("#destinationAddress_input").val(parsedResults.address.Match_addr.replace("California", "CA"));
                 map.centerAt(evt.mapPoint);
                   $('#solveRoute').css("visibility", "visible");
+                  console.log(whichStopAddressInput);
                 } else {
                   console.log(routeStops.length);
                   map.graphics.remove(routeStops.pop());
@@ -1166,7 +1091,13 @@ routeParams.outSpatialReference = {"wkid":102100};
               return false;
             }
           });
+                  console.log(whichStopAddressInput)
+        if(whichStopAddressInput != "initial"){
+          removeEventHandlers();
+        }
         });
+
+
       }
 
 
@@ -1260,7 +1191,6 @@ routeParams.outSpatialReference = {"wkid":102100};
               myAddress=parsedResults.address.Address;
 
               if(parsedResults.address && whichStopAddressInput=="initial"){
-                clearStops();
                 $('#solveRoute').css("visibility","hidden");
                 $("#destinationAddressInitial_input").val("");
                 $("#destinationAddressInitial_input").attr("placeholder","Your Location is ... "+ myAddress);
@@ -1270,32 +1200,28 @@ routeParams.outSpatialReference = {"wkid":102100};
               if(whichStopAddressInput == "start"){
                 if(parsedResults.address){
                   $("#startAddress_input").val(parsedResults.address.Match_addr.replace("California", "CA"));
-                  $("#startAddress").data("ready-status","ready");
-                  if($('#startAddress').data("ready-status") == "ready" && $('#destinationAddress').data("ready-status") == "ready"){
-                    $('#solveRoute').css('display',"inline");
-                    $('#solveRoute').data("solvePhase","generate");
+                  if(routeStops[0].geometry && routeStops[1].geometry){
+                    $('#solveRoute').css("visibility", "visible");
                   }
                 } else {
-                  map.graphics.remove(routeStops.shift());
-                  routeStops.unshift({});
+                  // map.graphics.remove(routeStops.shift());
+                  // routeStops.unshift({});
                   $("#startAddress_input").val("Please Try Again");
-                  $('#solveRoute').css('display',"none");
+                  $('#solveRoute').css("visibility", "hidden");
                 }
 
               } else if(whichStopAddressInput == "end"){
                 if(parsedResults.address){
                   $("#destinationAddress_input").val(parsedResults.address.Match_addr.replace("California", "CA"));
-                  $("#destinationAddress").data("ready-status","ready");
-                  if($('#startAddress').data("ready-status") == "ready" && $('#destinationAddress').data("ready-status") == "ready"){
-                    $('#solveRoute').css('display',"inline");
-                    $('#solveRoute').data("solvePhase","generate");
+                  if(routeStops[0].geometry && routeStops[1].geometry){
+                    $('#solveRoute').css("visibility", "visible");
+
                   }
                 } else {
                   map.graphics.remove(routeStops.pop());
                   routeStops.push(map.graphics.add({}));
                   $("#destinationAddress_input").val("Please Try Again");
                   $('#solveRoute').css('display',"none");
-
                 }
               }
 
@@ -1307,7 +1233,7 @@ routeParams.outSpatialReference = {"wkid":102100};
               }
             });
 
-console.log(whichStopAddressInput);
+          console.log(whichStopAddressInput);
           if(whichStopAddressInput=="start" ||  whichStopAddressInput=="end"){
             xyUnits = webMercatorUtils.lngLatToXY(long, lat);
 
@@ -1320,7 +1246,7 @@ console.log(whichStopAddressInput);
             }
 
             if(map.extent.ymin>xyUnits[1]){
-              miny = xyUnits[1] - .10 * (map.extent.ymax-xyUnits[1]);
+              miny = xyUnits[1] - .30 * (map.extent.ymax-xyUnits[1]);
 
             } else if(map.extent.ymax<xyUnits[1]){
               maxy = xyUnits[1] + .10 * (xyUnits[1]-map.extent.ymin);
@@ -1404,6 +1330,7 @@ console.log(whichStopAddressInput);
 
       //Stops listening for click events to add barriers and stops (if they've already been wired)
       function removeEventHandlers() {
+
         if (mapOnClick_addStops_connect) {
           mapOnClick_addStops_connect.remove();
         }
@@ -1417,7 +1344,6 @@ console.log(whichStopAddressInput);
           myLocationToAddress_connect.remove();
         }
         $("#myLocation").off('click', inputAddress);
-
       }
 
       function syncRouteWB(routeStops) { //With Barriers
@@ -1484,7 +1410,6 @@ console.log(whichStopAddressInput);
                         }
 
                         chosenRouteDirections = sRouteWB.directions;
-                        $('#solveRoute').data("solvePhase","finalize");
 
             
             
@@ -1577,11 +1502,38 @@ console.log(whichStopAddressInput);
 
       function solveInitialRoute() {
         removeEventHandlers();
-        console.log(initialCenterPoint);
         plotInitialStart();
         navigationExtents();
         syncRouteWOB(routeStops);
         syncRouteWB(routeStops);
+      }
+
+      function solveRouteClick() {
+        $(".map").LoadingOverlay("show");
+          barrierVisibility = true;
+          resetBarriers();
+          $("#crimeInfo").html("Crime Grid");
+          $("#crimesButton").data("crimeDisplay","crimeGrid");
+          $("#crimesButton").removeClass("fa-history");
+          $("#crimesButton").removeClass("fa-male");
+          $("#crimesButton").removeClass("fa-warning");
+          $("#crimesButton").addClass("fa-delicious");
+
+          $("#crimesButton").removeClass("iconUnselected");
+          $("#crimesButton").addClass("iconSelected");
+
+          if(routeStops[0].geometry){
+            solveRoute();
+          } else {
+            solveInitialRoute();
+          }
+          $(".nav-bar-wrapper").css('display',"none");
+          $('#solveRoute').css("visibility","hidden");
+          $("#destinationAddressInitial").css('display',"none");
+          $("#address-wrapper").css('display',"block");
+          
+        whichStopAddressInput="";
+        map.on("extent-change", addDesignatedStop);
       }
 
       //Clears all routes
@@ -2410,8 +2362,8 @@ function navigationExtents() {
     maxy = Math.max(startCoord.y,endCoord.y) + originalYDiff;
     miny = Math.min(startCoord.y,endCoord.y) - originalYDiff;
   } else {
-    maxy = Math.max(startCoord.y,endCoord.y) + .2* Math.abs(endCoord.y-startCoord.y);
-    miny = Math.min(startCoord.y,endCoord.y) - .2* Math.abs(endCoord.y-startCoord.y);
+    maxy = Math.max(startCoord.y,endCoord.y) + .6* Math.abs(endCoord.y-startCoord.y);
+    miny = Math.min(startCoord.y,endCoord.y) - .4* Math.abs(endCoord.y-startCoord.y);
   }
 
   newExtent = new Extent({xmin:minx,ymin:miny,xmax:maxx,ymax:maxy,spatialReference:{wkid:102100}});
