@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html class="no-js" lang="en" dir="ltr">
 <head>
@@ -125,7 +127,7 @@
   </div>
 
   <!-- Turn-by-turn -->
-  <div id='directions-button' class="small-12 large-12 columns directions-button-active" style="display:none;">
+  <div id='directions-button' class="small-12 large-12 columns directions-button-active directions-button-on" style="display:none;">
     <span>Click Here For Directions!</span>
   </div>
 
@@ -189,7 +191,7 @@
 
 
           <div class="row90pct">
-            <a id="myLocation" class="bottom-circle">
+            <a id="myLocation" class="bottom-circle iconUnselected" style="visibility: hidden">
               <div class="horizontal-center fa fa-crosshairs"></div>
             </a>
           </div>
@@ -206,14 +208,15 @@
       <div id = "routeDistance"><span id="calc-time-dist"></span>Begin! </div>
         <div id="beginRoute" class="mint-background"> <i class="fa fa-blind" aria-hidden="true"></i></div>
     </div>
-
-      <div id="featureInfo" class="" data-solve-phase="generate" style="visibility:visible;"> </div>
-
+    <div class="extraData">
+      <div id="featureInfo" class="" style="visibility:visible;"> </div>
+      <div id="crimeInfo" class="" style="visibility:visible;"> </div>
+      </div>
       <div class="bottom-buttons">
-        <div class="quarter-width"><button id="resetBtn" class="bottom-circle"><i class="fa fa-refresh" aria-hidden="true"></i></button></div>
-        <div class="quarter-width"><button id="featuresButton" class='bottom-circle fa fa-smile-o' data-features-display="none"></button></div>
-        <div class="quarter-width"><button id="crimesButton" class='bottom-circle fa fa-warning' data-crime-display="none"></button></div>
-        <div class="quarter-width"><div class="bottom-circle call-police"><a data-open="callPolicePopup"><i class="fa fa-phone" aria-hidden="true"></i></a></div></div>
+        <div class="quarter-width"><button id="resetBtn" class="bottom-circle iconUnselected"><i class="fa fa-refresh" aria-hidden="true"></i></button></div>
+        <div class="quarter-width"><button id="featuresButton" class='bottom-circle fa fa-shield iconUnselected' data-features-display="none"></button></div>
+        <div class="quarter-width"><button id="crimesButton" class='bottom-circle fa fa-warning iconUnselected' data-crime-display="none"></button></div>
+        <div class="quarter-width"><div class="bottom-circle call-police iconUnselected"><a data-open="callPolicePopup"><i class="fa fa-phone" aria-hidden="true"></i></a></div></div>
       </div>
 
 
