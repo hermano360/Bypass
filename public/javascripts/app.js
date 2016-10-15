@@ -923,6 +923,8 @@ routeParams.outSpatialReference = {"wkid":102100};
 
 
       function inputInitialAddress(){
+
+        initialCenterPoint = new Point(-118.4974,34.0090);
         $("#startAddress_input").attr("placeholder","Your Location...");
         navigator.geolocation.getCurrentPosition(function(position){
           long = position.coords.longitude;
