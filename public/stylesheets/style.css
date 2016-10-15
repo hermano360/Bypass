@@ -22,7 +22,6 @@ h1 {
   font-family:
 }
 
-
 .app-info{
   position: absolute;
   color: gray;
@@ -53,6 +52,7 @@ h1 {
 a{
   color: #fff;
 }
+
 
 .infoBtn a {
   color: black;
@@ -85,6 +85,7 @@ a{
 .input-wrapper {
   padding-left:0;
   padding-right:0;
+
 
 }
 #terms-and-conditions {
@@ -297,6 +298,7 @@ a{
   padding-bottom:1px;
   
   font-size:.65rem;
+
 }
 
 #featureInfo {
@@ -317,6 +319,7 @@ a{
 }
 
 
+
 #routeNameForm {
 	position: absolute;
 	bottom: 170px;
@@ -335,6 +338,7 @@ a{
 #map {
   position: absolute;
   width:100%;
+
 
   top: 0px;
   bottom: 0px;
@@ -435,7 +439,9 @@ a{
   }
 
   .routeChoice {
+
     cursor:pointer;
+
     position:relative;
     width:60%;
     left:20%;
@@ -443,6 +449,7 @@ a{
     color:#fff;
     padding-bottom: 2%;
   }
+
 
   .halfContainer {
     width:45%;
@@ -459,15 +466,19 @@ a{
     width:70%;
   }
 
+
   .routeSelected {
+
 
     border-bottom: 3px solid #fff;
   }
 
 
+
   .routeUnselected {
     border-bottom: 3px solid #26A69A;
   }
+
 
   .bottomRightNav {
     right: 20px;
@@ -475,6 +486,8 @@ a{
     position: absolute;
     width:102px;
   }
+
+
 
 
   .bottomRightNav > button {
@@ -486,6 +499,7 @@ a{
 
     width: 100%;
   }
+
 
   #destinationAddress {
 
@@ -501,14 +515,6 @@ a{
 
 
 
-/*#startAddress.directions-textbox {
-  background-image:url('../images/directions_arrow.png');
-  }*/
-
-/*}
-#destinationAddress.directions-textbox {
-  background-image:url('../images/pin.png');
-  }*/
 
 
   .iconSelected {
@@ -560,14 +566,6 @@ a{
 }
 
 
-  .close-button {
-
-    top: 5px;
-    right: 5px;
-    position: absolute;
-    font-size:40px;
-    z-index: 5;
-  }
 
   #infoPopup {
     background: #B5B5B5;
@@ -577,10 +575,8 @@ a{
 
   #directions-button {
 
+
   }
-
-
-
 
   .rightAlign {
     float:right;
@@ -606,6 +602,16 @@ a{
     height: 50%;
   }
 
+
+  .esriGeocoderContainer {
+    width: 100% !important;
+    height: 100% !important;
+    margin: 0px 0px 0px 0px  !important;
+  }
+
+    .esriGeocoderResults {
+ color:#000;
+  }
 
 
   .esriGeocoderContainer {
@@ -768,10 +774,35 @@ a{
   padding-right: 55px;
   border: 1px solid #ccc;
   background-color: #f2f2f2;
+
 }
 
 #beginRoute {
   cursor:pointer;
+  position:absolute;
+  float:right;
+  height:50px;
+  border-radius: 50%;
+  width:50px;
+  right:0;
+  text-align: center;
+  border: 1px solid #ccc;
+  color: #fff;
+
+}
+#calc-time-dist {
+  position:relative;
+  font-family: 'Raleway', sans-serif;
+  font-weight: bolder;
+  font-size: 18px;
+float:left;
+padding-left: 10px;
+
+}
+
+
+
+#beginRoute {
   position:absolute;
   float:right;
   height:50px;
