@@ -927,12 +927,11 @@ routeParams.outSpatialReference = {"wkid":102100};
         navigator.geolocation.getCurrentPosition(function(position){
           long = position.coords.longitude;
           lat = position.coords.latitude;
-
-          //Temporary Tests
-
-          initialCenterPoint = new Point(-118.496475, 34.024212);
+          initialCenterPoint = new Point(long,lat);
           $("#myLocation").css("visibility", "visible");
           myLocationAvailable = true;
+
+          map.centerAndZoom(initialCenterPoint,14);
           $.ajax({
             type: 'POST',
             url: "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/reverseGeocode?location="+long+"%2C+"+lat+"&distance=200&outSR=&f=pjson",
@@ -959,10 +958,11 @@ routeParams.outSpatialReference = {"wkid":102100};
       }
 
       function addDesignatedStop(){
+
         console.log(whichStopAddressInput);
         if(whichStopAddressInput=="initial"){
-          removeEventHandlers();
           addInitialDestinationStop();
+          
         } else if(whichStopAddressInput=="start"){
           removeEventHandlers();
           addStartStop();
@@ -987,10 +987,11 @@ routeParams.outSpatialReference = {"wkid":102100};
         $("#NormalRoute").css('display',"none");
           clearRoutes();
           var longlat = webMercatorUtils.xyToLngLat(evt.mapPoint["x"], evt.mapPoint["y"], true);
-          console.log("There are " + routeStops.length + " stops");
-          map.graphics.remove(routeStops.shift());
           startPoint = new Point(longlat);
+          console.log(routeStops.length);
+          map.graphics.remove(routeStops.shift());
           routeStops.unshift(map.graphics.add(new esri.Graphic(startPoint,startSymbol)));
+          console.log(routeStops.length);
           $.ajax({
             type: 'POST',
             url: "https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/reverseGeocode?location="+longlat[0]+"%2C+"+longlat[1]+"&distance=200&outSR=&f=pjson",
@@ -1086,7 +1087,7 @@ routeParams.outSpatialReference = {"wkid":102100};
               console.log(parsedResults);
               if(parsedResults.address){
                 $("#destinationAddressInitial_input").val(parsedResults.address.Match_addr.replace("California", "CA"));
-                $("#destinationAddress_input").val(parsedResults.address.Match_addr.replace("California", "CA"));
+                // $("#destinationAddress_input").val(parsedResults.address.Match_addr.replace("California", "CA"));
                 map.centerAt(evt.mapPoint);
                   $('#solveRoute').css("visibility", "visible");
                   console.log(whichStopAddressInput);
@@ -1371,7 +1372,7 @@ routeParams.outSpatialReference = {"wkid":102100};
 
         //temporarily change for testing 5 where barriers.length was before
 
-        for(var i = 0; i< 5; i++){
+        for(var i = 0; i< barriers.length; i++){
 
           polygonBarriersURL += "{\"geometry\":{\"rings\":[[";
           for(var j = 0; j < 5/*barriers[i].geometry.rings[0].length*/; j++){
@@ -1391,7 +1392,6 @@ routeParams.outSpatialReference = {"wkid":102100};
 
         var finalSynchronousBarriersURL = 'https://route.arcgis.com/arcgis/rest/services/World/Route/NAServer/Route_World/solve?'+walkModeUrl+'token='+globalToken+'&stops='+stops[0][0]+','+stops[0][1]+';'+stops[1][0]+','+stops[1][1]+"&"+ polygonBarriersURL+'&f=json&returnPolygonBarriers=true';
 
-        console.log(stops);
         $.ajax({
           type: 'POST',
           url: finalSynchronousBarriersURL,
@@ -1402,6 +1402,11 @@ routeParams.outSpatialReference = {"wkid":102100};
             $("#BypassRoute").css('display',"inline-block");
             $("#NormalRoute").css('display',"inline-block");
             $(".bottom-route-bar").css('display',"block");
+          $("#resetBtn").css("visibility","visible");
+          $("#featuresButton").css("visibility","visible");
+          $("#crimesButton").css("visibility","visible");
+          $(".call-police").css("visibility","visible");
+          $("#myLocation").css("visibility","visible");
 
             
                         $('#directions-button').css('display',"inline");
@@ -1528,9 +1533,16 @@ routeParams.outSpatialReference = {"wkid":102100};
       }
 
       function solveRouteClick() {
+       console.log($("#destinationAddress_input").val($("#destinationAddressInitial_input").val()));
         $(".map").LoadingOverlay("show");
           barrierVisibility = true;
           resetBarriers();
+
+          $("#resetBtn").css("visibility","hidden");
+          $("#featuresButton").css("visibility","hidden");
+          $("#crimesButton").css("visibility","hidden");
+          $(".call-police").css("visibility","hidden");
+          $("#myLocation").css("visibility","hidden");
           $("#crimeInfo").html("Crime Grid");
           $("#crimesButton").data("crimeDisplay","crimeGrid");
           $("#crimesButton").removeClass("fa-history");
