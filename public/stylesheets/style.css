@@ -61,21 +61,6 @@ a{
   right: 5px;
 }
 
-.emergencyBtn {
-  font-size: 45px;
-  width:37px;
-  min-width:37px;
-  height:50px;
-  position:absolute;
-  right: 20px;
-  bottom: 18px;
-}
-
-.emergencyBtn a {
-  color: #d37984;
-  min-width: 105px;
-}
-
 #callEmergencyPopup > a {
   width: 100%;
   margin-top:40px;
@@ -118,6 +103,10 @@ a{
 
 .reveal {
   padding-top:20px;
+}
+
+.reveal-overlay {
+  z-index:10;
 }
 
 [type=color], [type=date], [type=datetime-local], [type=datetime], [type=email], [type=month], [type=number], [type=password], [type=search], [type=tel], [type=text], [type=time], [type=url], [type=week], textarea, [type='text']:focus, [type='password']:focus, [type='date']:focus, [type='datetime']:focus, [type='datetime-local']:focus, [type='month']:focus, [type='week']:focus, [type='email']:focus, [type='number']:focus, [type='search']:focus, [type='tel']:focus, [type='time']:focus, [type='url']:focus, [type='color']:focus, textarea:focus {
@@ -293,7 +282,7 @@ a{
   font-weight: bold;
   padding-top:1px;
   padding-bottom:1px;
-  
+
   font-size:.65rem;
 }
 
@@ -540,7 +529,7 @@ a{
     margin:0 !important;
     color:#000 !important;
     border:none !important;
-    font-weight:bold !important; 
+    font-weight:bold !important;
     background-color: #fff !important;
     background-position: left center !important;
     background-repeat: no-repeat !important;

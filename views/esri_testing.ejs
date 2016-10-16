@@ -122,12 +122,6 @@
     </a>
   </div>
 
-  <div class="emergencyBtn">
-    <a data-open="callEmergencyPopup">
-      <i class="fa fa-phone-square" aria-hidden="true"></i>
-    </a>
-  </div>
-
   <div class="reveal" id="callEmergencyPopup" data-reveal>
     <a class='button alert radius' href="tel:911">Call Police</a>
     <button class="close-button" data-close aria-label="Close modal" type="button">
@@ -229,13 +223,13 @@
             </a>
           </div>
         </div>
-        
+
       </div>
     </div>
 
 
     <div class="row90pct lowerOptions">
-      
+
       <div id="solveRoute" class="" data-solve-phase="generate" style="visibility:hidden;">Take Me There Safely!</div>
     <div class="row bottom-route-bar" style="display:none">
       <div id = "routeDistance"><span id="calc-time-dist"></span>Begin! </div>
@@ -249,14 +243,9 @@
         <div class="quarter-width"><button id="resetBtn" class="bottom-circle iconUnselected"><i class="fa fa-refresh" aria-hidden="true"></i></button></div>
         <div class="quarter-width"><button id="featuresButton" class='bottom-circle fa fa-shield iconUnselected' data-features-display="none"></button></div>
         <div class="quarter-width"><button id="crimesButton" class='bottom-circle fa fa-warning iconUnselected' data-crime-display="none"></button></div>
-        <div class="quarter-width"><div class="bottom-circle call-police iconUnselected"><a data-open="callPolicePopup"><i class="fa fa-phone" aria-hidden="true"></i></a></div></div>
+        <div class="quarter-width"><button class='bottom-circle fa fa-phone iconUnselected' data-open="callEmergencyPopup"></button></div>
       </div>
-
-
-
   </div>
-
-
 
 
   <script src="javascripts/app.js"></script>
