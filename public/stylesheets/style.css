@@ -42,6 +42,11 @@ h1 {
   margin-left:50%;
 }
 
+#emergencyBtn {
+  color: #FFFFFF;
+  background: #d37984;
+}
+
 #resetBtn {
 /*  position:absolute;
   color: gray;
