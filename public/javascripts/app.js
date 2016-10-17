@@ -933,7 +933,7 @@ routeParams.outSpatialReference = {"wkid":102100};
           map.centerAndZoom(initialCenterPoint,14);
           $.ajax({
             type: 'POST',
-            url: "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/reverseGeocode?location="+long+"%2C+"+lat+"&distance=200&outSR=&f=pjson",
+            url: "https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/reverseGeocode?location="+long+"%2C+"+lat+"&distance=200&outSR=&f=pjson",
             success: function (results, textStatus, xhr) {
               var parsedResults = JSON.parse(results);
               initialAddress = parsedResults.address.Match_addr.replace("California","CA");
@@ -1080,7 +1080,7 @@ routeParams.outSpatialReference = {"wkid":102100};
           routeStops.push(map.graphics.add(new esri.Graphic(new Point(longlat),stopSymbol)));
           $.ajax({
             type: 'POST',
-            url: "http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/reverseGeocode?location="+longlat[0]+"%2C+"+longlat[1]+"&distance=200&outSR=&f=pjson",
+            url: "https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/reverseGeocode?location="+longlat[0]+"%2C+"+longlat[1]+"&distance=200&outSR=&f=pjson",
             success: function (results, textStatus, xhr) {
               var parsedResults = JSON.parse(results);
               console.log(parsedResults);
