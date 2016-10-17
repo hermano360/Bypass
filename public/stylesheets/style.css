@@ -456,13 +456,15 @@ a{
   }
 
   #startAddress{
-
+        position:relative;
+    z-index:9;
 
     width: 100%;
   }
 
   #destinationAddress {
-
+    position:relative;
+    z-index:8;
     width: 100%;
     margin-bottom:2%;
   }
@@ -582,6 +584,7 @@ a{
 
     .esriGeocoderResults {
  color:#000;
+ z-index:3;
   }
 
 
