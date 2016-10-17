@@ -7,9 +7,12 @@
 
 
 /*Fonts*/
+* {
+  font-family: 'Raleway', sans-serif;
+}
+
 body{
   position: absolute;
-  font-family: 'Raleway', sans-serif;
   font-weight: lighter;
   font-size: 16px;
   width: 100%;
@@ -39,11 +42,6 @@ h1 {
   margin-left:50%;
 }
 
-.call-police {
-  margin-left:auto;
-  margin-right:auto;
-}
-
 #resetBtn {
 /*  position:absolute;
   color: gray;
@@ -71,7 +69,6 @@ a{
 .input-wrapper {
   padding-left:0;
   padding-right:0;
-
 }
 
 .input-wrapper i{
@@ -81,7 +78,7 @@ a{
 }
 
 .input-wrapper {
-  margin: 2% 0px 0px 0px;
+  margin: 1% 0px 0px 0px;
 }
 
 /*Buttons*/
@@ -262,8 +259,8 @@ a{
   cursor:pointer;
   text-align: center;
   font-weight: bold;
-  padding-top:4px;
-  padding-bottom:4px;
+  padding-top:6px;
+  padding-bottom:6px;
   border-bottom: 1px solid #BBBBBB;
   border: 1px solid #57585A;
   background-color: #f2f2f2;
@@ -429,9 +426,12 @@ a{
     left:20%;
     text-align:center;
     color:#fff;
-    padding-bottom: 2%;
+    padding-bottom: 1%;
   }
-
+  .routeChoice > div {
+    height:24px;
+    min-height:24px;
+  }
 
   .halfContainer {
     width:45%;
@@ -439,11 +439,8 @@ a{
 
 
   .routeOption {
-    font-family: 'Raleway', sans-serif;
     font-weight: lighter;
-    font-size: 12px;
-
-
+    font-size: 16px;
     vertical-align: middle;
     position:relative;
     left:0%;
@@ -451,7 +448,6 @@ a{
   }
 
   .routeSelected {
-
     border-bottom: 3px solid #fff;
   }
 
@@ -459,9 +455,6 @@ a{
   .routeUnselected {
     border-bottom: 3px solid #26A69A;
   }
-
-
-
 
   .bottomRightNav {
     right: 20px;
@@ -611,6 +604,11 @@ a{
     display: none !important;
   }
 
+  #address-wrapper {
+    border-bottom: 1px solid #57585A;
+    border-top: 1px solid #57585A;
+  }
+
   .address-wrapper {
     background-color:#8cd4cc;
     position:relative;
@@ -622,31 +620,35 @@ a{
   .mint-background {
     background-color: #26A69A;
   }
+
+  .tofrom {
+    margin-left:17px;
+  }
+
   #startAddress_input {
    width: 100% !important;
-   height: 25px !important;
+   height: 35px !important;
    text-indent: 15px;
    padding: 0px !important;
    margin: 0px  !important;
    border: none;
-   font-size: .85rem !important;
+   font-size: 1rem !important;
    background-color: #f2f2f2;
    color: #575757;
  }
 
  .address_wrapper {
-  position:relative;
-
-}
+   position:relative;
+ }
 
 #destinationAddress_input {
   width: 100% !important;
-  height: 25px !important;
+  height: 35px !important;
   text-indent: 15px;
   padding: 0 !important;
   margin: 0 !important;
   border: none;
-  font-size: .85rem !important;
+  font-size: 1rem !important;
   background-color: #f2f2f2;
   color: #575757;
 }
@@ -709,6 +711,7 @@ a{
   height:50px;
   width:50px;
   border: 1px solid #57585A;
+  padding-top:2px;
 }
 
 .quarter-width {
@@ -743,7 +746,6 @@ a{
 
 
 #routeDistance {
-
   position:relative;
   float:left;
   width:100%;
@@ -752,7 +754,7 @@ a{
   padding-top: 10px;
   text-align: right;
   padding-right: 55px;
-  border: 1px solid #ccc;
+  border: 1px solid #57585A;
   background-color: #f2f2f2;
 }
 
@@ -761,26 +763,17 @@ a{
   position:absolute;
   float:right;
   height:50px;
-  border-radius: 50%;
   width:50px;
   right:0;
   text-align: center;
-  border: 1px solid #ccc;
+  border: 1px solid #57585A;
   color: #fff;
 }
 #calc-time-dist {
   position:relative;
-  font-family: 'Raleway', sans-serif;
   font-weight: bolder;
   font-size: 18px;
-float:left;
-padding-left: 10px;
-
+  float:left;
+  padding-left: 10px;
 }
-
-
-
-
-
-
 
