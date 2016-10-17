@@ -169,23 +169,6 @@ a{
   min-height:0;
 }
 
-@media only screen and (max-device-width: 414px) and (max-device-height: 736px) {
-  .nav-bar {
-    display: none;
-  }
-
-  .infoBtnMobile {
-    display:block;
-    font-size: 45px;
-    width:37px;
-    min-width:37px;
-    height:50px;
-    position:absolute;
-    right: 80px;
-    bottom: 18px;
-  }
-}
-
 .filter-directions-nav-bar {
   font-weight:bold;
   border-bottom: 1px solid #BBBBBB;
