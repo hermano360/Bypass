@@ -132,7 +132,7 @@ $(document).foundation()
         center: [-118.49132, 34.01455],
         zoom: 14,
         smartNavigation: false, //by adding this, the scroll mouse goes in and out, rather than up and down. perhaps the other way is better though, idk
-        slider:false  
+        slider:false
       });
 
 
@@ -141,15 +141,15 @@ $(document).foundation()
 
 
       ready(function() {
-        
+
         map.on("extent-change", addDesignatedStop);
         inputInitialAddress();
         var endGeocoderInitial = new Geocoder({
           autoComplete:true,
           map: map,
         }, dom.byId("destinationAddressInitial"));
-        
-        
+
+
 
         endGeocoderInitial.startup();
         endGeocoderInitial.autoNavigate = false;
@@ -225,8 +225,8 @@ $(document).foundation()
           navigationExtents();
           $('.bottom-route-bar').css("display","none");
           $("#destinationAddress_input").val(results.result.name.replace("California", "CA"));
-          
-          
+
+
           if(routeStops[0].geometry && routeStops[1].geometry){
             $('#solveRoute').css("visibility", "visible");
           }
@@ -423,7 +423,7 @@ $(document).foundation()
           }
           $("#address-wrapper").css('display',"none");
           barrierVisibility = false;
-          resetBarriers(); 
+          resetBarriers();
           $("#featuresButton").data("featuresDisplay","none");
           $("#crimeInfo").html("Crime Grid");
           $("#crimesButton").data("crimeDisplay","none");
@@ -580,7 +580,7 @@ $('#destinationAddressInitial').click(function() {
           $("#crimesButton").removeClass("fa-history");
           $("#crimesButton").removeClass("fa-male");
           $("#crimesButton").addClass("fa-warning");
-          
+
           $("#featuresButton").removeClass("fa-wifi");
           $("#featuresButton").removeClass("fa-cutlery");
           $("#featuresButton").addClass("fa-shield");
@@ -727,7 +727,7 @@ if($("#crimesButton").data("crimeDisplay")=="none"){
   $("#crimesButton").addClass("iconSelected");
   barrierVisibility = true;
 
-  resetBarriers(); 
+  resetBarriers();
   $("#crimeInfo").html("Crime Grid");
 
   $("#crimesButton").data("crimeDisplay","crimeGrid");
@@ -961,7 +961,7 @@ routeParams.outSpatialReference = {"wkid":102100};
         console.log(whichStopAddressInput);
         if(whichStopAddressInput=="initial"){
           addInitialDestinationStop();
-          
+
         } else if(whichStopAddressInput=="start"){
           removeEventHandlers();
           addStartStop();
@@ -973,7 +973,7 @@ routeParams.outSpatialReference = {"wkid":102100};
           removeEventHandlers();
         }
         console.log(whichStopAddressInput);
-        
+
       }
 
 
@@ -1028,12 +1028,12 @@ routeParams.outSpatialReference = {"wkid":102100};
 
         $("#myLocation").on('click', inputAddress);
 
-       
+
       mapOnClick_addDestinationStop_connect= map.on("click", function(evt){
           $("#BypassRoute").css('display',"none");
         $("#NormalRoute").css('display',"none");
         $('#solveRoute').css("visibility", "hidden");
-        
+
           clearRoutes();
           var longlat = webMercatorUtils.xyToLngLat(evt.mapPoint["x"], evt.mapPoint["y"], true);
           console.log("There are " + routeStops.length + " stops");
@@ -1048,7 +1048,7 @@ routeParams.outSpatialReference = {"wkid":102100};
               console.log(parsedResults);
               if(parsedResults.address){
                 $("#destinationAddress_input").val(parsedResults.address.Match_addr.replace("California", "CA"));
-                
+
                 if(routeStops[0].geometry && routeStops[1].geometry){
                   $('#solveRoute').css("visibility", "visible");
                 }
@@ -1339,7 +1339,7 @@ routeParams.outSpatialReference = {"wkid":102100};
       //Stops listening for click events to add barriers and stops (if they've already been wired)
       function removeEventHandlers() {
 
-        
+
 
               if (mapOnClick_addInitialStop_connect) {
           mapOnClick_addInitialStop_connect.remove();
@@ -1404,10 +1404,10 @@ routeParams.outSpatialReference = {"wkid":102100};
           $("#resetBtn").css("visibility","visible");
           $("#featuresButton").css("visibility","visible");
           $("#crimesButton").css("visibility","visible");
-          $(".call-police").css("visibility","visible");
+          $("#emergencyBtn").css("visibility","visible");
           $("#myLocation").css("visibility","visible");
 
-            
+
                         $('#directions-button').css('display',"inline");
 
                         sRouteWB = JSON.parse(results);
@@ -1434,9 +1434,9 @@ routeParams.outSpatialReference = {"wkid":102100};
 
                         chosenRouteDirections = sRouteWB.directions;
 
-                        
-            
-            
+
+
+
                         bypassTimeDistance = "(" + sRouteWB.directions[0].summary.totalLength.toFixed(1) +" mi "+ (sRouteWB.directions[0].summary.totalLength*60/3.1).toFixed(0) + " min)";
                         //$('#solveRoute').text("Pick Safer Way" + " " + bypassTimeDistance);
 
@@ -1481,11 +1481,11 @@ routeParams.outSpatialReference = {"wkid":102100};
                           //console.log(sRoute.directions[0].features[i].attributes.text); shows written directions
                         };
 
-            
-            
 
-                        
-            
+
+
+
+
                         normalTimeDistance = "(" + sRoute.directions[0].summary.totalLength.toFixed(1) +" mi "+ (sRoute.directions[0].summary.totalLength*60/3.1).toFixed(0) + " min)";
                         $("#normalOption").html((sRoute.directions[0].summary.totalLength*60/3.1).toFixed(0)+" min");
 
@@ -1546,7 +1546,7 @@ routeParams.outSpatialReference = {"wkid":102100};
           $("#resetBtn").css("visibility","hidden");
           $("#featuresButton").css("visibility","hidden");
           $("#crimesButton").css("visibility","hidden");
-          $(".call-police").css("visibility","hidden");
+          $("#emergencyBtn").css("visibility","hidden");
           $("#myLocation").css("visibility","hidden");
           $("#crimeInfo").html("Crime Grid");
           $("#crimesButton").data("crimeDisplay","crimeGrid");
@@ -1567,7 +1567,7 @@ routeParams.outSpatialReference = {"wkid":102100};
           $('#solveRoute').css("visibility","hidden");
           $("#destinationAddressInitial").css('display',"none");
           $("#address-wrapper").css('display',"block");
-          
+
         whichStopAddressInput="";
         map.on("extent-change", addDesignatedStop);
       }
