@@ -899,6 +899,7 @@ routeParams.outSpatialReference = {"wkid":102100};
 
 
       function inputInitialAddress(){
+        $('#solveRoute').attr('disabled', true);
         $("#startAddress_input").attr("placeholder","Your Location...");
         navigator.geolocation.getCurrentPosition(function(position){
           long = position.coords.longitude;
@@ -915,6 +916,7 @@ routeParams.outSpatialReference = {"wkid":102100};
               var parsedResults = JSON.parse(results);
               initialAddress = parsedResults.address.Match_addr.replace("California","CA");
               $("#startAddress_input").val(initialAddress);
+              $('#solveRoute').attr('disabled', false);
             },
             error: function (xhr, textStatus, errorThrown) {
               console.log("test failed");
@@ -935,6 +937,7 @@ routeParams.outSpatialReference = {"wkid":102100};
           syncRouteWOB(routeStops);
           syncRouteWB(routeStops);
         } else {
+          $('#solveRoute').attr('disabled', false);
           whichStopAddressInput="start";
           $('#startAddress_input').trigger('click');
           $(".map").LoadingOverlay("hide");
