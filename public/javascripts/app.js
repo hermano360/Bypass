@@ -142,6 +142,8 @@ $(document).foundation()
 
       ready(function() {
 
+        console.log(window.location.href);
+
         map.on("extent-change", addDesignatedStop);
         inputInitialAddress();
         var endGeocoderInitial = new Geocoder({
@@ -437,6 +439,7 @@ $(document).foundation()
           $("#featuresButton").addClass("iconUnselected");
           $("#featuresButton").removeClass("iconSelected");
           map.centerAndZoom(startPoint,17);
+          $('#directions-button').css('display',"inline");
 
 
         })
@@ -1408,7 +1411,7 @@ routeParams.outSpatialReference = {"wkid":102100};
           $("#myLocation").css("visibility","visible");
 
 
-                        $('#directions-button').css('display',"inline");
+                        
 
                         sRouteWB = JSON.parse(results);
 
@@ -1502,7 +1505,7 @@ routeParams.outSpatialReference = {"wkid":102100};
 
       function chooseBypass(){
         clearRoutes();
-        $("#directions-button").css('display',"block");
+
 
         routes.push(map.graphics.add(new esri.Graphic(normalRoute,routeSymbols["unselectedRoute"])));
         routes.push(map.graphics.add(new esri.Graphic(bypassRoute,routeSymbols["selectedRoute"])));
@@ -1512,7 +1515,7 @@ routeParams.outSpatialReference = {"wkid":102100};
 
       function chooseNormal(){
         clearRoutes();
-        $("#directions-button").css('display',"block");
+
 
         routes.push(map.graphics.add(new esri.Graphic(bypassRoute,routeSymbols["unselectedRoute"])));
         routes.push(map.graphics.add(new esri.Graphic(normalRoute,routeSymbols["selectedRoute"])));

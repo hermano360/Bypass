@@ -152,7 +152,7 @@ a{
 @media screen and (max-width: 30em) {
   #missionStatement {
     padding-top:3px;
-    font-size:11px;
+    font-size:9px;
   }
 }
 
@@ -416,10 +416,7 @@ a{
     color:#fff;
     padding-bottom: 1%;
   }
-  .routeChoice > div {
-    height:24px;
-    min-height:24px;
-  }
+
 
   .halfContainer {
     width:45%;
@@ -428,7 +425,7 @@ a{
 
   .routeOption {
     font-weight: lighter;
-    font-size: 16px;
+    font-size: 12px;
     vertical-align: middle;
     position:relative;
     left:0%;
@@ -436,11 +433,13 @@ a{
   }
 
   .routeSelected {
+    top:0;
     border-bottom: 3px solid #fff;
   }
 
 
   .routeUnselected {
+    top:0;
     border-bottom: 3px solid #26A69A;
   }
 
@@ -603,6 +602,7 @@ a{
   .address-wrapper {
     background-color:#8cd4cc;
     position:relative;
+    
   }
 
   .address-container {
@@ -618,7 +618,7 @@ a{
 
   #startAddress_input {
    width: 100% !important;
-   height: 35px !important;
+   height: 25px !important;
    text-indent: 15px;
    padding: 0px !important;
    margin: 0px  !important;
@@ -634,7 +634,7 @@ a{
 
 #destinationAddress_input {
   width: 100% !important;
-  height: 35px !important;
+  height: 25px !important;
   text-indent: 15px;
   padding: 0 !important;
   margin: 0 !important;
