@@ -163,7 +163,7 @@ $(document).foundation()
           $("#destinationAddressInitial_input").val(results.result.name.replace("California", "CA"));
           $("#destinationAddress_input").val(results.result.name.replace("California", "CA"));
 
-          $('#solveRoute').css("visibility", "visible");
+          $('#solveRoute').css("display", "block");
           var points = webMercatorUtils.xyToLngLat(results.result.feature.geometry.x, results.result.feature.geometry.y, true);
           var instancePoint = new Point(points[0],points[1]);
           map.centerAndZoom(instancePoint,16);
@@ -193,7 +193,7 @@ $(document).foundation()
           routeStops.unshift(map.graphics.add(new esri.Graphic(instancePoint,startSymbol)));
           navigationExtents();
           if(routeStops[0].geometry && routeStops[1].geometry){
-            $('#solveRoute').css("visibility", "visible");
+            $('#solveRoute').css("display", "block");
           }
           // var minx=map.extent.xmin;
           // var miny=map.extent.ymin;
@@ -234,7 +234,7 @@ $(document).foundation()
 
 
           if(routeStops[0].geometry && routeStops[1].geometry){
-            $('#solveRoute').css("visibility", "visible");
+            $('#solveRoute').css("display", "block");
           }
 
         // var minx=map.extent.xmin;
@@ -360,7 +360,7 @@ $(document).foundation()
             $('#startAddress').css('display',"block");
             $('#destinationAddress').css('display',"block");
             if($('#solveRoute').text()==="Go!"){
-              $('#solveRoute').css("visibility","hidden");
+              $('#solveRoute').css("display", "none");
               $('#directionsDisplay').empty();
             } else {
               //$('#solveRoute').css("display","none");
@@ -449,7 +449,7 @@ $(document).foundation()
 
 
         $('#startAddress').keyup(function(){
-          $('#solveRoute').css("visibility", "hidden");
+          $('#solveRoute').css("display", "none");
         });
 
         $('#destinationAddress').click(function() {
@@ -483,7 +483,7 @@ $(document).foundation()
         });
 
         $('#destinationAddress_input').keyup(function(){
-          $('#solveRoute').css('visibility',"hidden");
+          $('#solveRoute').css("display", "none");
         });
 
 
@@ -549,7 +549,7 @@ $('#destinationAddressInitial').click(function() {
           $("#destinationAddressInitial_input").val("");
           $("#destinationAddressInitial_input").attr("placeholder","Click on Map or Type Address!");
           $('#directionsDisplay').empty();
-          $('#solveRoute').css("visibility", "hidden");
+          $('#solveRoute').css("display", "none");
           $("#featureInfo").html("");
           $("#crimeInfo").html("");
 
@@ -852,7 +852,7 @@ routeParams.outSpatialReference = {"wkid":102100};
 
       function inputAddress(){
         clearRoutes();
-        $('#solveRoute').css("visibility","hidden");
+        $('#solveRoute').css("display", "none");
         //$('#solveRoute').text("Get Me There Safely!");
         navigator.geolocation.getCurrentPosition(function(position){
           long = position.coords.longitude;
@@ -881,7 +881,7 @@ routeParams.outSpatialReference = {"wkid":102100};
               $("#myLocation").off('click', inputAddress);
 
               if($('#startAddress').val() && $('#destinationAddress').val()){
-                $('#solveRoute').css("visibility", "visible");
+                $('#solveRoute').css("display", "block");
               }
             },
             error: function (xhr, textStatus, errorThrown) {
@@ -984,7 +984,7 @@ routeParams.outSpatialReference = {"wkid":102100};
         $("#myLocation").on('click', inputAddress);
 
         mapOnClick_addStartStop_connect= dojo.connect(map, "onClick", function (evt) {
-        $('#solveRoute').css("visibility", "hidden");
+        $('#solveRoute').css("display", "none");
         $(".bottom-route-bar").css('display',"none");
         $("#BypassRoute").css('display',"none");
         $("#NormalRoute").css('display',"none");
@@ -1006,14 +1006,15 @@ routeParams.outSpatialReference = {"wkid":102100};
                 $("#startAddress_input").val(parsedResults.address.Match_addr.replace("California", "CA"));
 
                 if(routeStops[0].geometry && routeStops[1].geometry){
-                  $('#solveRoute').css("visibility", "visible");
+                  $('#solveRoute').css("display", "block");
                 }
               } else {
                 console.log(routeStops.length);
                 map.graphics.remove(routeStops.shift());
                 routeStops.unshift({});
                 $("#startAddress_input").val("Please Try Again");
-                $('#solveRoute').css("visibility", "hidden");
+                $('#solveRoute').css("display", "none");
+
               }
             },
             error: function (xhr, textStatus, errorThrown) {
@@ -1036,7 +1037,7 @@ routeParams.outSpatialReference = {"wkid":102100};
       mapOnClick_addDestinationStop_connect= dojo.connect(map, "onClick", function (evt) {
           $("#BypassRoute").css('display',"none");
         $("#NormalRoute").css('display',"none");
-        $('#solveRoute').css("visibility", "hidden");
+        $('#solveRoute').css("display", "none");
         $(".bottom-route-bar").css('display',"none");
 
           clearRoutes();
@@ -1055,14 +1056,14 @@ routeParams.outSpatialReference = {"wkid":102100};
                 $("#destinationAddress_input").val(parsedResults.address.Match_addr.replace("California", "CA"));
 
                 if(routeStops[0].geometry && routeStops[1].geometry){
-                  $('#solveRoute').css("visibility", "visible");
+                  $('#solveRoute').css("display", "block");
                 }
               } else {
                 console.log(routeStops.length);
                 map.graphics.remove(routeStops.pop());
                 routeStops.push({});
                 $("#destinationAddress_input").val("Please Try Again");
-                $('#solveRoute').css("visibility", "hidden");
+                $('#solveRoute').css("display", "none");
               }
 
             },
@@ -1094,7 +1095,7 @@ routeParams.outSpatialReference = {"wkid":102100};
                 $("#destinationAddressInitial_input").val(parsedResults.address.Match_addr.replace("California", "CA"));
                 // $("#destinationAddress_input").val(parsedResults.address.Match_addr.replace("California", "CA"));
                 map.centerAt(evt.mapPoint);
-                  $('#solveRoute').css("visibility", "visible");
+                  $('#solveRoute').css("display", "block");
                 } else {
                   console.log(routeStops.length);
                   map.graphics.remove(routeStops.pop());
@@ -1204,7 +1205,7 @@ routeParams.outSpatialReference = {"wkid":102100};
               myAddress=parsedResults.address.Address;
 
               if(parsedResults.address && whichStopAddressInput=="initial"){
-                $('#solveRoute').css("visibility","hidden");
+                $('#solveRoute').css("display", "none");
                 $("#destinationAddressInitial_input").val("");
                 $("#destinationAddressInitial_input").attr("placeholder","Your Location is ... "+ myAddress);
               }
@@ -1214,20 +1215,20 @@ routeParams.outSpatialReference = {"wkid":102100};
                 if(parsedResults.address){
                   $("#startAddress_input").val(parsedResults.address.Match_addr.replace("California", "CA"));
                   if(routeStops[0].geometry && routeStops[1].geometry){
-                    $('#solveRoute').css("visibility", "visible");
+                    $('#solveRoute').css("display", "block");
                   }
                 } else {
                   // map.graphics.remove(routeStops.shift());
                   // routeStops.unshift({});
                   $("#startAddress_input").val("Please Try Again");
-                  $('#solveRoute').css("visibility", "hidden");
+                  $('#solveRoute').css("display", "none");
                 }
 
               } else if(whichStopAddressInput == "end"){
                 if(parsedResults.address){
                   $("#destinationAddress_input").val(parsedResults.address.Match_addr.replace("California", "CA"));
                   if(routeStops[0].geometry && routeStops[1].geometry){
-                    $('#solveRoute').css("visibility", "visible");
+                    $('#solveRoute').css("display", "block");
 
                   }
                 } else {
@@ -1556,7 +1557,7 @@ routeParams.outSpatialReference = {"wkid":102100};
             solveInitialRoute();
           }
           $(".nav-bar-wrapper").css('display',"none");
-          $('#solveRoute').css("visibility","hidden");
+          $('#solveRoute').css("display", "none");
           $(".bottom-route-bar").css('display',"none");
           $("#destinationAddressInitial").css('display',"none");
           $("#address-wrapper").css('display',"block");
