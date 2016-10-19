@@ -132,7 +132,8 @@ $(document).foundation()
         center: [-118.49132, 34.01455],
         zoom: 14,
         smartNavigation: false, //by adding this, the scroll mouse goes in and out, rather than up and down. perhaps the other way is better though, idk
-        slider:false
+        slider:false,
+        isDoubleClickZoom: true
       });
 
 
@@ -142,10 +143,13 @@ $(document).foundation()
 
       ready(function() {
 
+        inputInitialAddress();
+        whichStopAddressInput="initial";
+        addDesignatedStop();
         console.log(window.location.href);
 
-        map.on("extent-change", addDesignatedStop);
-        inputInitialAddress();
+        
+        
         var endGeocoderInitial = new Geocoder({
           autoComplete:true,
           map: map,
@@ -255,7 +259,7 @@ $(document).foundation()
 
 
 
-      //$("#startAddress_input").attr("placeholder","Type or Click on Map for Start");
+      $("#startAddress_input").attr("placeholder","Click on Map or Type Address Here!");
       //$("#destinationAddress_input").attr("placeholder","Type or Click on Map for Destination");
       $("#destinationAddressInitial_input").attr("placeholder","Click on Map or Type Address!");
 
@@ -301,27 +305,13 @@ $(document).foundation()
           normalizedArray = crimeNormalizer(densityArray, footTrafficArray);
           mapAllIndices(normalizedArray);
           map.on("extent-change", resetBarriersPoints);
+          map.on("extent-change", addDesignatedStop);
         });
 
-        });
-
-        xhr.get("cached_danger_influences.csv", { //uploading csv data
-          handleAs: "text",
-        }).then(function(data) {
-          globalvariable = data.replace(/\n/g, "," ).split(",");
-          formatedData = formatGlobal(globalvariable);
-          densityArray = dangerAlgorithm(formatedData);
-          //mapAllIndices(densityArray);
-
-        //   xhr.get("2015-PART_I_AND_II_CRIMES.csv", {
-        //     handleAs: "text",
-        //   }).then(function(data) {
-
-        //     var crime2015 = data.replace(/\n/g,"?" ).replace(/\"/g,'').split("?");
-        //     geocodexy(crime2015);
-        // });
 
         });
+
+
 
 
 
@@ -392,24 +382,7 @@ $(document).foundation()
 
         });
 
-        $("#bypassLogo").click( function() {
-          barrierVisibility = false;
-          resetBarriers();
-          clearCrimesData();
-          clearFeaturesData();
-          clearMyLocation();
-            $("#crimesButton").html("Dangers");
-            $("#crimesButton").data("crimeDisplay","none");
-            $("#featuresButton").html("Safety Pts");
-            $("#featuresButton").data("featuresDisplay","none");
 
-
-            if ($('#directionsDisplay').text().length != 0 ) {
-              console.log("direction list was populated");
-              $('#directionsDisplay').empty();
-            }
-
-        });
 
 
         $("#solveRoute").click( function(){
@@ -553,6 +526,7 @@ $('#destinationAddressInitial').click(function() {
         });
 
         $("#resetBtn").click( function () {
+          map.setZoom(14);
           whichStopAddressInput="initial";
           chosenRouteDirections = "";
           clearStops();
@@ -953,38 +927,62 @@ routeParams.outSpatialReference = {"wkid":102100};
 
 
       function plotInitialStart(){
-        startPoint = initialCenterPoint;
-        map.graphics.remove(routeStops.shift());
-        routeStops.unshift(map.graphics.add(new esri.Graphic(initialCenterPoint,startSymbol)));
-        console.log(routeStops[0].geometry);
+        if(initialCenterPoint){
+          startPoint = initialCenterPoint;
+          map.graphics.remove(routeStops.shift());
+          routeStops.unshift(map.graphics.add(new esri.Graphic(initialCenterPoint,startSymbol)));
+          navigationExtents();
+          syncRouteWOB(routeStops);
+          syncRouteWB(routeStops);
+        } else {
+          whichStopAddressInput="start";
+          $('#startAddress_input').trigger('click');
+          $(".map").LoadingOverlay("hide");
+          $("#address-wrapper").css('display',"block");
+          $("#resetBtn").css("visibility","visible");
+          $("#featuresButton").css("visibility","visible");
+          $("#crimesButton").css("visibility","visible");
+          $("#emergencyBtn").css("visibility","visible");
+          $("#myLocation").css("visibility","visible");
+        }
       }
 
       function addDesignatedStop(){
 
-        console.log(whichStopAddressInput);
-        if(whichStopAddressInput=="initial"){
-          addInitialDestinationStop();
 
-        } else if(whichStopAddressInput=="start"){
+ if(whichStopAddressInput==="start"){
           removeEventHandlers();
           addStartStop();
-        } else if(whichStopAddressInput=="end"){
+        } else if(whichStopAddressInput==="end"){
           removeEventHandlers();
           addDestinationStop();
-        } else {
-          console.log("remove Event Handlers called");
+        } else if(whichStopAddressInput==="initial"){
+          addInitialDestinationStop();
+
+        } else{
           removeEventHandlers();
         }
-        console.log(whichStopAddressInput);
 
+      }
+
+      function addIndicatedStop(phase){
+        removeEventHandlers();
+        if(phase==="initial"){         
+          addInitialDestinationStop();
+        } else if(phase === "start"){          
+          addStartStop();
+        } else if(phase === "end"){
+          addDestinationStop();
+        }
       }
 
 
       function addStartStop(){
         $("#myLocation").on('click', inputAddress);
 
-        mapOnClick_addStartStop_connect= map.on("click", function(evt){
+        mapOnClick_addStartStop_connect= dojo.connect(map, "onClick", function (evt) {
         $('#solveRoute').css("visibility", "hidden");
+        $(".bottom-route-bar").css('display',"none");
         $("#BypassRoute").css('display',"none");
         $("#NormalRoute").css('display',"none");
           clearRoutes();
@@ -1032,10 +1030,11 @@ routeParams.outSpatialReference = {"wkid":102100};
         $("#myLocation").on('click', inputAddress);
 
 
-      mapOnClick_addDestinationStop_connect= map.on("click", function(evt){
+      mapOnClick_addDestinationStop_connect= dojo.connect(map, "onClick", function (evt) {
           $("#BypassRoute").css('display',"none");
         $("#NormalRoute").css('display',"none");
         $('#solveRoute').css("visibility", "hidden");
+        $(".bottom-route-bar").css('display',"none");
 
           clearRoutes();
           var longlat = webMercatorUtils.xyToLngLat(evt.mapPoint["x"], evt.mapPoint["y"], true);
@@ -1076,8 +1075,10 @@ routeParams.outSpatialReference = {"wkid":102100};
 
 
       function addInitialDestinationStop(){
-        console.log("add initial dest called");
-        mapOnClick_addInitialStop_connect= map.on("click", function(evt){
+
+
+
+        mapOnClick_addInitialStop_connect= dojo.connect(map, "onClick", function (evt) {
           var longlat = webMercatorUtils.xyToLngLat(evt.mapPoint["x"], evt.mapPoint["y"], true);
           map.graphics.remove(routeStops.pop());
           routeStops.push(map.graphics.add(new esri.Graphic(new Point(longlat),stopSymbol)));
@@ -1086,13 +1087,11 @@ routeParams.outSpatialReference = {"wkid":102100};
             url: "https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/reverseGeocode?location="+longlat[0]+"%2C+"+longlat[1]+"&distance=200&outSR=&f=pjson",
             success: function (results, textStatus, xhr) {
               var parsedResults = JSON.parse(results);
-              console.log(parsedResults);
               if(parsedResults.address){
                 $("#destinationAddressInitial_input").val(parsedResults.address.Match_addr.replace("California", "CA"));
                 // $("#destinationAddress_input").val(parsedResults.address.Match_addr.replace("California", "CA"));
                 map.centerAt(evt.mapPoint);
                   $('#solveRoute').css("visibility", "visible");
-                  console.log(whichStopAddressInput);
                 } else {
                   console.log(routeStops.length);
                   map.graphics.remove(routeStops.pop());
@@ -1341,28 +1340,9 @@ routeParams.outSpatialReference = {"wkid":102100};
 
       //Stops listening for click events to add barriers and stops (if they've already been wired)
       function removeEventHandlers() {
-
-
-
-              if (mapOnClick_addInitialStop_connect) {
-          mapOnClick_addInitialStop_connect.remove();
-        }
-                if (mapOnClick_addDestinationStop_connect) {
-          mapOnClick_addDestinationStop_connect.remove();
-        }
-
-        if (mapOnClick_addStartStop_connect) {
-          mapOnClick_addStartStop_connect.remove();
-        }
-        if (mapOnClick_addBarriers_connect) {
-          mapOnClick_addBarriers_connect.remove();
-        }
-        if (mapOnClick_addPolygonBarriers_connect) {
-          mapOnClick_addPolygonBarriers_connect.remove();
-        }
-        if (myLocationToAddress_connect) {
-          myLocationToAddress_connect.remove();
-        }
+        dojo.disconnect(mapOnClick_addInitialStop_connect);
+        dojo.disconnect(mapOnClick_addDestinationStop_connect); 
+        dojo.disconnect(mapOnClick_addStartStop_connect); 
         $("#myLocation").off('click', inputAddress);
       }
 
@@ -1405,10 +1385,12 @@ routeParams.outSpatialReference = {"wkid":102100};
             $("#NormalRoute").css('display',"inline-block");
             $(".bottom-route-bar").css('display',"block");
           $("#resetBtn").css("visibility","visible");
+          $("#crimeInfo").css("visibility","visible");
           $("#featuresButton").css("visibility","visible");
           $("#crimesButton").css("visibility","visible");
           $("#emergencyBtn").css("visibility","visible");
           $("#myLocation").css("visibility","visible");
+
 
 
                         
@@ -1533,14 +1515,17 @@ routeParams.outSpatialReference = {"wkid":102100};
       }
 
       function solveInitialRoute() {
+
         removeEventHandlers();
         plotInitialStart();
-        navigationExtents();
-        syncRouteWOB(routeStops);
-        syncRouteWB(routeStops);
+
       }
 
       function solveRouteClick() {
+
+        console.log(routeStops[0]);
+
+
        console.log($("#destinationAddress_input").val($("#destinationAddressInitial_input").val()));
         $(".map").LoadingOverlay("show");
           barrierVisibility = true;
@@ -1551,6 +1536,7 @@ routeParams.outSpatialReference = {"wkid":102100};
           $("#crimesButton").css("visibility","hidden");
           $("#emergencyBtn").css("visibility","hidden");
           $("#myLocation").css("visibility","hidden");
+          $("#crimeInfo").css("visibility","hidden");
           $("#crimeInfo").html("Crime Grid");
           $("#crimesButton").data("crimeDisplay","crimeGrid");
           $("#crimesButton").removeClass("fa-history");
@@ -1568,11 +1554,14 @@ routeParams.outSpatialReference = {"wkid":102100};
           }
           $(".nav-bar-wrapper").css('display',"none");
           $('#solveRoute').css("visibility","hidden");
+          $(".bottom-route-bar").css('display',"none");
           $("#destinationAddressInitial").css('display',"none");
           $("#address-wrapper").css('display',"block");
 
         whichStopAddressInput="";
-        map.on("extent-change", addDesignatedStop);
+        
+
+
       }
 
       //Clears all routes
