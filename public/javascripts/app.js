@@ -148,8 +148,8 @@ $(document).foundation()
         addDesignatedStop();
         console.log(window.location.href);
 
-        
-        
+
+
         var endGeocoderInitial = new Geocoder({
           autoComplete:true,
           map: map,
@@ -970,9 +970,9 @@ routeParams.outSpatialReference = {"wkid":102100};
 
       function addIndicatedStop(phase){
         removeEventHandlers();
-        if(phase==="initial"){         
+        if(phase==="initial"){
           addInitialDestinationStop();
-        } else if(phase === "start"){          
+        } else if(phase === "start"){
           addStartStop();
         } else if(phase === "end"){
           addDestinationStop();
@@ -1345,8 +1345,8 @@ routeParams.outSpatialReference = {"wkid":102100};
       //Stops listening for click events to add barriers and stops (if they've already been wired)
       function removeEventHandlers() {
         dojo.disconnect(mapOnClick_addInitialStop_connect);
-        dojo.disconnect(mapOnClick_addDestinationStop_connect); 
-        dojo.disconnect(mapOnClick_addStartStop_connect); 
+        dojo.disconnect(mapOnClick_addDestinationStop_connect);
+        dojo.disconnect(mapOnClick_addStartStop_connect);
         $("#myLocation").off('click', inputAddress);
       }
 
@@ -1397,7 +1397,7 @@ routeParams.outSpatialReference = {"wkid":102100};
 
 
 
-                        
+
 
                         sRouteWB = JSON.parse(results);
 
@@ -1563,7 +1563,7 @@ routeParams.outSpatialReference = {"wkid":102100};
           $("#address-wrapper").css('display',"block");
 
         whichStopAddressInput="";
-        
+
 
 
       }
@@ -2415,10 +2415,12 @@ function resetPoints(){
     clearCrimesData();
     crimesPlot();
   }
-
 }
 
-
-
+// Show the terms and conditions popup for first time users
+if(localStorage.getItem('termsAndConditionsPopup') != 'shown') {
+  $('#termsAndConditionsPopup').foundation('open');
+  localStorage.setItem('termsAndConditionsPopup','shown')
+}
 
 });
