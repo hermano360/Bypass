@@ -527,9 +527,7 @@ a{
     background: #fff;
   }
 
-
   .close-button {
-
     top: 5px;
     right: 5px;
     position: absolute;
@@ -543,12 +541,9 @@ a{
     position: absolute;
   }
 
-  #directions-button {
-
-
+  #termsAndConditionsPopup > .close-button {
+    font-size:25px;
   }
-
-
 
   .rightAlign {
     float:right;
@@ -602,7 +597,7 @@ a{
   .address-wrapper {
     background-color:#8cd4cc;
     position:relative;
-    
+
   }
 
   .address-container {
