@@ -5,6 +5,8 @@ $(document).foundation()
     "esri/config",
     "esri/map",
     "esri/graphic",
+    "esri/layers/GraphicsLayer",
+    "esri/InfoTemplate",
     "esri/dijit/Search",
     "esri/IdentityManager",
     "esri/tasks/RouteTask",
@@ -37,7 +39,7 @@ $(document).foundation()
     "dijit/form/HorizontalSlider",
     "dijit/form/HorizontalRuleLabels"
     ], function (
-      urlUtils, esriConfig, Map, Graphic, Search, esriId, RouteTask, RouteParameters, RouteResult,
+      urlUtils, esriConfig, Map, Graphic,GraphicsLayer, InfoTemplate, Search, esriId, RouteTask, RouteParameters, RouteResult,
       FeatureSet, SimpleMarkerSymbol, SimpleLineSymbol, SimpleFillSymbol, Polyline, Extent, Geocoder,
       Color, array, on, dom, registry, djQuery, webMercatorUtils, Circle, Point, request, xhr,ready,HeatmapRenderer
       )
@@ -105,9 +107,13 @@ $(document).foundation()
       var startPoint;
       var endPoint;
       var myLocationAvailable = false;
+      var whichRoute;
+      var featureCollectionSF = new GraphicsLayer();
 
       var sfBarriers = [];
       var sfGrid = [];
+      var sfCrimeData;
+      var crimeCollectionSF = new GraphicsLayer();
 
 
       var authdata = {client_id: '2FiTpg1kQIhDPS1H', client_secret: '926550d14c5e4fe9b39fc25229654ce7', grant_type: 'client_credentials', expiration: '1440'}
@@ -145,7 +151,10 @@ $(document).foundation()
 
 
 
+
+
       ready(function() {
+        
 
         inputInitialAddress();
         whichStopAddressInput="initial";
@@ -328,11 +337,13 @@ $(document).foundation()
           //plotFilteredData(["RawData",{crime: ["Assault","Burglary"],pointsOfInterest: ["Wifi Location","Sex Offender"],business: ["School"]},"Last Year"]);
         });
 
+        getSFCrime();
         xhr.get("SFPD_Incidents_-Jul16_Sep16.csv", {
           handleAs: "text",
         }).then(function(data) {
           sfGrid = tlbrArray(data.replace(/\n/g, "," ).split(","))
           mapPlot(sfGrid);
+          createBarriers(sfGrid);
           });
 
 
@@ -728,7 +739,8 @@ if($("#crimesButton").data("crimeDisplay")=="none"){
   barrierVisibility = false;
   resetBarriers();
   crimesPlot();
-  $("#crimeInfo").html("Crime in Last 24 Hours");
+  plotCrimeData(sfCrimeData);
+  $("#crimeInfo").html("Recent Crime");
   $("#crimesButton").data("crimeDisplay","crimePoints");
   $("#crimesButton").removeClass("fa-delicious");
   $("#crimesButton").addClass("fa-history");
@@ -1146,9 +1158,9 @@ routeParams.outSpatialReference = {"wkid":102100};
           map.graphics.remove(irreleventBarriers.splice(i, 1)[0]);
         }
 
-        for (var i=sfBarriers.length-1; i>=0; i--) {
-          map.graphics.remove(sfBarriers.splice(i, 1)[0]);
-        }
+        featureCollectionSF.clear();
+
+
 
 
       }
@@ -1165,6 +1177,8 @@ routeParams.outSpatialReference = {"wkid":102100};
         for (var i=rawCrimesGraphics.length-1; i>=0; i--) {
           map.graphics.remove(rawCrimesGraphics.splice(i, 1)[0]);
         }
+
+        crimeCollectionSF.clear();
       }
 
       function clearFeaturesData() {
@@ -1380,6 +1394,7 @@ routeParams.outSpatialReference = {"wkid":102100};
 
           polygonBarriersURL += "{\"geometry\":{\"rings\":[[";
           for(var j = 0; j < sfBarriers[i].geometry.rings[0].length; j++){
+            
             polygonBarriersURL += "["+sfBarriers[i].geometry.rings[0][j][0]+","+sfBarriers[i].geometry.rings[0][j][1]+"]";
             if(j<4){
               polygonBarriersURL += ",";
@@ -1423,6 +1438,7 @@ routeParams.outSpatialReference = {"wkid":102100};
                         bypassRouteDirections = JSON.parse(results).directions;
                         bypassRoute = new esri.geometry.Polyline(sRouteWB.routes.features[0].geometry.paths[0]);
                         routes.push(map.graphics.add(new esri.Graphic(bypassRoute,routeSymbols["selectedRoute"])));
+                        whichRoute = "bypass";
 
 
                         if(sRouteWB.routes.features[0].geometry.paths[0].length>sRoute.routes.features[0].geometry.paths[0].length){
@@ -1510,12 +1526,11 @@ routeParams.outSpatialReference = {"wkid":102100};
 
       function chooseBypass(){
         clearRoutes();
-
-
         routes.push(map.graphics.add(new esri.Graphic(normalRoute,routeSymbols["unselectedRoute"])));
         routes.push(map.graphics.add(new esri.Graphic(bypassRoute,routeSymbols["selectedRoute"])));
         chosenRouteDirections = bypassRouteDirections;
         $("#calc-time-dist").html(bypassTimeDistance);
+        whichRoute = "bypass";
       }
 
       function chooseNormal(){
@@ -1526,6 +1541,7 @@ routeParams.outSpatialReference = {"wkid":102100};
         routes.push(map.graphics.add(new esri.Graphic(normalRoute,routeSymbols["selectedRoute"])));
         chosenRouteDirections = normalRouteDirections;
         $("#calc-time-dist").html(normalTimeDistance);
+        whichRoute = "normal";
       }
 
       //Solves the routes. Any errors will trigger the errorHandler function.
@@ -1589,6 +1605,7 @@ routeParams.outSpatialReference = {"wkid":102100};
 
       //Clears all routes
       function clearRoutes() {
+        whichRoute = "";
         $("#directions-button").css("display","none");
 
         for (var i=routes.length-1; i>=0; i--) {
@@ -2178,9 +2195,11 @@ console.log([mapFormat, dataSet, timeFrame]);
 
 
 function resetBarriers(evt) {
+
 clearBarriers();
 mapAllIndices(normalizedArray);
 mapPlot(sfGrid);
+
 }
 
 function filterParameterFormatter(){
@@ -2217,6 +2236,7 @@ return outputArray;
 
 //9/14
 function crimesPlot(){
+
 
 
 
@@ -2265,6 +2285,7 @@ function crimesPlot(){
 
 function sexOffendersPlot(){
   console.log("sex offenders called");
+
 
     var dataOutline = new SimpleLineSymbol();
     var dataPointMarker = new SimpleMarkerSymbol();
@@ -2435,6 +2456,7 @@ function resetPoints(){
   if($("#crimesButton").data("crimeDisplay")=="crimePoints"){
     clearCrimesData();
     crimesPlot();
+    plotCrimeData(sfCrimeData);
   }
 }
 
@@ -2446,13 +2468,18 @@ if(localStorage.getItem('termsAndConditionsPopup') != 'shown') {
 
 function resetRoutes(){
 
-  clearRoutes();
-  if($("#BypassRoute").hasClass(routeSelected)){
-        routes.push(map.graphics.add(new esri.Graphic(bypassRoute,routeSymbols["selectedRoute"])));
-        routes.push(map.graphics.add(new esri.Graphic(normalRoute,routeSymbols["unselectedRoute"])));
-  } else {
-        routes.push(map.graphics.add(new esri.Graphic(bypassRoute,routeSymbols["selectedRoute"])));
-        routes.push(map.graphics.add(new esri.Graphic(normalRoute,routeSymbols["unselectedRoute"])));
+  console.log(whichRoute);
+
+  if(whichRoute =="bypass"){
+    clearRoutes();
+    routes.push(map.graphics.add(new esri.Graphic(normalRoute,routeSymbols["unselectedRoute"])));
+    routes.push(map.graphics.add(new esri.Graphic(bypassRoute,routeSymbols["selectedRoute"])));
+    whichRoute ="bypass";
+  } else if(whichRoute =="normal"){
+    clearRoutes();
+    routes.push(map.graphics.add(new esri.Graphic(bypassRoute,routeSymbols["unselectedRoute"])));
+    routes.push(map.graphics.add(new esri.Graphic(normalRoute,routeSymbols["selectedRoute"])));
+    whichRoute ="normal";
   }
 
 }
@@ -2472,7 +2499,69 @@ function tlbrArray(splitCSV) {
 
 function mapPlot(grid){
 
+
+  /*https://data.sfgov.org/resource/gxxq-x39z.json?$where=date%3E%20%222016-10-01T00:00:00%22%20AND%20date%20%3C%20%222016-10-15T00:00:00%22
+*/
   var op;
+  var impedance;
+  var topLeftPoint;
+  var bottomRightPoint;
+  var ring;
+  var square;
+  var polygonbarrier;
+  var barrierVisibilityFactor = 1;
+
+  if(!barrierVisibility){
+  barrierVisibilityFactor = 0;
+  }
+
+
+  for(var i = 0; i<grid.length; i++){
+    op = grid[i][4]*barrierVisibilityFactor;
+    impedance = op*10;
+
+    polygonBarrierSymbol.setColor(new Color([255,0,0,op]));
+    polygonBarrierSymbol.setOutline(new SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new Color([250,0,0,op]), 2));
+
+    topLeftPoint = new esri.geometry.Point([grid[i][0], grid[i][1]]);
+    bottomRightPoint = new esri.geometry.Point([grid[i][2], grid[i][3]]);
+    ring = [];
+    ring.push([topLeftPoint.x,topLeftPoint.y]);
+    ring.push([bottomRightPoint.x, topLeftPoint.y]);
+    ring.push([bottomRightPoint.x, bottomRightPoint.y]);
+    ring.push([topLeftPoint.x, bottomRightPoint.y]);
+    ring.push([topLeftPoint.x,topLeftPoint.y]);
+
+
+    square = new esri.geometry.Polygon(ring);
+    polygonbarrier = new esri.Graphic(square,polygonBarrierSymbol);
+    polygonbarrier.attributes= {BarrierType: 1, Attr_Miles: impedance, cow:i};
+
+    if(impedance > 1) {
+      featureCollectionSF.add(polygonbarrier);
+    } else if (impedance > .5){
+      //irreleventBarriers.push(map.graphics.add(polygonbarrier));
+    }
+
+
+/*  var myPoint = {"geometry":{"x":-104.4140625,"y":69.2578125,
+    "spatialReference":{"wkid":4326}},"attributes":{"XCoord":-104.4140625,
+    "YCoord":69.2578125,"Plant":"Mesa Mint"},"symbol":{"color":[255,0,0,128],
+    "size":12,"angle":0,"xoffset":0,"yoffset":0,"type":"esriSMS",
+    "style":"esriSMSSquare","outline":{"color":[0,0,0,255],"width":1,
+    "type":"esriSLS","style":"esriSLSSolid"}},
+    "infoTemplate":{"title":"Vernal Pool Locations","content":"Latitude: ${YCoord} <br/>
+     Longitude: ${XCoord} <br/> Plant Name:${Plant}"}};*/
+
+  }
+
+  console.log(featureCollectionSF);
+  map.addLayer(featureCollectionSF);
+}
+
+function createBarriers(grid){
+
+    var op;
   var impedance;
   var topLeftPoint;
   var bottomRightPoint;
@@ -2501,15 +2590,104 @@ function mapPlot(grid){
     polygonbarrier.attributes= {BarrierType: 1, Attr_Miles: impedance};
 
     if(impedance > 1) {
-      sfBarriers.push(map.graphics.add(polygonbarrier));
-    } else if (impedance > .5){
-      irreleventBarriers.push(map.graphics.add(polygonbarrier));
+      sfBarriers.push(polygonbarrier);
     }
-
+    
   }
+
+  //console.log(sfBarriers[10].getContent());
 }
 
+function pad(n) {
+    return (n < 10) ? ("0" + n) : n;
+}
 
+function getSFCrime() {
+  var latestDay=new Date() - 1209600000;
+  var twoWeeksDay=new Date() - 1209600000*2;
+  var latestDayInfo = { day: new Date(latestDay).getDate(), month: new Date(latestDay).getMonth()+1,year: new Date(latestDay).getFullYear()};
+  var twoWeeksInfo = { day: new Date(twoWeeksDay).getDate(), month: new Date(twoWeeksDay).getMonth()+1,year: new Date(twoWeeksDay).getFullYear()};
+
+  latestDayInfo.day = pad(latestDayInfo.day);
+  latestDayInfo.month = pad(latestDayInfo.month);
+  twoWeeksInfo.day = pad(twoWeeksInfo.day);
+  twoWeeksInfo.month = pad(twoWeeksInfo.month);
+
+  $.ajax({
+    url: 'https://data.sfgov.org/resource/gxxq-x39z.json?$where=%20(date%3E%20%22'+ twoWeeksInfo.year+'-'+ twoWeeksInfo.month +'-' +twoWeeksInfo.day+'T00:00:00%22%20AND%20date%20%3C%20%22'+ latestDayInfo.year+'-'+ latestDayInfo.month +'-' +latestDayInfo.day+'T00:00:00%22)AND%20(category=%20%22ASSAULT%22%20OR%20category=%22ROBBERY%22%20OR%20category=%22WEAPON%20LAWS%22%20OR%20category=%22LARCENY/THEFT%22%20OR%20category=%22BURGLARY%22%20OR%20category=%22DRUG/NARCOTIC%22%20OR%20category=%22VEHICLE%20THEFT%22%20OR%20category=%22SEX%20OFFENSES,%20FORCIBLE%22%20OR%20category=%22KIDNAPPING%22%20OR%20category=%22PROSTITUTION%22%20OR%20category=%22SEX%20OFFENSES,%20NON%20FORCIBLE%22)&$select=date,%20x,%20y,descript',
+    type: "GET",
+    data: {
+      "$limit" : 5000,
+      "$$app_token" : "Oouymz6gl8EZtwDvIcmnR3c43"
+    },
+
+    success: function (results, textStatus, xhr) {
+
+      sfCrimeData= results;
+
+    },
+
+    error: function (xhr, textStatus, errorThrown) {
+      console.log("test failed");
+      console.log("ERROR:" + xhr.responseText + xhr.status + errorThrown);
+      return false;
+    }
+  });
+}
+
+function plotCrimeData(crimeObject) {
+
+
+    var dataPointMarker = new SimpleMarkerSymbol();
+    var dataColor = new Color([0,255,0, 1]);
+    var template;
+
+
+
+for(var i = 0; i < crimeObject.length; i++ ){
+
+    dataPointMarker.setColor(dataColor);
+    dataPointMarker.setSize(4);
+    var pointGeometry = new Point(crimeObject[i].x,crimeObject[i].y);
+    var pointGraphic = new esri.Graphic(pointGeometry,dataPointMarker);
+    pointGraphic.attributes= {Date: crimeObject[i].date.substring(0, 10), Description: crimeObject[i].descript}
+    crimeCollectionSF.add(pointGraphic);
+
+    template = new esri.InfoTemplate();  
+    template.setTitle('Crime');
+    pointGraphic.setInfoTemplate(template);  
+    }
+    map.addLayer(crimeCollectionSF);
+
+    }
+
+
+
+/*
+
+
+
+
+
+
+    if(filteredCrimeLocations[0]){
+
+      console.log("filteredCrimeLocations called in crimeplot");
+
+
+    } else{
+    for(var i = 0; i<allLocations.length; i++){
+      if(dataColors[allLocations[i][4]] && (nowDate-allLocations[i][0])<=86400){
+        filteredCrimeLocations.push(allLocations[i]);
+        dataOutline.setColor(new Color(dataColors[allLocations[i][4]]));
+        dataPointMarker.setColor(new Color(dataColors[allLocations[i][4]]));
+        dataPointMarker.setOutline(dataOutline);
+        dataPointMarker.setSize(4);
+        rawCrimesGraphics.push(map.graphics.add(new esri.Graphic(new Point(allLocations[i][3],allLocations[i][2]),dataPointMarker)));
+      }
+    }
+  }
+*/
 
 
 
