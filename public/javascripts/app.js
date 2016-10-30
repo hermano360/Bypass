@@ -31,7 +31,6 @@ $(document).foundation()
     "dojo/request",
     "dojo/request/xhr",
     "dojo/ready",
-    "esri/renderers/HeatmapRenderer",
     "esri/tasks/geometry",
     "esri/units",
     "dijit/layout/BorderContainer",
@@ -41,7 +40,7 @@ $(document).foundation()
     ], function (
       urlUtils, esriConfig, Map, Graphic,GraphicsLayer, InfoTemplate, Search, esriId, RouteTask, RouteParameters, RouteResult,
       FeatureSet, SimpleMarkerSymbol, SimpleLineSymbol, SimpleFillSymbol, Polyline, Extent, Geocoder,
-      Color, array, on, dom, registry, djQuery, webMercatorUtils, Circle, Point, request, xhr,ready,HeatmapRenderer
+      Color, array, on, dom, registry, djQuery, webMercatorUtils, Circle, Point, request, xhr,ready
       )
     {
 
@@ -701,7 +700,9 @@ $("#crimesButton").click(function(){
 
   $("#crimesButton").removeClass("iconUnselected");
   $("#crimesButton").addClass("iconSelected");
+
 if($("#crimesButton").data("crimeDisplay")=="none"){
+  addDesignatedStop();
   $("#crimesButton").removeClass("iconUnselected");
   $("#crimesButton").addClass("iconSelected");
   barrierVisibility = true;
@@ -715,13 +716,14 @@ if($("#crimesButton").data("crimeDisplay")=="none"){
   $("#crimesButton").addClass("iconSelected");
   barrierVisibility = false;
   resetBarriers();
-  //crimesPlot();
   plotCrimeData(sfCrimeData);
+  removeEventHandlers();
   $("#crimeInfo").html("Recent Crime");
   $("#crimesButton").data("crimeDisplay","crimePoints");
   $("#crimesButton").removeClass("fa-delicious");
   $("#crimesButton").addClass("fa-history");
 }else if($("#crimesButton").data("crimeDisplay")=="crimePoints"){
+  addDesignatedStop();
   $("#crimesButton").removeClass("iconUnselected");
   $("#crimesButton").addClass("iconSelected");
   clearCrimesData();
@@ -731,6 +733,7 @@ if($("#crimesButton").data("crimeDisplay")=="none"){
   $("#crimesButton").addClass("fa-male");
 $("#crimesButton").data("crimeDisplay","sexOffenders");
 } else if($("#crimesButton").data("crimeDisplay")=="sexOffenders"){
+  addDesignatedStop();
   $("#crimesButton").removeClass("iconSelected");
   $("#crimesButton").addClass("iconUnselected");
   clearCrimesData();
@@ -765,8 +768,6 @@ $("#featuresButton").click(function(){
       $("#featuresButton").addClass("fa-shield");
     }
   });
-
-
 
 //routeTask = new RouteTask("https://route.arcgis.com/arcgis/rest/services/World/Route/NAServer/Route_World");
 routeParams = new RouteParameters();
@@ -915,8 +916,8 @@ routeParams.outSpatialReference = {"wkid":102100};
           removeEventHandlers();
           addDestinationStop();
         } else if(whichStopAddressInput==="initial"){
+          removeEventHandlers();
           addInitialDestinationStop();
-
         } else{
           removeEventHandlers();
         }
@@ -1034,9 +1035,6 @@ routeParams.outSpatialReference = {"wkid":102100};
 
 
       function addInitialDestinationStop(){
-
-
-
         mapOnClick_addInitialStop_connect= dojo.connect(map, "onClick", function (evt) {
           var longlat = webMercatorUtils.xyToLngLat(evt.mapPoint["x"], evt.mapPoint["y"], true);
           map.graphics.remove(routeStops.pop());
@@ -1065,8 +1063,6 @@ routeParams.outSpatialReference = {"wkid":102100};
             }
           });
         });
-
-
       }
 
 
@@ -1239,63 +1235,6 @@ routeParams.outSpatialReference = {"wkid":102100};
       }
 
 
-      function addSquareBarrier(long, lat,max,value) {
-        //op as opacity, radius as radius
-
-        var op = value/max;
-
-        var impedance = op*10;
-        var outlineop;
-
-        xmin = long;
-        ymax = lat;
-
-        //Change square outline
-
-        if(impedance > 1){
-          outlineop = .2
-        } else{
-          outlineop = 0;
-        }
-
-        if(!barrierVisibility){
-          op = 0;
-          outlineop = 0;
-        }
-        //Change square color
-
-        //just for a testing
-
-        polygonBarrierSymbol.setColor(new Color([255,0,0,op]));
-
-        polygonBarrierSymbol.setOutline(new SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new Color([250,0,0,outlineop]), 2));
-
-        var topLeftPoint = new esri.geometry.Point([xmin, ymax]);
-
-        var ring = []; // point that make up the circle
-
-
-        ring.push([topLeftPoint.x,topLeftPoint.y]);
-        ring.push([topLeftPoint.x + 0.001651218959260686, topLeftPoint.y]);
-        ring.push([topLeftPoint.x + 0.001651218959260686, topLeftPoint.y - 0.0013911360369712373]);
-        ring.push([topLeftPoint.x, topLeftPoint.y - 0.0013911360369712373]);
-
-        ring.push(ring[0]); // start point needs to == end point
-        var square = new esri.geometry.Polygon(ring);
-        var polygonbarrier = new esri.Graphic(square,polygonBarrierSymbol);
-        polygonbarrier.attributes= {BarrierType: 1, Attr_Miles: impedance};
-
-
-        if(impedance > 1.2){//Readjust here in case there are too many barriers on the screen
-          barriers.push(map.graphics.add(polygonbarrier));
-        }else {
-          irreleventBarriers.push(map.graphics.add(polygonbarrier));
-        }
-      }
-
-     //Load-in barrier circle(polygon)
-
-
 
       //Stops listening for click events to add barriers and stops (if they've already been wired)
       function removeEventHandlers() {
@@ -1372,7 +1311,6 @@ routeParams.outSpatialReference = {"wkid":102100};
 
 
                         for(var i = 0; i < minRoutePathLength; i++){
-                          //only if routes are the same do you give the option for bypass and normal routes.
 
                             $("#BypassRoute").css('display',"inline-block");
                             $("#NormalRoute").css('display',"inline-block");
@@ -1380,10 +1318,6 @@ routeParams.outSpatialReference = {"wkid":102100};
                         }
 
                         chosenRouteDirections = sRouteWB.directions;
-
-
-
-
                         bypassTimeDistance = "(" + sRouteWB.directions[0].summary.totalLength.toFixed(1) +" mi "+ (sRouteWB.directions[0].summary.totalLength*60/3.1).toFixed(0) + " min)";
                         //$('#solveRoute').text("Pick Safer Way" + " " + bypassTimeDistance);
 
@@ -1392,9 +1326,7 @@ routeParams.outSpatialReference = {"wkid":102100};
 
                         $(".map").LoadingOverlay("hide");
 
-                        //enableNewRouteBtn();
-                        enableButtons();
-                        enableStartEndTextboxes();
+
           },
           error: function (xhr, textStatus, errorThrown) {
             console.log("test failed");
@@ -1707,7 +1639,6 @@ routeParams.outSpatialReference = {"wkid":102100};
 
       //This reflects how far the center of each cell is from eachother, in terms of [longitude, latitude]. This is approximate since earth is round
       var deltaLngLat = [(-longLatTL[0]+longLatRB[0])/xcells,(-longLatRB[1]+longLatTL[1])/ycells];
-
       for(var i = 0; i < xcells; i++){
         calculatedArray[i]=[];//sets the stage for a new column
         for(var m = 0; m < ycells; m++){
@@ -2053,7 +1984,6 @@ function parkingMetersCall(){
 
     success: function (results, textStatus, xhr) {
       parkingData = results;
-      console.log(parkingData);
     },
 
     error: function (xhr, textStatus, errorThrown) {
@@ -2085,7 +2015,7 @@ function parkingMetersPlot(parkingObject) {
 }
 
 
-for(var i = 0; i < parkingObject.length; i=i+3 ){
+for(var i = 0; i < parkingObject.length; i=i+5 ){
 
   if(dataColors[parkingObject[i].ratearea]){
     dataPointMarker.setColor(new Color(dataColors[parkingObject[i].ratearea]));
@@ -2253,7 +2183,7 @@ function mapPlot(grid){
     if(impedance>6){
       blockColor = new Color([255,0,0,op])
     } else if(impedance>1.75){
-      blockColor = new Color([255,165,0,op])
+      blockColor = new Color([255,165,0,op*1.5])
     } else {
       blockColor = new Color([255,255,0,op*2])
     }
@@ -2376,14 +2306,14 @@ function getSFCrime() {
 function plotCrimeData(crimeObject) {
 
 
-    var dataPointMarker = new SimpleMarkerSymbol();
-    var dataColor = new Color([0,0,255, 1]);
-    var template;
-    var dataOutline = new SimpleMarkerSymbol();
+  var dataPointMarker = new SimpleMarkerSymbol();
+  var dataColor = new Color([0,0,255, 1]);
+  var template;
+  var dataOutline = new SimpleMarkerSymbol();
 
 
 
-for(var i = 0; i < crimeObject.length; i++ ){
+  for(var i = 0; i < crimeObject.length; i++ ){
 
     dataPointMarker.setColor(dataColor);
     dataOutline.setColor(dataColor);
@@ -2397,39 +2327,12 @@ for(var i = 0; i < crimeObject.length; i++ ){
     template.setTitle('Crime');
     pointGraphic.setInfoTemplate(template);
 
-    }
-
-    map.addLayer(crimeCollectionSF);
-
-    }
-
-
-
-/*
-
-
-
-
-
-
-    if(filteredCrimeLocations[0]){
-
-      console.log("filteredCrimeLocations called in crimeplot");
-
-
-    } else{
-    for(var i = 0; i<allLocations.length; i++){
-      if(dataColors[allLocations[i][4]] && (nowDate-allLocations[i][0])<=86400){
-        filteredCrimeLocations.push(allLocations[i]);
-        dataOutline.setColor(new Color(dataColors[allLocations[i][4]]));
-        dataPointMarker.setColor(new Color(dataColors[allLocations[i][4]]));
-        dataPointMarker.setOutline(dataOutline);
-        dataPointMarker.setSize(4);
-        rawCrimesGraphics.push(map.graphics.add(new esri.Graphic(new Point(allLocations[i][3],allLocations[i][2]),dataPointMarker)));
-      }
-    }
   }
-*/
+
+  map.addLayer(crimeCollectionSF);
+
+}
+
 
 
 
