@@ -157,7 +157,7 @@ $(document).foundation()
 
 
       ready(function() {
-        
+
 
         inputInitialAddress();
         whichStopAddressInput="initial";
@@ -1256,7 +1256,7 @@ routeParams.outSpatialReference = {"wkid":102100};
 
           polygonBarriersURL += "{\"geometry\":{\"rings\":[[";
           for(var j = 0; j < sfBarriers[i].geometry.rings[0].length; j++){
-            
+
             polygonBarriersURL += "["+sfBarriers[i].geometry.rings[0][j][0]+","+sfBarriers[i].geometry.rings[0][j][1]+"]";
             if(j<4){
               polygonBarriersURL += ",";
@@ -2036,10 +2036,10 @@ for(var i = 0; i < parkingObject.length; i=i+5 ){
     var pointGraphic = new esri.Graphic(pointGeometry,dataPointMarker);
     pointGraphic.attributes= {Rate_Area:area[0], Hours:area[1], Rates:area[2], Time_limit:area[3]};
     parkingCollectionSF.add(pointGraphic);
-    template = new esri.InfoTemplate();  
+    template = new esri.InfoTemplate();
     template.setTitle('Park Info');
     pointGraphic.setInfoTemplate(template);
-      
+
     }
 
     map.addLayer(parkingCollectionSF);
@@ -2259,7 +2259,7 @@ function createBarriers(grid){
     if(impedance > 1) {
       sfBarriers.push(polygonbarrier);
     }
-    
+
   }
 
   //console.log(sfBarriers[10].getContent());
@@ -2323,7 +2323,7 @@ function plotCrimeData(crimeObject) {
     var pointGraphic = new esri.Graphic(pointGeometry,dataPointMarker);
     pointGraphic.attributes= {Date: crimeObject[i].date.substring(0, 10), Description: crimeObject[i].descript}
     crimeCollectionSF.add(pointGraphic);
-    template = new esri.InfoTemplate();  
+    template = new esri.InfoTemplate();
     template.setTitle('Crime');
     pointGraphic.setInfoTemplate(template);
 

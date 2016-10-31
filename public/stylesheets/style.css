@@ -238,6 +238,13 @@ a{
   /*padding-left:30px;*/
 }
 
+.esriPopup .actionsPane {
+  display:none;
+}
+.esriPopup .titleButton.maximize {
+  display:none;
+}
+
 #solveRoute {
   position: relative;
   top:0;
