@@ -106,6 +106,9 @@ $(document).foundation()
       var endPoint;
       var myLocationAvailable = false;
 
+      var sfBarriers = [];
+      var sfGrid = [];
+
 
       var authdata = {client_id: '2FiTpg1kQIhDPS1H', client_secret: '926550d14c5e4fe9b39fc25229654ce7', grant_type: 'client_credentials', expiration: '1440'}
 
@@ -129,8 +132,9 @@ $(document).foundation()
 
       map = new Map("map", {
         basemap: "streets",
-        center: [-118.49132, 34.01455],
-        zoom: 14,
+
+        center: [-122.4134601, 37.7823048],
+        zoom: 13,
         smartNavigation: false, //by adding this, the scroll mouse goes in and out, rather than up and down. perhaps the other way is better though, idk
         slider:false,
         isDoubleClickZoom: true
@@ -323,6 +327,14 @@ $(document).foundation()
           //console.log(allLocations);
           //plotFilteredData(["RawData",{crime: ["Assault","Burglary"],pointsOfInterest: ["Wifi Location","Sex Offender"],business: ["School"]},"Last Year"]);
         });
+
+        xhr.get("SFPD_Incidents_-Jul16_Sep16.csv", {
+          handleAs: "text",
+        }).then(function(data) {
+          sfGrid = tlbrArray(data.replace(/\n/g, "," ).split(","))
+          mapPlot(sfGrid);
+          });
+
 
         $.ajax({
           type: 'POST',
@@ -1133,6 +1145,12 @@ routeParams.outSpatialReference = {"wkid":102100};
         for (var i=irreleventBarriers.length-1; i>=0; i--) {
           map.graphics.remove(irreleventBarriers.splice(i, 1)[0]);
         }
+
+        for (var i=sfBarriers.length-1; i>=0; i--) {
+          map.graphics.remove(sfBarriers.splice(i, 1)[0]);
+        }
+
+
       }
 
       function clearRawData() {
@@ -1356,22 +1374,23 @@ routeParams.outSpatialReference = {"wkid":102100};
 
         var polygonBarriersURL= "{\"features\":[";
 
-        //temporarily change for testing 5 where barriers.length was before
 
-        for(var i = 0; i< barriers.length; i++){
+
+        for(var i = 0; i< 100; i++){
 
           polygonBarriersURL += "{\"geometry\":{\"rings\":[[";
-          for(var j = 0; j < barriers[i].geometry.rings[0].length; j++){
-            polygonBarriersURL += "["+barriers[i].geometry.rings[0][j][0]+","+barriers[i].geometry.rings[0][j][1]+"]";
+          for(var j = 0; j < sfBarriers[i].geometry.rings[0].length; j++){
+            polygonBarriersURL += "["+sfBarriers[i].geometry.rings[0][j][0]+","+sfBarriers[i].geometry.rings[0][j][1]+"]";
             if(j<4){
               polygonBarriersURL += ",";
             }
           }
-          polygonBarriersURL += "]]},\"attributes\":{\"BarrierType\":1,\"Attr_Miles\":"+barriers[i].attributes.Attr_Miles+"}}";
+          polygonBarriersURL += "]]},\"attributes\":{\"BarrierType\":1,\"Attr_Miles\":"+sfBarriers[i].attributes.Attr_Miles+"}}";
           if(i<barriers.length-1){
             polygonBarriersURL += ",";
           }
         }
+
         polygonBarriersURL += "]}";
 
         polygonBarriersURL= "polygonBarriers=" + polygonBarriersURL;
@@ -1527,10 +1546,10 @@ routeParams.outSpatialReference = {"wkid":102100};
 
       function solveRouteClick() {
 
-        console.log(routeStops[0]);
 
 
-       console.log($("#destinationAddress_input").val($("#destinationAddressInitial_input").val()));
+
+
         $(".map").LoadingOverlay("show");
           barrierVisibility = true;
           resetBarriers();
@@ -2161,6 +2180,7 @@ console.log([mapFormat, dataSet, timeFrame]);
 function resetBarriers(evt) {
 clearBarriers();
 mapAllIndices(normalizedArray);
+mapPlot(sfGrid);
 }
 
 function filterParameterFormatter(){
@@ -2406,6 +2426,7 @@ function navigationExtents() {
 function resetBarriersPoints(){
   resetBarriers();
   resetPoints();
+  resetRoutes();
   $("#startAddress").blur();
   $("#destinationAddress").blur();
 }
@@ -2422,5 +2443,75 @@ if(localStorage.getItem('termsAndConditionsPopup') != 'shown') {
   $('#termsAndConditionsPopup').foundation('open');
   localStorage.setItem('termsAndConditionsPopup','shown')
 }
+
+function resetRoutes(){
+
+  clearRoutes();
+  if($("#BypassRoute").hasClass(routeSelected)){
+        routes.push(map.graphics.add(new esri.Graphic(bypassRoute,routeSymbols["selectedRoute"])));
+        routes.push(map.graphics.add(new esri.Graphic(normalRoute,routeSymbols["unselectedRoute"])));
+  } else {
+        routes.push(map.graphics.add(new esri.Graphic(bypassRoute,routeSymbols["selectedRoute"])));
+        routes.push(map.graphics.add(new esri.Graphic(normalRoute,routeSymbols["unselectedRoute"])));
+  }
+
+}
+
+function tlbrArray(splitCSV) {
+  var row = [];
+  var readyArray = [];
+  for(var i = 0; i < splitCSV.length; i = i+5) {
+    for(var j = 0; j<5;j++){
+      row[j] = splitCSV[i+j];
+    }
+    readyArray.push(row);
+    row = [];
+  }
+  return readyArray;
+}
+
+function mapPlot(grid){
+
+  var op;
+  var impedance;
+  var topLeftPoint;
+  var bottomRightPoint;
+  var ring;
+  var square;
+  var polygonbarrier;
+
+  for(var i = 0; i<grid.length; i++){
+    op = grid[i][4];
+    impedance = op*10;
+    polygonBarrierSymbol.setColor(new Color([255,0,0,op]));
+    polygonBarrierSymbol.setOutline(new SimpleLineSymbol(esri.symbol.SimpleLineSymbol.STYLE_SOLID, new Color([250,0,0,op]), 2));
+
+    topLeftPoint = new esri.geometry.Point([grid[i][0], grid[i][1]]);
+    bottomRightPoint = new esri.geometry.Point([grid[i][2], grid[i][3]]);
+    ring = [];
+    ring.push([topLeftPoint.x,topLeftPoint.y]);
+    ring.push([bottomRightPoint.x, topLeftPoint.y]);
+    ring.push([bottomRightPoint.x, bottomRightPoint.y]);
+    ring.push([topLeftPoint.x, bottomRightPoint.y]);
+    ring.push([topLeftPoint.x,topLeftPoint.y]);
+
+
+    square = new esri.geometry.Polygon(ring);
+    polygonbarrier = new esri.Graphic(square,polygonBarrierSymbol);
+    polygonbarrier.attributes= {BarrierType: 1, Attr_Miles: impedance};
+
+    if(impedance > 1) {
+      sfBarriers.push(map.graphics.add(polygonbarrier));
+    } else if (impedance > .5){
+      irreleventBarriers.push(map.graphics.add(polygonbarrier));
+    }
+
+  }
+}
+
+
+
+
+
 
 });
