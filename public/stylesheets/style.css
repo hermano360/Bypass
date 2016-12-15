@@ -238,6 +238,13 @@ a{
   /*padding-left:30px;*/
 }
 
+.esriPopup .actionsPane {
+  display:none;
+}
+.esriPopup .titleButton.maximize {
+  display:none;
+}
+
 #solveRoute {
   position: relative;
   top:0;
@@ -602,7 +609,7 @@ a{
   .address-wrapper {
     background-color:#8cd4cc;
     position:relative;
-    
+
   }
 
   .address-container {
